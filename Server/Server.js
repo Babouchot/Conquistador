@@ -45,7 +45,7 @@ function connectionToServer(socket, type, gameID) {
 		case 'table':
 			table = socket;
 			console.log("table connected");
-			if (players.length > PLAYER_NUMBER) {
+			if (players.length >= PLAYER_NUMBER) {
 				launchGame();
 			}
 			break;
@@ -55,9 +55,10 @@ function connectionToServer(socket, type, gameID) {
 				players.push(player);
 				console.log("player " + players.length + " connected");
 				if (table !== undefined) {
-					table.emit('new_player', player);
+					//WTF ?
+					//table.emit('new_player', player);
 				}
-				if (players.length >= PLAYER_NUMBER) {
+				if (players.length == PLAYER_NUMBER && table !== undefined ) {
 					launchGame();
 				}
 			}
