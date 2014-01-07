@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <title>Test page for TriviadorIHM table</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="test" content="Test page for TriviadorIHM table">
+    <meta name="author" content="Cyrille Bogaert">
+    <link href="assets/game.css" rel="stylesheet">
+  <body>
+    <script type="text/javascript" src="jquery-1.6.2.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+      var socket = io.connect();
+      socket.on('requestIdentity', function () {
+        socket.emit('identity', 'table');
+      });
+    </script>
+  </body>
+</html>
