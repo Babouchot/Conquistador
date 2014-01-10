@@ -37,9 +37,14 @@ io.sockets.on('connection', connectionToServer);
 // A device try to connect to the server
 function connectionToServer(socket) {
 
+	console.log('connection request');
+
+
 	socket.emit ('requestIdentity', {});
 
+	// socket.on('identity', function (type, pseudo) {
 	socket.on('identity', function (type, pseudo) {
+		console.log(type);
 
 		switch (type) {
 		case 'table':
@@ -54,7 +59,8 @@ function connectionToServer(socket) {
 				
 				var player = new Player(players.length, socket, table, pseudo);
 				players.push(player);
-				console.log("player " + players.length + " connected");
+				player.playerSocket.emit('successfullyConnected', {});
+				console.log("player " + player.pseudo + players.length + " connected");
 				if (table !== undefined) {
 					table.emit('newPlayer', player.serialize());
 				}
@@ -62,13 +68,21 @@ function connectionToServer(socket) {
 					launchGame();
 				}
 			}
-			else if (table !== undefined) {
-				launchGame();
-			}
 			break;
 		}
 
 	});
+
+	socket.on('tableIdentity', function (message) {
+		if (message.type == 'table') {
+			table = socket;
+			console.log("table connected");
+			if (players.length >= PLAYER_NUMBER) {
+				launchGame();
+			}
+		}
+	});
+
 }
 
 
@@ -76,7 +90,7 @@ function connectionToServer(socket) {
 function launchGame () {
 	console.log("game is launching");
 	for (var i = 0; i < players.length; ++i) {
-		console.log("Player " + players[i].gameID + i + " start_game");
+		console.log("Player " + players[i].pseudo + players[i].gameID + " start_game");
 		players[i].playerSocket.emit('start_game', {});
 	}
 	if (table !== undefined) {

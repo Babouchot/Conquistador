@@ -13,83 +13,92 @@ function Game(playersArray, tableSocket) {
 
 	this.territories = new Array();
 
+	var self = this;
+
 	//	Phase 1 : Attribution des territoires sur question
 	this.phase1 = function () {	
 		var playersAnswers = [];
 		console.log('phase 1 started');
-	};
 	
-	this.phase1.init = function () {
-		// give one territory to each player
-	};
 	
-	this.phase1.update = function () {
-		// Pick a question from the database
-		var question;
-		//this.table.emit('question', question);
-		for (var i = 0; i < this.players.length; ++i) {
-			var p = this.players[i];
-			p.playerSocket.emit('question', question);
-			p.playerSocket.on('answer', function (answer) {
-				playersAnswers.push({'id' : p.gameID, 'answer' : answer});
-			});
-		}
-		
-		// wait for answers
-		function waitAnswers() {
-			if (playersAnswers.length < this.players.length) {
-				setTimeout(waitAnswers, 200);
-			}
-		}
-		
-		// find winner and attribute territories
-		playersAnswer.sort(function (answer1, answer2) {
-			var answerOffset1 = Math.abs(answer1.value - question.correctAnswer);
-			var answerOffset2 = Math.abs(answer2.value - question.correctAnswer);
+		this.init = function () {
+			// give one territory to each player
 			
-			if (answerOffset1 == answerOffset2) {
-				return answer1.time - answer2.time;
+			// parse question database file
+			var questionsFile = require('./questions.js');
+			var questions = new questionsFile();
+			console.log(questions);
+		};
+		
+		this.update = function () {
+			// Pick a question from the database
+			var question;
+			//this.table.emit('question', question);
+			for (var i = 0; i < self.players.length; ++i) {
+				var p = self.players[i];
+				p.playerSocket.emit('question', question);
+				self.table.emit('question', question);
+				p.playerSocket.on('answer', function (answer) {
+					playersAnswers.push({'id' : p.gameID, 'answer' : answer});
+				});
 			}
-			return answerOffset1 - answerOffset2;
-		});
-		
-		var capturedTerritories = new Array(4);
-		for (var i = 0; i < playersAnswer.length; ++i) {
-			switch (i) {
-			case 0:
-				capturedTerritories[playersAnswers[i].id] = 2;
-				break;
-			case 1:
-				capturedTerritories[playersAnswers[i].id] = 1;
-				break;
-			case 2:
-				capturedTerritories[playersAnswers[i].id] = 1;
-				break;
-			default:
-				capturedTerritories[playersAnswers[i].id] = 0;
-				break;
+			
+			// wait for answers
+			function waitAnswers() {
+				if (playersAnswers.length < self.players.length) {
+					setTimeout(waitAnswers, 200);
+				}
 			}
-		}
-		// send the number of territories each player have to capture
-		this.table.emit('capturePhase', capturedTerritories);
-		
-		// create the new assigned territories and assign the correct owner
-		this.table.on ('endCapturePhase', function (capturedTerritories) {
-			for (var i = 0; i < capturedTerritories.length; ++i) {
-				var territory = new Territory(capturedTerritories[i].zone);
-				this.territories.push(territory);
-				changeTerritoryOwner(players[capturedTerritories[i].owner], territory);
+			
+			// find winner and attribute territories
+			playersAnswers.sort(function (answer1, answer2) {
+				var answerOffset1 = Math.abs(answer1.value - question.correctAnswer);
+				var answerOffset2 = Math.abs(answer2.value - question.correctAnswer);
+				
+				if (answerOffset1 == answerOffset2) {
+					return answer1.time - answer2.time;
+				}
+				return answerOffset1 - answerOffset2;
+			});
+			
+			var capturedTerritories = new Array(4);
+			for (var i = 0; i < playersAnswers.length; ++i) {
+				switch (i) {
+				case 0:
+					capturedTerritories[playersAnswers[i].id] = 2;
+					break;
+				case 1:
+					capturedTerritories[playersAnswers[i].id] = 1;
+					break;
+				case 2:
+					capturedTerritories[playersAnswers[i].id] = 1;
+					break;
+				default:
+					capturedTerritories[playersAnswers[i].id] = 0;
+					break;
+				}
 			}
-		});
-		
-		// send the updated list of territories to the table
-		this.table.emit ('updateMapState', serializeTerritories());
-		
-		// check if all territories are assigned
-		if (this.territories.length >= TERRITORIES) {
-			return false;
-		}
-		return true;
+			// send the number of territories each player have to capture
+			self.table.emit('capturePhase', capturedTerritories);
+			
+			// create the new assigned territories and assign the correct owner
+			self.table.on ('endCapturePhase', function (capturedTerritories) {
+				for (var i = 0; i < capturedTerritories.length; ++i) {
+					var territory = new Territory(capturedTerritories[i].zone);
+					self.territories.push(territory);
+					changeTerritoryOwner(players[capturedTerritories[i].owner], territory);
+				}
+			});
+			
+			// send the updated list of territories to the table
+			self.table.emit ('updateMapState', self.serializeTerritories());
+			
+			// check if all territories are assigned
+			if (self.territories.length >= TERRITORIES) {
+				return false;
+			}
+			return true;
+		};
 	};
 
 
@@ -128,18 +137,12 @@ function Game(playersArray, tableSocket) {
 	this.currentPhase = this.phase1;
 
 	this.gameLoop = function () {
-		this.currentPhase();
+		var phase1 = new this.phase1();
+		phase1.init();
+		phase1.update();
+		//this.currentPhase();
 	};
 
-}
-
-function changeTerritoryOwner (newOwner, territory) {
-	var oldOwner = territory.owner;
-	if (oldOwner !== undefined) {
-		oldOwner.removeTerritory(territory);
-	}
-	newOwner.addTerritory(territory);
-	territory.setOwner(newOwner);
 }
 
 Game.prototype.serializeTerritories = function () {
@@ -149,3 +152,14 @@ Game.prototype.serializeTerritories = function () {
 	}
 	return serialized;
 };
+
+
+
+function changeTerritoryOwner (newOwner, territory) {
+	var oldOwner = territory.owner;
+	if (oldOwner !== undefined) {
+		oldOwner.removeTerritory(territory);
+	}
+	newOwner.addTerritory(territory);
+	territory.setOwner(newOwner);
+}

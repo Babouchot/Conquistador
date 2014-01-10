@@ -10,7 +10,15 @@ function Player (gameID, playerSocket, tableSocket, pseudo) {
 	this.tableSocket = tableSocket;
 	this.territories = new Array();
 	this.score = 0;
-	
+
+	// Temporary
+	var questionsFile = require('./questions.js');
+	var questions = new questionsFile();
+
+	this.playerSocket.on ('requestQuestionTest',function() {
+		this.playerSocket.emit('question', questions[2]);
+	});
+
 }
 
 
