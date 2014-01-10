@@ -3,21 +3,24 @@
 
 exports = module.exports = Game;
 
+var TERRITORIES = 16;
+
 function Game(playersArray, tableSocket) {
 	this.players = playersArray;
 	this.table = tableSocket;
 	this.MAXTURNS = 12;
 	this.currentTurn = 0;
 
+	this.territories = new Array();
 
-
-	//	Phase 1
+	//	Phase 1 : Attribution des territoires sur question
 	this.phase1 = function () {	
-		
 		var playersAnswers = [];
-
 		console.log('phase 1 started');
-		
+	};
+	
+	this.phase1.init = function () {
+		// give one territory to each player
 	};
 	
 	this.phase1.update = function () {
@@ -40,11 +43,58 @@ function Game(playersArray, tableSocket) {
 		}
 		
 		// find winner and attribute territories
+		playersAnswer.sort(function (answer1, answer2) {
+			var answerOffset1 = Math.abs(answer1.value - question.correctAnswer);
+			var answerOffset2 = Math.abs(answer2.value - question.correctAnswer);
+			
+			if (answerOffset1 == answerOffset2) {
+				return answer1.time - answer2.time;
+			}
+			return answerOffset1 - answerOffset2;
+		});
+		
+		var capturedTerritories = new Array(4);
+		for (var i = 0; i < playersAnswer.length; ++i) {
+			switch (i) {
+			case 0:
+				capturedTerritories[playersAnswers[i].id] = 2;
+				break;
+			case 1:
+				capturedTerritories[playersAnswers[i].id] = 1;
+				break;
+			case 2:
+				capturedTerritories[playersAnswers[i].id] = 1;
+				break;
+			default:
+				capturedTerritories[playersAnswers[i].id] = 0;
+				break;
+			}
+		}
+		// send the number of territories each player have to capture
+		this.table.emit('capturePhase', capturedTerritories);
+		
+		// create the new assigned territories and assign the correct owner
+		this.table.on ('endCapturePhase', function (capturedTerritories) {
+			for (var i = 0; i < capturedTerritories.length; ++i) {
+				var territory = new Territory(capturedTerritories[i].zone);
+				this.territories.push(territory);
+				changeTerritoryOwner(players[capturedTerritories[i].owner], territory);
+			}
+		});
+		
+		// send the updated list of territories to the table
+		this.table.emit ('updateMapState', serializeTerritories());
+		
+		// check if all territories are assigned
+		if (this.territories.length >= TERRITORIES) {
+			return false;
+		}
+		return true;
 	};
 
 
 
-	//	Phase 2
+	//	Phase 2 : Placement des pions (tags) sur les zones controllées
 	this.phase2 = function () {
 		console.log('phase 2 started');
 	};
@@ -83,3 +133,19 @@ function Game(playersArray, tableSocket) {
 
 }
 
+function changeTerritoryOwner (newOwner, territory) {
+	var oldOwner = territory.owner;
+	if (oldOwner !== undefined) {
+		oldOwner.removeTerritory(territory);
+	}
+	newOwner.addTerritory(territory);
+	territory.setOwner(newOwner);
+}
+
+Game.prototype.serializeTerritories = function () {
+	var serialized = new Array(this.territories.length);
+	for (var i = 0; i < this.territories.length; ++i) {
+		serialized[territories[i].zone] = territories[i].owner;
+	}
+	return serialized;
+};

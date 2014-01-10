@@ -25,7 +25,6 @@ Player.prototype.getTerritories = function () {
 
 Player.prototype.addTerritory = function (territory) {
 	this.territories.push(territory);
-	territory.setOwner(this);
 };
 
 Player.prototype.removeTerritory = function (territory) {

@@ -56,7 +56,7 @@ function connectionToServer(socket) {
 				players.push(player);
 				console.log("player " + players.length + " connected");
 				if (table !== undefined) {
-					table.emit('new_player', player.serialize());
+					table.emit('newPlayer', player.serialize());
 				}
 				if (players.length == PLAYER_NUMBER && table !== undefined ) {
 					launchGame();
@@ -80,7 +80,7 @@ function launchGame () {
 		players[i].playerSocket.emit('start_game', {});
 	}
 	if (table !== undefined) {
-		table.emit('start_game', {});
+		table.emit('startGame', {});
 	}
 	var game = new Game(players, table);
 	console.log("Game launched");
