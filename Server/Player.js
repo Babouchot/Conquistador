@@ -3,12 +3,14 @@
 
 exports = module.exports = Player;
 
-function Player (gameID, playerSocket, tableSocket) {
+function Player (gameID, playerSocket, tableSocket, pseudo) {
 	this.gameID = gameID;
+	this.pseudo = pseudo;
 	this.playerSocket = playerSocket;
 	this.tableSocket = tableSocket;
 	this.territories = new Array();
 	this.score = 0;
+	
 }
 
 
@@ -34,7 +36,11 @@ Player.prototype.removeTerritory = function (territory) {
 };
 
 Player.prototype.play = function () {
-	this.playerSocket.emit ('play');
-	this.tableSocket.emit ('play', this);
+	this.playerSocket.emit ('play', {});
+//	this.tableSocket.emit ('play');
 };
 
+
+Player.prototype.serialize = function () {
+	return {'pseudo': this.pseudo, 'score': this.score, 'territories':this.territories};
+};

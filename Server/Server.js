@@ -10,7 +10,7 @@ var Game = require('./Game.js');
 var PLAYER_NUMBER = 2;
 
 
-// Création du serveur, page par defait, port
+// Création du serveur, page par defaut, port
 var app = express();
 app.configure(function(){
   app.use(express.static(__dirname + '/'));
@@ -35,11 +35,11 @@ var table;
 io.sockets.on('connection', connectionToServer);
 
 // A device try to connect to the server
-function connectionToServer(socket, type, gameID) {
+function connectionToServer(socket) {
 
-	socket.emit ('requestIdentity');
+	socket.emit ('requestIdentity', {});
 
-	socket.on('identity', function (type, gameID) {
+	socket.on('identity', function (type, pseudo) {
 
 		switch (type) {
 		case 'table':
@@ -51,12 +51,12 @@ function connectionToServer(socket, type, gameID) {
 			break;
 		case 'player':
 			if (players.length < PLAYER_NUMBER) {
-				var player = new Player(gameID, socket, table);
+				
+				var player = new Player(players.length, socket, table, pseudo);
 				players.push(player);
 				console.log("player " + players.length + " connected");
 				if (table !== undefined) {
-					//WTF ?
-					//table.emit('new_player', player);
+					table.emit('new_player', player.serialize());
 				}
 				if (players.length == PLAYER_NUMBER && table !== undefined ) {
 					launchGame();
@@ -77,10 +77,10 @@ function launchGame () {
 	console.log("game is launching");
 	for (var i = 0; i < players.length; ++i) {
 		console.log("Player " + players[i].gameID + i + " start_game");
-		players[i].playerSocket.emit('start_game');
+		players[i].playerSocket.emit('start_game', {});
 	}
 	if (table !== undefined) {
-		table.emit('start_game');
+		table.emit('start_game', {});
 	}
 	var game = new Game(players, table);
 	console.log("Game launched");
