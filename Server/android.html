@@ -2,9 +2,9 @@
 <html lang="fr">
   <head>
     <meta charset="utf-8">
-    <title>Test page for TriviadorIHM player</title>
+    <title>Test page for TriviadorIHM android player</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="test" content="Test page for TriviadorIHM player">
+    <meta name="test" content="Test page for TriviadorIHM android player">
     <meta name="author" content="Cyrille Bogaert">
     <link href="assets/game.css" rel="stylesheet">
   <body>
@@ -13,7 +13,8 @@
     <script type="text/javascript">
       var socket = io.connect();
       socket.on('requestIdentity', function () {
-        socket.emit('identity', 'player', 'Babouchot');
+        socket.emit('playerIdentity', {pseudo:'android'});
+        console.log("playerIdentity android");
       });
     </script>
   </body>

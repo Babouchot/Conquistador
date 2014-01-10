@@ -22,7 +22,7 @@ app.get('/', function(req, res, next){
 
 var server = app.listen(8080);
 
-console.log('Server running ou port 8080');
+console.log('Conquistador server running ou port 8080');
 
 var serverSocket = require('socket.io');
 var io = serverSocket.listen(server,  {log : false});
@@ -42,25 +42,18 @@ function connectionToServer(socket) {
 
 	socket.emit ('requestIdentity', {});
 
-	// socket.on('identity', function (type, pseudo) {
-	socket.on('identity', function (type, pseudo) {
-		console.log(type);
+	if (players.length >= PLAYER_NUMBER || table === undefined) {
 
-		switch (type) {
-		case 'table':
-			table = socket;
-			console.log("table connected");
-			if (players.length >= PLAYER_NUMBER) {
-				launchGame();
-			}
-			break;
-		case 'player':
+		
+		socket.on('playerIdentity', function (message) {
+
+			var pseudo = message.pseudo;
 			if (players.length < PLAYER_NUMBER) {
-				
+		
 				var player = new Player(players.length, socket, table, pseudo);
 				players.push(player);
 				player.playerSocket.emit('successfullyConnected', {});
-				console.log("player " + player.pseudo + players.length + " connected");
+				console.log("player" + players.length + " " + player.pseudo + " connected");
 				if (table !== undefined) {
 					table.emit('newPlayer', player.serialize());
 				}
@@ -68,23 +61,21 @@ function connectionToServer(socket) {
 					launchGame();
 				}
 			}
-			break;
-		}
+		});
 
-	});
-
-	socket.on('tableIdentity', function (message) {
-		if (message.type == 'table') {
-			table = socket;
-			console.log("table connected");
-			if (players.length >= PLAYER_NUMBER) {
-				launchGame();
+		socket.on('tableIdentity', function (message) {
+			if (message.type == 'table') {
+				table = socket;
+				console.log("table connected");
+				if (players.length >= PLAYER_NUMBER) {
+					launchGame();
+				}
 			}
-		}
-	});
+		});
+
+	}
 
 }
-
 
 
 function launchGame () {
