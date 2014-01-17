@@ -21,6 +21,9 @@ function Game(playersArray, tableSocket) {
 	this.phase1 = function () {	
 		var playersAnswers = [];
 		console.log('phase 1 started');
+		this.count = PLAYER_NUMBER;
+
+		var phase1 = this;
 	
 	
 		this.init = function () {
@@ -35,12 +38,26 @@ function Game(playersArray, tableSocket) {
 			for (var i = 0; i < self.players.length; ++i) {
 				var territory = new Territory(Math.random()*3 + i*4);
 				self.territories.push(territory);
-				self.players[i].addTerritory(territory);
+				changeTerritoryOwner(self.players[i], territory);
 				self.table.emit('majPlayerInfo', self.players[i].serialize());
 			}
 
+			// get the new territories
+			self.table.on('capturedTerritories', function (message) {
+				var gameID = message.gameID;
+				var territories = message.territories;
+				for (var i = 0; i < territories.length; ++i) {
+					var territory = new Territory(territories[i]);
+					self.territories.push(territory);
+					changeTerritoryOwner(players[gameID], territory);
+					self.table.emit('majPlayerInfo', players[gameID].serialize());
+				}
+				phase1.count--;
+			});
+
 		};
 		
+
 		this.update = function () {
 			// Pick a question from the database
 			var question;
@@ -75,6 +92,25 @@ function Game(playersArray, tableSocket) {
 			
 			
 
+			var orderedPlayers = new Array();
+
+			for (var i = 0; i < playersAnswers.length; ++i) {
+				orderedPlayers.push(playersAnswers[i].id);
+			}
+
+			
+			// send the number of territories each player have to capture
+			phase1.count = PLAYER_NUMBER;
+			self.table.emit('captureTerritories', capturedTerritories);
+
+			function waitTerritories () {
+				if (count > 0) {
+					setTimeout(waitTerritories, 200);
+				}
+			}
+			waitTerritories();
+
+
 			// PHASE 2
 			// // create the new assigned territories and assign the correct owner
 			// self.table.on ('endCapturePhase', function (capturedTerritories) {
@@ -93,42 +129,44 @@ function Game(playersArray, tableSocket) {
 			// 	return false;
 			// }
 			// return true;
+
+		}; // Phase 1 update
+
+
+		this.nextPhase = function () {
+			var phase2 = new this.phase2();
+
+			function waitPhase2() {
+				if (phase2.count > 0) {
+					setTimeout(waitAnswers, 200);
+				}
+			}
+			waitPhase2();
 		};
 
-		this.end = function () {
-			var capturedTerritories = new Array(4);
-			capturedTerritories[playersAnswers[0].id] = 2;
-			capturedTerritories[playersAnswers[1].id] = 1;
-			capturedTerritories[playersAnswers[2].id] = 1;
-			capturedTerritories[playersAnswers[3].id] = 0;
-
-			// send the number of territories each player have to capture
-			self.table.emit('capturePhase', capturedTerritories);
-		}
-	};
+	}; // Phase1
 
 
 
 	//	Phase 2 : Déploiement des armées (Placement des pions/tags sur les zones controllées)
 	this.phase2 = function () {
 
+		console.log('phase 2 started');
 		this.count = PLAYER_NUMBER;
 		var phase2 = this;
 
-		this.update = function () {
-			console.log('phase 2 started');
-			self.table.on('endPhase2', function (gameID, territories) {
-				for (var i = 0; i < territories.length; ++i) {
-					var territory = new Territory(territories[i]);
-					self.territories.push(territory);
-					players[gameID].addTerritory(territory);
-					self.table.emit('majPlayerInfo', players[gameID].serialize());
-				}
-				phase2.count --;
-			});
-		}
+
+		self.table.emit('placeCommanders', {});
+		self.table.on ('commandersPlaced', function () {
+			phase2.nextPhase();
+		});
+
+		this.nextPhase = function () {
+
+		};
 
 	};
+
 
 	//	Phase 3 : Conquête du monde
 	this.phase3 =  function () {
@@ -142,6 +180,7 @@ function Game(playersArray, tableSocket) {
 		this.currentTurn++;
 	};
 
+
 	//	Phase 4 : Fin
 	this.phase4 = function () {
 		console.log('phase 4 started');
@@ -149,7 +188,7 @@ function Game(playersArray, tableSocket) {
 			return player1.score - player2.score;
 		});
 		//WTF ?
-		this.table.emit('results', players);
+		this.table.emit('results', players.serialize());
 		var position = 0;
 		for (var i = 0; i < this.players.length; ++i) {
 			this.players[i].playerSocket.emit('results', position++);
@@ -164,12 +203,7 @@ function Game(playersArray, tableSocket) {
 		while (self.territories.length < TERRITORIES) {
 			phase1.update();
 		}
-		phase1.end();
-
-		var phase2 = new this.phase2();
-		while (phase2.count > 0) {
-			phase2.update();
-		}
+		phase1.nextPhase();
 
 	};
 
