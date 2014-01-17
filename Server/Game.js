@@ -15,7 +15,7 @@ function Game(playersArray, tableSocket) {
 
 	var self = this;
 
-	//	Phase 1 : Attribution des territoires sur question
+	//	Phase 1 : Prise des territoires (Attribution des territoires sur question)
 	this.phase1 = function () {	
 		var playersAnswers = [];
 		console.log('phase 1 started');
@@ -28,6 +28,14 @@ function Game(playersArray, tableSocket) {
 			var questionsFile = require('./questions.js');
 			var questions = new questionsFile();
 			console.log(questions);
+
+			// Attributing random territories
+			for (var i = 0; i < players.length; ++i) {
+				var territory = new Territory(Math.random()*3 + i*4);
+				players[i].addTerritory(territory);
+				self.table.emit('majPlayerInfo', players[i].serialize());
+			}
+
 		};
 		
 		this.update = function () {
@@ -93,12 +101,16 @@ function Game(playersArray, tableSocket) {
 
 
 
-	//	Phase 2 : Placement des pions (tags) sur les zones controllées
+	//	Phase 2 : Déploiement des armées (Placement des pions/tags sur les zones controllées)
 	this.phase2 = function () {
 		console.log('phase 2 started');
+		var phase2 = this;
+		self.table.on('endPhase2', function (territories) {
+
+		});
 	};
 
-	//	Phase 3
+	//	Phase 3 : Conquête du monde
 	this.phase3 =  function () {
 		console.log('phase 3 started');
 		if (this.currentTurn > this.MAXTURNS) {
@@ -110,7 +122,7 @@ function Game(playersArray, tableSocket) {
 		this.currentTurn++;
 	};
 
-	//	Phase 4
+	//	Phase 4 : Fin
 	this.phase4 = function () {
 		console.log('phase 4 started');
 		this.players.sort(function (player1, player2) {

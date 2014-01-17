@@ -16,7 +16,7 @@ function Player (gameID, playerSocket, tableSocket, pseudo) {
 	var questions = new questionsFile();
 
 	this.playerSocket.on ('requestQuestionTest',function() {
-		this.playerSocket.emit('question', questions[2]);
+		playerSocket.emit('question', questions[2]);
 	});
 
 }
@@ -53,5 +53,5 @@ Player.prototype.play = function () {
 
 
 Player.prototype.serialize = function () {
-	return {'gameID' : this.gameID, 'pseudo': this.pseudo, 'score': this.score};
+	return {'gameID' : this.gameID, 'pseudo': this.pseudo, 'score': this.score, 'territories' : this.getTerritories()};
 };
