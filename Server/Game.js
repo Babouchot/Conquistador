@@ -32,6 +32,7 @@ function Game(playersArray, tableSocket) {
 			// Attributing random territories
 			for (var i = 0; i < players.length; ++i) {
 				var territory = new Territory(Math.random()*3 + i*4);
+				self.territories.push(territory);
 				players[i].addTerritory(territory);
 				self.table.emit('majPlayerInfo', players[i].serialize());
 			}
@@ -79,23 +80,25 @@ function Game(playersArray, tableSocket) {
 			// send the number of territories each player have to capture
 			self.table.emit('capturePhase', capturedTerritories);
 			
-			// create the new assigned territories and assign the correct owner
-			self.table.on ('endCapturePhase', function (capturedTerritories) {
-				for (var i = 0; i < capturedTerritories.length; ++i) {
-					var territory = new Territory(capturedTerritories[i].zone);
-					self.territories.push(territory);
-					changeTerritoryOwner(players[capturedTerritories[i].owner], territory);
-				}
-			});
+
+			// PHASE 2
+			// // create the new assigned territories and assign the correct owner
+			// self.table.on ('endCapturePhase', function (capturedTerritories) {
+			// 	for (var i = 0; i < capturedTerritories.length; ++i) {
+			// 		var territory = new Territory(capturedTerritories[i].zone);
+			// 		self.territories.push(territory);
+			// 		changeTerritoryOwner(players[capturedTerritories[i].owner], territory);
+			// 	}
+			// });
 			
-			// send the updated list of territories to the table
-			self.table.emit ('updateMapState', self.serializeTerritories());
+			// // send the updated list of territories to the table
+			// self.table.emit ('updateMapState', self.serializeTerritories());
 			
-			// check if all territories are assigned
-			if (self.territories.length >= TERRITORIES) {
-				return false;
-			}
-			return true;
+			// // check if all territories are assigned
+			// if (self.territories.length >= TERRITORIES) {
+			// 	return false;
+			// }
+			// return true;
 		};
 	};
 
@@ -103,11 +106,23 @@ function Game(playersArray, tableSocket) {
 
 	//	Phase 2 : Déploiement des armées (Placement des pions/tags sur les zones controllées)
 	this.phase2 = function () {
-		console.log('phase 2 started');
-		var phase2 = this;
-		self.table.on('endPhase2', function (territories) {
 
-		});
+		this.count = PLAYER_NUMBER;
+		var phase2 = this;
+
+		this.update = function () {
+			console.log('phase 2 started');
+			self.table.on('endPhase2', function (gameID, territories) {
+				for (var i = 0; i < territories.length; ++i) {
+					var territory = new Territory(territories[i]);
+					self.territories.push(territory);
+					players[gameID].addTerritory(territory);
+					self.table.emit('majPlayerInfo', players[gameID].serialize());
+				}
+				phase2.count --;
+			});
+		}
+
 	};
 
 	//	Phase 3 : Conquête du monde
@@ -141,8 +156,15 @@ function Game(playersArray, tableSocket) {
 	this.gameLoop = function () {
 		var phase1 = new this.phase1();
 		phase1.init();
-		phase1.update();
-		//this.currentPhase();
+		while (self.territories.length < TERRITORIES) {
+			phase1.update();
+		}
+
+		var phase2 = new this.phase2();
+		while (phase2.count > 0) {
+			phase2.update();
+		}
+
 	};
 
 }
