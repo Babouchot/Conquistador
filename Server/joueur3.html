@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <title>Test page for TriviadorIHM android player</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="test" content="Test page for TriviadorIHM android player">
+    <meta name="author" content="Cyrille Bogaert">
+    <link href="assets/game.css" rel="stylesheet">
+  <body>
+    <script type="text/javascript" src="jquery-1.6.2.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+      var socket = io.connect();
+      socket.on('requestIdentity', function () {
+        socket.emit('playerIdentity', {pseudo:'Bastien'});
+        console.log("playerIdentity android");
+      });
+
+      socket.on('question', function (question) {
+        var answer = Math.random()*100;
+        var time = Math.random()*100;
+        socket.emit('answer', {'answer' : answer, 'time' : time});
+      });
+    </script>
+  </body>
+</html>

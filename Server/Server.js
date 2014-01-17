@@ -7,7 +7,7 @@ var Player = require('./Player.js');
 var Game = require('./Game.js');
   
 
-var PLAYER_NUMBER = 2;
+var PLAYER_NUMBER = 4;
 
 
 // Création du serveur, page par defaut, port
