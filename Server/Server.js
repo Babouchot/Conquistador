@@ -92,5 +92,8 @@ function launchGame () {
 	}
 	var game = new Game(players, table);
 	console.log("Game launched");
-	game.gameLoop();
+
+	table.on("startGame", function () {
+		game.gameLoop();
+	});
 }

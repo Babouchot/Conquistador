@@ -3,6 +3,8 @@
 
 exports = module.exports = Game;
 
+var Territory = require('./Territory.js');
+
 var TERRITORIES = 16;
 
 function Game(playersArray, tableSocket) {
@@ -30,11 +32,11 @@ function Game(playersArray, tableSocket) {
 			console.log(questions);
 
 			// Attributing random territories
-			for (var i = 0; i < players.length; ++i) {
+			for (var i = 0; i < self.players.length; ++i) {
 				var territory = new Territory(Math.random()*3 + i*4);
 				self.territories.push(territory);
-				players[i].addTerritory(territory);
-				self.table.emit('majPlayerInfo', players[i].serialize());
+				self.players[i].addTerritory(territory);
+				self.table.emit('majPlayerInfo', self.players[i].serialize());
 			}
 
 		};
@@ -71,14 +73,6 @@ function Game(playersArray, tableSocket) {
 				return answerOffset1 - answerOffset2;
 			});
 			
-			var capturedTerritories = new Array(4);
-			capturedTerritories[playersAnswers[0].id] = 2;
-			capturedTerritories[playersAnswers[1].id] = 1;
-			capturedTerritories[playersAnswers[2].id] = 1;
-			capturedTerritories[playersAnswers[3].id] = 0;
-
-			// send the number of territories each player have to capture
-			self.table.emit('capturePhase', capturedTerritories);
 			
 
 			// PHASE 2
@@ -100,6 +94,17 @@ function Game(playersArray, tableSocket) {
 			// }
 			// return true;
 		};
+
+		this.end = function () {
+			var capturedTerritories = new Array(4);
+			capturedTerritories[playersAnswers[0].id] = 2;
+			capturedTerritories[playersAnswers[1].id] = 1;
+			capturedTerritories[playersAnswers[2].id] = 1;
+			capturedTerritories[playersAnswers[3].id] = 0;
+
+			// send the number of territories each player have to capture
+			self.table.emit('capturePhase', capturedTerritories);
+		}
 	};
 
 
@@ -159,6 +164,7 @@ function Game(playersArray, tableSocket) {
 		while (self.territories.length < TERRITORIES) {
 			phase1.update();
 		}
+		phase1.end();
 
 		var phase2 = new this.phase2();
 		while (phase2.count > 0) {
