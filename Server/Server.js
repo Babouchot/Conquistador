@@ -42,7 +42,7 @@ function connectionToServer(socket) {
 
 	socket.emit ('requestIdentity', {});
 
-	if (players.length >= PLAYER_NUMBER || table === undefined) {
+	if (players.length < PLAYER_NUMBER || table === undefined) {
 
 		
 		socket.on('playerIdentity', function (message) {
@@ -64,12 +64,10 @@ function connectionToServer(socket) {
 		});
 
 		socket.on('tableIdentity', function (message) {
-			if (message.type == 'table') {
-				table = socket;
-				console.log("table connected");
-				if (players.length >= PLAYER_NUMBER) {
-					launchGame();
-				}
+			table = socket;
+			console.log("table connected");
+			if (players.length >= PLAYER_NUMBER) {
+				launchGame();
 			}
 		});
 
@@ -78,14 +76,19 @@ function connectionToServer(socket) {
 }
 
 
+io.sockets.on ('disconnect', function () {
+	console.log("disconnecting");
+});
+
+
 function launchGame () {
 	console.log("game is launching");
-	for (var i = 0; i < players.length; ++i) {
-		console.log("Player " + players[i].pseudo + players[i].gameID + " start_game");
-		players[i].playerSocket.emit('start_game', {});
-	}
 	if (table !== undefined) {
 		table.emit('startGame', {});
+	}
+	for (var i = 0; i < players.length; ++i) {
+		console.log("Player " + players[i].pseudo + players[i].gameID + " startGame");
+		players[i].playerSocket.emit('startGame', {});
 	}
 	var game = new Game(players, table);
 	console.log("Game launched");

@@ -49,6 +49,7 @@ function Game(playersArray, tableSocket) {
 					setTimeout(waitAnswers, 200);
 				}
 			}
+			waitAnswers();
 			
 			// find winner and attribute territories
 			playersAnswers.sort(function (answer1, answer2) {
@@ -62,22 +63,11 @@ function Game(playersArray, tableSocket) {
 			});
 			
 			var capturedTerritories = new Array(4);
-			for (var i = 0; i < playersAnswers.length; ++i) {
-				switch (i) {
-				case 0:
-					capturedTerritories[playersAnswers[i].id] = 2;
-					break;
-				case 1:
-					capturedTerritories[playersAnswers[i].id] = 1;
-					break;
-				case 2:
-					capturedTerritories[playersAnswers[i].id] = 1;
-					break;
-				default:
-					capturedTerritories[playersAnswers[i].id] = 0;
-					break;
-				}
-			}
+			capturedTerritories[playersAnswers[0].id] = 2;
+			capturedTerritories[playersAnswers[1].id] = 1;
+			capturedTerritories[playersAnswers[2].id] = 1;
+			capturedTerritories[playersAnswers[3].id] = 0;
+
 			// send the number of territories each player have to capture
 			self.table.emit('capturePhase', capturedTerritories);
 			

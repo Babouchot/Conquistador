@@ -27,7 +27,11 @@ Player.prototype.getID = function () {
 };
 
 Player.prototype.getTerritories = function () {
-	return this.territories;
+	var territoriesID = new Array();
+	for (var i = 0; i < this.territories.length; ++i) {
+		territoriesID.push(this.territories[i].zone);
+	}
+	return territoriesID;
 };
 
 
@@ -49,5 +53,5 @@ Player.prototype.play = function () {
 
 
 Player.prototype.serialize = function () {
-	return {'pseudo': this.pseudo, 'score': this.score, 'territories':this.territories};
+	return {'gameID' : this.gameID, 'pseudo': this.pseudo, 'score': this.score};
 };
