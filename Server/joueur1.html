@@ -23,6 +23,11 @@
         var time = Math.random()*100;
         socket.emit('answer', {'answer' : answer, 'time' : time});
       });
+	  
+	  socket.on('startGame', function(msg)
+	  {
+		console.log("id rcv : "+msg.id);
+	  });
     </script>
   </body>
 </html>

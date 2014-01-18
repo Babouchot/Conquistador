@@ -88,12 +88,12 @@ function launchGame () {
 	}
 	for (var i = 0; i < players.length; ++i) {
 		console.log("Player " + players[i].pseudo + players[i].gameID + " startGame");
-		players[i].playerSocket.emit('startGame', {});
+		players[i].playerSocket.emit('startGame', {'id' : i});
 	}
 	var game = new Game(players, table);
 	console.log("Game launched");
 
 	table.on("startGame", function () {
-		game.gameLoop();
+		game.start();
 	});
 }

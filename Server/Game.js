@@ -19,22 +19,75 @@ function Game(playersArray, tableSocket) {
 	var self = this;
 
 	//	Phase 1 : Prise des territoires (Attribution des territoires sur question)
-	this.phase1 = function () {	
+	this.phase1 = function () {
+
 		var playersAnswers = [];
 		console.log('phase 1 started');
-		this.count = PLAYER_NUMBER;
+		this.playerCaptureCount = PLAYER_NUMBER;
 
 		var phase1 = this;
 	
 		// parse question database file
 		var questionsFile = require('./questions.js');
 		var questions = new questionsFile();
+		//current question
+		var question;
+		
+		
+		function sendNewQuestion()
+		{
+			// Pick a question from the database (not like that, a random question)
+			question = questions[0];
+			for (var i = 0; i < self.players.length; ++i) {
 
+				var p = self.players[i];
 
+				console.log("send question");
+				p.playerSocket.emit('question', question);
+				self.table.emit('question', question);
+			}
+		}
+
+		function processAnswers()
+		{
+			// find winner and attribute territories
+			playersAnswers.sort(function (answer1, answer2) {
+				var answerOffset1 = Math.abs(answer1.value - question.answer);
+				var answerOffset2 = Math.abs(answer2.value - question.answer);
+				
+				if (answerOffset1 == answerOffset2) {
+					return answer1.time - answer2.time;
+				}
+				return answerOffset1 - answerOffset2;
+			});
+			console.log("ordered : "+playersAnswers);
+			var orderedPlayers = new Array();
+
+			for (var i = 0; i < playersAnswers.length; ++i) {
+				orderedPlayers.push(playersAnswers[i].id);
+			}
+
+			
+			// send the number of territories each player have to capture
+			phase1.count = PLAYER_NUMBER;
+			self.table.emit('captureTerritories', {'orderedPlayers' : orderedPlayers});
+		}
+
+		// wait for answers
+		function checkIfAllAnswers() {
+			if (playersAnswers.length < self.players.length) {
+				console.log('some players did not answer');
+			}else{
+				console.log('all players answered');
+				processAnswers();
+			}
+		}
+		
 		this.init = function () {
 			// give one territory to each player
 			// Attributing random territories
 			for (var i = 0; i < self.players.length; ++i) {
+
 				var territory = new Territory(Math.floor(Math.random()*3 + i*4));
 				self.territories.push(territory);
 				changeTerritoryOwner(self.players[i], territory);
@@ -43,88 +96,55 @@ function Game(playersArray, tableSocket) {
 
 			// get the new territories
 			self.table.on('capturedTerritories', function (message) {
+
 				var gameID = message.gameID;
 				var territories = message.territories;
+
 				for (var i = 0; i < territories.length; ++i) {
+
 					var territory = new Territory(territories[i]);
 					self.territories.push(territory);
 					changeTerritoryOwner(players[gameID], territory);
+
 					self.table.emit('majPlayerInfo', players[gameID].serialize());
 				}
-				phase1.count--;
+				phase1.playerCaptureCount--;
+
+				//check if all capture have been done
+				if(phase1.playerCaptureCount == 0){
+					if(false){ // check if all territotires have been taken
+						//go to next phase
+						this.nextPhase();
+					} else {//if free zones remain
+						sendNewQuestion();
+					}
+				}
 			});
 
-		};
-		
 
-		this.update = function () {
-			// Pick a question from the database
-			var question = questions[0];
-			console.log("fuck");
-			//this.table.emit('question', question);
+			//Event binding for each player
 			for (var i = 0; i < self.players.length; ++i) {
+
 				var p = self.players[i];
-				console.log("send question");
-				p.playerSocket.emit('question', question);
-				self.table.emit('question', question);
-				// console.log('question :' + question.title);
+
 				p.playerSocket.on('answer', function (message) {
+
 					console.log("answer");
 					var answer = message.answer;
 					var time = message.time;
 					var gameID = message.gameID;
 					playersAnswers.push({'id' : p.gameID, 'answer' : answer, 'time': time});
 					console.log('id:' + p.gameID + '/answer:' + answer + '/time:' + time);
-					waitAnswers();
+					checkIfAllAnswers();
 				});
 			}
 			
-			// wait for answers
-			function waitAnswers() {
-				if (playersAnswers.length < self.players.length) {
-					console.log('timeout');
+			sendNewQuestion();
 
-					//setTimeout(waitAnswers, 200);
-				}else{
-					afterQuesions();
-				}
-			}
-			//waitAnswers();
-			///console.log('end timeout');
-			
-			function afterQuesions()
-			{
-				// find winner and attribute territories
-				playersAnswers.sort(function (answer1, answer2) {
-					var answerOffset1 = Math.abs(answer1.value - question.answer);
-					var answerOffset2 = Math.abs(answer2.value - question.answer);
-					
-					if (answerOffset1 == answerOffset2) {
-						return answer1.time - answer2.time;
-					}
-					return answerOffset1 - answerOffset2;
-				});
-				
-				
+		};
 
-				var orderedPlayers = new Array();
-
-				for (var i = 0; i < playersAnswers.length; ++i) {
-					orderedPlayers.push(playersAnswers[i].id);
-				}
-
-				
-				// send the number of territories each player have to capture
-				phase1.count = PLAYER_NUMBER;
-				self.table.emit('captureTerritories', orderedPlayers);
-
-				function waitTerritories () {
-					if (phase1.count > 0) {
-						setTimeout(waitTerritories, 200);
-					}
-				}
-				waitTerritories();
-				}
+		
+		this.update = function () {
 
 			// PHASE 2
 			// // create the new assigned territories and assign the correct owner
@@ -149,15 +169,12 @@ function Game(playersArray, tableSocket) {
 
 
 		this.nextPhase = function () {
-			var phase2 = new this.phase2();
-
-			function waitPhase2() {
-				if (phase2.count > 0) {
-					setTimeout(waitAnswers, 200);
-				}
-			}
-			waitPhase2();
+			console.log("phase 1 over, phase 2 not implemented yet");
+			self.phase2();
 		};
+		
+		//initialize itself
+		this.init();
 
 	}; // Phase1
 
@@ -212,10 +229,11 @@ function Game(playersArray, tableSocket) {
 
 	this.currentPhase = this.phase1;
 
-	this.gameLoop = function () {
-		var phase1 = new this.phase1();
-		phase1.init();
-		phase1.update();
+	this.start = function () {
+		/*var phase1 = new this.phase1();
+		phase1.init();*/
+		this.phase1();
+		//phase1.update();
 		// phase1.nextPhase();
 
 	};
