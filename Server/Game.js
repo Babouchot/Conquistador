@@ -36,6 +36,8 @@ function Game(playersArray, tableSocket) {
 		
 		function sendNewQuestion()
 		{
+			phase1.playerCaptureCount = PLAYER_NUMBER;
+			playersAnswers.length = 0;
 			// Pick a question from the database (not like that, a random question)
 			question = questions[0];
 			for (var i = 0; i < self.players.length; ++i) {
@@ -52,21 +54,22 @@ function Game(playersArray, tableSocket) {
 		{
 			// find winner and attribute territories
 			playersAnswers.sort(function (answer1, answer2) {
+				
 				var answerOffset1 = Math.abs(answer1.value - question.answer);
 				var answerOffset2 = Math.abs(answer2.value - question.answer);
-				
+				console.log(" sort : answer1 : "+answerOffset1+" answer2 : "+answerOffset2);
 				if (answerOffset1 == answerOffset2) {
 					return answer1.time - answer2.time;
 				}
 				return answerOffset1 - answerOffset2;
 			});
-			console.log("ordered : "+playersAnswers);
+			
 			var orderedPlayers = new Array();
-
+			
 			for (var i = 0; i < playersAnswers.length; ++i) {
 				orderedPlayers.push(playersAnswers[i].id);
 			}
-
+			console.log("ordered players : " + orderedPlayers);
 			
 			// send the number of territories each player have to capture
 			phase1.count = PLAYER_NUMBER;
@@ -99,34 +102,52 @@ function Game(playersArray, tableSocket) {
 
 				var gameID = message.gameID;
 				var territories = message.territories;
-
+				console.log("captured zones : "+territories);
 				for (var i = 0; i < territories.length; ++i) {
-
+					console.log("adding captured zone : " + territories[i]);
 					var territory = new Territory(territories[i]);
 					self.territories.push(territory);
-					changeTerritoryOwner(players[gameID], territory);
+					changeTerritoryOwner(self.players[gameID], territory);
 
-					self.table.emit('majPlayerInfo', players[gameID].serialize());
+					self.table.emit('majPlayerInfo', self.players[gameID].serialize());
 				}
 				phase1.playerCaptureCount--;
-
+				console.log("phase1.playerCaptureCount " + phase1.playerCaptureCount);
 				//check if all capture have been done
 				if(phase1.playerCaptureCount == 0){
-					if(false){ // check if all territotires have been taken
+					console.log("nb ter " +self.territories.length+" to : " + TERRITORIES); 
+					if(self.territories.length >= TERRITORIES){ // check if all territotires have been taken
 						//go to next phase
-						this.nextPhase();
+						phase1.nextPhase();
 					} else {//if free zones remain
 						sendNewQuestion();
 					}
 				}
 			});
 
+			function answerEventGenerator(pla)
+			{
+				return function (message) {
+
+					console.log("answer");
+					var answer = message.answer;
+					var time = message.time;
+					var gameID = message.gameID;
+					playersAnswers.push({'id' : pla.gameID, 'value' : answer, 'time': time});
+					console.log('id:' + pla.gameID + '/answer:' + answer + '/time:' + time);
+					checkIfAllAnswers();
+				}
+			}
 
 			//Event binding for each player
 			for (var i = 0; i < self.players.length; ++i) {
 
 				var p = self.players[i];
-
+				/* -----CANNOT WORK----- ! See : http://blog.jbrantly.com/2010/04/creating-javascript-function-inside.html
+				* The reason that this is true is somewhat complex, but in basic terms,
+				* the function is only actually created once (instead of once each iteration of the loop)
+				* and that one function points to the last known values of the variables it uses.
+				
 				p.playerSocket.on('answer', function (message) {
 
 					console.log("answer");
@@ -137,6 +158,10 @@ function Game(playersArray, tableSocket) {
 					console.log('id:' + p.gameID + '/answer:' + answer + '/time:' + time);
 					checkIfAllAnswers();
 				});
+				*/
+				
+				//----FIX----
+				p.playerSocket.on('answer', (answerEventGenerator(p)));
 			}
 			
 			sendNewQuestion();

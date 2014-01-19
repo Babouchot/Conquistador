@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XnaContent xmlns:Pipeline="Microsoft.Xna.Framework.Content.Pipeline">
+  <Asset Type="Pipeline:BuildItemCollection">
+    <BuildSuccessful>true</BuildSuccessful>
+    <Settings>
+      <ContentProjectGUID>{9F5B49DE-A8CE-40B2-8533-3F20B6139DCE}</ContentProjectGUID>
+      <TargetPlatform>Windows</TargetPlatform>
+      <TargetProfile>Reach</TargetProfile>
+      <BuildConfiguration>Release</BuildConfiguration>
+      <CompressContent>true</CompressContent>
+      <RootDirectory>D:\Cours\Surface\TextXNA\TextXNA\TextXNAContent\</RootDirectory>
+      <LoggerRootDirectory>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\</LoggerRootDirectory>
+      <IntermediateDirectory>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\obj\x86\Release\</IntermediateDirectory>
+      <OutputDirectory>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Release\Content\</OutputDirectory>
+    </Settings>
+    <Assemblies>
+      <Assembly>
+        <Key>C:\Windows\Microsoft.Net\assembly\GAC_32\Microsoft.Xna.Framework.Content.Pipeline\v4.0_4.0.0.0__842cf8be1de50553\Microsoft.Xna.Framework.Content.Pipeline.dll</Key>
+        <Value>2013-10-01T07:42:47.6510825+02:00</Value>
+      </Assembly>
+    </Assemblies>
+  </Asset>
+</XnaContent>

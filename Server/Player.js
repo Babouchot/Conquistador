@@ -14,7 +14,7 @@ function Player (gameID, playerSocket, tableSocket, pseudo) {
 	// Temporary
 	var questionsFile = require('./questions.js');
 	var questions = new questionsFile();
-
+	console.log("player initialized with socket : " + playerSocket.id);
 	this.playerSocket.on ('requestQuestionTest',function() {
 		playerSocket.emit('question', questions[2]);
 	});

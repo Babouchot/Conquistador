@@ -1,0 +1,8 @@
+D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Release\Resources\icon.png
+D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Release\TextXNA.xml
+D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Release\TextXNA.exe
+D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Release\TextXNA.pdb
+D:\Cours\Surface\TextXNA\TextXNA\TextXNA\obj\x86\Release\ResolveAssemblyReference.cache
+D:\Cours\Surface\TextXNA\TextXNA\TextXNA\obj\x86\Release\Microsoft.Xna.Framework.RuntimeProfile.txt
+D:\Cours\Surface\TextXNA\TextXNA\TextXNA\obj\x86\Release\TextXNA.exe
+D:\Cours\Surface\TextXNA\TextXNA\TextXNA\obj\x86\Release\TextXNA.pdb
