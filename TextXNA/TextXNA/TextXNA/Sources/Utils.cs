@@ -6,6 +6,8 @@ using Microsoft.Xna.Framework;
 
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Surface.Core;
+using System.Net;
+using System.Net.Sockets;
 
 namespace TestXNA.Sources
 {
@@ -84,6 +86,30 @@ namespace TestXNA.Sources
 
             return colors2D;
         }
-        
+
+        /// <summary>
+        /// Return local ip address or an empty string if the network is not reachable
+        /// </summary>
+        /// <returns></returns>
+        public static string LocalIPAddress()
+        {
+            if (!System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable())
+            {
+                return "";
+            }
+
+            IPHostEntry host;
+            string localIP = "";
+            host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (IPAddress ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    localIP = ip.ToString();
+                    break;
+                }
+            }
+            return localIP;
+        }
     }
 }

@@ -93,7 +93,7 @@ namespace TestXNA.Sources.NodeJSClient
                 }
             });
 
-            socket.On("placeCommander", (data) =>
+            socket.On("placeCommanders", (data) =>
             {
                 Console.WriteLine("received place commanders");
                 if (placeCommandersCB != null)

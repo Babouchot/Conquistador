@@ -39,3 +39,5 @@ D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Newtonsoft.Json.xml
 D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\SocketIOClient.pdb
 D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\SocketIOClient.xml
 D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\WebSocket4Net.pdb
+D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\RoundedRect.xnb
+D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\MessagingToolkit.QRCode.dll

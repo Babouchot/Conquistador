@@ -311,7 +311,8 @@ namespace TestXNA.Sources.GameRooms
                 //tell the server this phase is over
                 ServerCom.Instance.sendSimpleMessage("commandersPlaced");
                 //switch update method
-                _updateAction = oldUpdate;
+                _updateAction = emptyUpdate;
+                Console.WriteLine("commanders Placed message sent");
             }
 
             updateCommanders(dt);
@@ -417,7 +418,7 @@ namespace TestXNA.Sources.GameRooms
 
         }
 
-        private void onPlaceCommander(SocketIOClient.Messages.IMessage data)
+        private void onPlaceCommanders(SocketIOClient.Messages.IMessage data)
         {
             _updateAction = placeCommanderUpdate;
         }
@@ -539,7 +540,7 @@ namespace TestXNA.Sources.GameRooms
 
             NodeJSClient.ServerCom.Instance.majPlayerInfoCB = MajPlayerInfo;
             NodeJSClient.ServerCom.Instance.captureZonesCB = onCaptureTerritories;
-            NodeJSClient.ServerCom.Instance.placeCommandersCB= onPlaceCommander;
+            NodeJSClient.ServerCom.Instance.placeCommandersCB= onPlaceCommanders;
  
             //My initialization logic
             _displayedPopups = new List<WarRoom.PopupStr>();
@@ -558,7 +559,7 @@ namespace TestXNA.Sources.GameRooms
             _arrowImage = MyGame.ContentManager.Load<Texture2D>("Images/Arrow");
             _mapBackground = MyGame.ContentManager.Load<Texture2D>("Images/Map");
             _mapOverlay = MyGame.ContentManager.Load<Texture2D>("Images/MapOverlay");
-            _UIBackground = MyGame.ContentManager.Load<Texture2D>("Images/UIBack");
+            _UIBackground = MyGame.ContentManager.Load<Texture2D>("Images/RoundedRect");
 
 
             _commanderHighlight = MyGame.ContentManager.Load<Texture2D>("Images/TagHighlight");

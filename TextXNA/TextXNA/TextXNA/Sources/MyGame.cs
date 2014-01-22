@@ -27,7 +27,7 @@ namespace TestXNA
         private static ContentManager _content;
 
         private static TouchTarget touchTarget;
-        private Color backgroundColor = new Color(0f, 0f, 0.5f, 1f);
+        private Color backgroundColor = Color.White;
         private bool applicationLoadCompleteSignalled;
 
         private UserOrientation currentOrientation = UserOrientation.Bottom;
@@ -246,7 +246,7 @@ namespace TestXNA
             //TODO: Add your drawing code here
             //TODO: Avoid any expensive logic if application is neither active nor previewed
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied);
-
+            //spriteBatch.Begin();
             drawRoom();
 
             spriteBatch.End();

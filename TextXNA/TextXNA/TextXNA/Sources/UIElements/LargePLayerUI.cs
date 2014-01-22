@@ -12,7 +12,7 @@ namespace TestXNA.Sources.UIElements
     class LargePLayerUI : IDrawable
     {
         private const int Width = 300;
-        private const int Height = 600;
+        private const int Height = 400;
 
         private int _player;
         private Texture2D _avatar;
@@ -36,12 +36,13 @@ namespace TestXNA.Sources.UIElements
 
         public void draw()
         {
-            MyGame.SpriteBatch.Draw(_background, _backgroundArea, Color.White);
+            MyGame.SpriteBatch.Draw(_background, _backgroundArea, GameData.PlayerData.Instance[_player].HighlitColor);
             MyGame.SpriteBatch.Draw(_avatar, _avatarArea, Color.White);
             string name = GameData.PlayerData.Instance[_player].Name;
             Vector2 nameSize = MyGame.BasicFont.MeasureString(name);
             Vector2 namePosition = _position + new Vector2(0f, Height/3f);
-            MyGame.SpriteBatch.DrawString(MyGame.BasicFont, name, namePosition, Color.White, 0f, nameSize / 2f
+
+            MyGame.SpriteBatch.DrawString(MyGame.BasicFont, name, namePosition, Color.Black, 0f, nameSize / 2f
                 , 1f, SpriteEffects.None, 0f);
         }
 

@@ -219,7 +219,8 @@ function Game(playersArray, tableSocket) {
 		});
 
 		this.nextPhase = function () {
-
+			console.log("phase 2 over, phase 3 not implemented yet");
+			self.phase3;
 		};
 
 	};

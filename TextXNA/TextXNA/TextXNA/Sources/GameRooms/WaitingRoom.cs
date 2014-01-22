@@ -16,6 +16,8 @@ using TestXNA.Sources;
 using TestXNA.Sources.NodeJSClient;
 using TestXNA.Sources.NodeJSClient.MessageData;
 using TestXNA.Sources.GameData;
+using MessagingToolkit.QRCode.Codec;
+using MessagingToolkit.QRCode.Codec.Data;
 
 
 
@@ -34,19 +36,76 @@ namespace TestXNA.Sources.GameRooms
         private Vector2 _posStart;
         private Vector2 _offset;
 
+        private DialogBox _dialog = null;
+        private Texture2D _QRCode = null;
+        private Rectangle _QrCodeArea;
+
+        Texture2D _UIBackRect;
+
         public WaitingRoom()
         {
-            Rectangle area = new Rectangle((int)MyGame.ScreenCenter.X - _buttonWidth / 2, (int)(MyGame.ScreenCenter.Y * 1.8f) - _buttonHeight / 2
-                , _buttonWidth, _buttonHeight);
+            Microsoft.Xna.Framework.Rectangle area = new Microsoft.Xna.Framework.Rectangle(
+                (int)MyGame.ScreenCenter.X - _buttonWidth / 2
+                , (int)(MyGame.ScreenCenter.Y * 1.8f) - _buttonHeight / 2
+                , _buttonWidth
+                , _buttonHeight);
             
-            Texture2D uiBack = MyGame.ContentManager.Load<Texture2D>("Images/UIBack");
+            _UIBackRect = MyGame.ContentManager.Load<Texture2D>("Images/RoundedRect");
 
-            _startButton = new UIElements.SimpleButton(uiBack, area, "Start Game");
+            _startButton = new UIElements.SimpleButton(_UIBackRect, area, "Start Game");
 
             _playerUIs = new List<UIElements.LargePLayerUI>();
 
-            _posStart = new Vector2(250f, 400f);
-            _offset = new Vector2(400f, 0f);
+            _posStart = new Vector2(380f, 500f);
+            _offset = new Vector2(380f, 0f);
+
+
+            //Create QR Code
+
+            QRCodeEncoder encoder = new QRCodeEncoder();
+            string ip = Utils.LocalIPAddress();
+
+            Console.WriteLine("\n\n\n\nServer ip : " + ip + "\n\n\n");
+
+            if (ip == "")
+            {
+                Console.WriteLine("Creating dialog");
+                _dialog = new ConditionalDialogBox(
+                    delegate() { return Utils.LocalIPAddress() != ""; }
+                    , "Network could not be reached\n"
+                    + "Please find de way to connect to a reliable, working network\n"
+                    + "(Unice hotsport is NOT one of those networks...)"
+                    , new Microsoft.Xna.Framework.Rectangle((int)MyGame.ScreenCenter.X , (int)MyGame.ScreenCenter.Y , 400, 400));
+                _dialog.Position = MyGame.ScreenCenter;
+                _dialog.Show();
+            }
+            else
+            {
+                
+                System.Drawing.Bitmap qrCodeImage = encoder.Encode(ip);
+
+                Color[] pixels = new Color[qrCodeImage.Width * qrCodeImage.Height];
+                for (int y = 0; y < qrCodeImage.Height; y++)
+                {
+                    for (int x = 0; x < qrCodeImage.Width; x++)
+                    {
+                        System.Drawing.Color c = qrCodeImage.GetPixel(x, y);
+                        pixels[(y * qrCodeImage.Width) + x] = new Color(c.R, c.G, c.B, c.A);
+                    }
+                }
+
+                _QRCode = new Texture2D(
+                  MyGame.SpriteBatch.GraphicsDevice,
+                  qrCodeImage.Width,
+                  qrCodeImage.Height);
+
+                _QRCode.SetData<Color>(pixels);
+
+                int recWidth = MyGame.ScreenArea.Width / 8;
+                _QrCodeArea = new Rectangle((int)(MyGame.ScreenCenter.X - recWidth / 2), 10, recWidth, recWidth);
+            }
+
+            //
 
             /*
             for (int i = 0; i < 4; ++i)
@@ -61,7 +120,6 @@ namespace TestXNA.Sources.GameRooms
             NodeJSClient.ServerCom.Instance.Execute();
         }
 
-
         //TODO
         /*
          * Launch Game button (4 players mandatory)
@@ -71,6 +129,12 @@ namespace TestXNA.Sources.GameRooms
          */
         public void update(float dt)
         {
+            if (_dialog != null && _dialog.IsShown)
+            {
+                _dialog.update(dt);
+                return;
+            }
+
             _startButton.update(dt);
             ReadOnlyTouchPointCollection touches = MyGame.TouchTarget.GetState();
 
@@ -86,11 +150,24 @@ namespace TestXNA.Sources.GameRooms
 
         public void draw()
         {
+            
+            if (_QRCode != null)
+            {
+                MyGame.SpriteBatch.Draw(_QRCode, _QrCodeArea, Color.White);
+            }
+
             foreach (UIElements.LargePLayerUI ui in _playerUIs)
             {
                 ui.draw();
             }
-            _startButton.draw();    
+            _startButton.draw();
+
+            if (_dialog != null)
+            {
+                _dialog.draw();
+            }
+
+            //MyGame.SpriteBatch.Draw(uiBack, MyGame.ScreenArea, Color.Red);
         }
 
 
@@ -115,9 +192,8 @@ namespace TestXNA.Sources.GameRooms
         private void InitPlayerUI(int gamerID)
         {
             Texture2D avat = MyGame.ContentManager.Load<Texture2D>("Images/trollFace");
-            Texture2D uiBack = MyGame.ContentManager.Load<Texture2D>("Images/UIBack");
 
-            UIElements.LargePLayerUI ui = new UIElements.LargePLayerUI(gamerID, avat, uiBack);
+            UIElements.LargePLayerUI ui = new UIElements.LargePLayerUI(gamerID, avat, _UIBackRect);
             ui.Position = _posStart;
             _playerUIs.Add(ui);
             _posStart += _offset;

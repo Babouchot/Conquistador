@@ -225,7 +225,7 @@ namespace TestXNA.Sources
             Vector2 size = _playerUIFont.MeasureString(_name + "\n" + _name + "\n" + _name);
             Vector2 position = Utils.pointToVector2(_area.Center) -size / 2f;
 
-            MyGame.SpriteBatch.Draw(_image, _area, Color.White);
+            MyGame.SpriteBatch.Draw(_image, _area, GameData.PlayerData.Instance[_player].HighlitColor);
 
             MyGame.SpriteBatch.DrawString(_playerUIFont, _name + "\n" + _name + "\n" + _name, Utils.pointToVector2(_area.Center), Color.Black, _angle, size / 2f, 1f,
                 SpriteEffects.None, 0f);
