@@ -32,4 +32,18 @@ namespace TestXNA.Sources.NodeJSClient.MessageData
         public List<int> orderedPlayers{ get; set; }
     };
 
+    public class QuestionData
+    {
+        public string type { get; set; }
+        public string title { get; set; }
+        public int answer { get; set; }
+        public int id { get; set; }
+    }
+
+    public class QuestionDataRoot
+    {
+        public string name { get; set; }
+        public List<QuestionData> args { get; set; }
+    }
+
 }

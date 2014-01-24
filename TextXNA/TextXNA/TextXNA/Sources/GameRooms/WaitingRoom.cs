@@ -41,6 +41,7 @@ namespace TestXNA.Sources.GameRooms
         private Rectangle _QrCodeArea;
 
         Texture2D _UIBackRect;
+        Texture2D _roomBackground;
 
         public WaitingRoom()
         {
@@ -51,13 +52,14 @@ namespace TestXNA.Sources.GameRooms
                 , _buttonHeight);
             
             _UIBackRect = MyGame.ContentManager.Load<Texture2D>("Images/RoundedRect");
+            _roomBackground = MyGame.ContentManager.Load<Texture2D>("Images/WaitingBack");
 
             _startButton = new UIElements.SimpleButton(_UIBackRect, area, "Start Game");
 
             _playerUIs = new List<UIElements.LargePLayerUI>();
 
-            _posStart = new Vector2(380f, 500f);
-            _offset = new Vector2(380f, 0f);
+            _posStart = new Vector2(MyGame.ScreenArea.Width / 5, 500f);
+            _offset = new Vector2(MyGame.ScreenArea.Width / 5, 0f);
 
 
             //Create QR Code
@@ -150,7 +152,9 @@ namespace TestXNA.Sources.GameRooms
 
         public void draw()
         {
-            
+
+            MyGame.SpriteBatch.Draw(_roomBackground, MyGame.ScreenArea, Color.White);
+
             if (_QRCode != null)
             {
                 MyGame.SpriteBatch.Draw(_QRCode, _QrCodeArea, Color.White);
