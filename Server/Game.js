@@ -18,6 +18,12 @@ function Game(playersArray, tableSocket, io) {
 
 	this.currentQuestion = 0;
 
+	// parse question database file
+	this.questionsFile = require('./questions.js');
+	this.questions = new this.questionsFile();
+	//current question
+	this.question = null;
+
 	this.territories = new Array();
 
 	var self = this;
@@ -25,21 +31,29 @@ function Game(playersArray, tableSocket, io) {
 	this.table.on('timeout', function (message) {
 		console.log ('TIMEOUT !!!');
 		var questionID = message.id;
-		if (questionID == this.currentQuestion) {
-
-			var playersDidNotAnswer = [];
-			for (var i = 0; i < self.players; ++i) {
+		console.log("QuestionId : " + questionID);
+		console.log("currentQuestion : " + self.currentQuestion);
+		if (questionID == self.currentQuestion) {
+			console.log("gnééééééééééééé");
+			var playersDidNotAnswer = new Array();
+			for (var i = 0; i < self.players.length; ++i) {
+				console.log ("i : " + i);
 				playersDidNotAnswer.push(self.players[i].gameID);
 				self.players[i].playerSocket.emit('timeout', message);
 			}
-			for (var j = 0; j < playersAnswers.length; ++j) {
+			for (var j = 0; j < self.playersAnswers.length; ++j) {
+				console.log(self.playersAnswers[j].id);
 				var index = playersDidNotAnswer.indexOf(self.playersAnswers[j].id);
 				if (index > -1) {
+					console.log("before splice : " + playersDidNotAnswer);
 					playersDidNotAnswer.splice(index, 1);
+					console.log("after splice : " + playersDidNotAnswer);
 				}
 			}
+			console.log(playersDidNotAnswer);
 			for (var k = 0; k < playersDidNotAnswer.length; ++k) {
 				self.playersAnswers.push({'id' : playersDidNotAnswer[k], 'value' : "void", 'time': -1});
+				console.log(playersDidNotAnswer);
 			}
 			checkIfAllAnswers();
 		}
@@ -51,7 +65,7 @@ function Game(playersArray, tableSocket, io) {
 	{
 		// find winner and attribute territories
 
-		playersAnswers.sort(function (answer1, answer2) {
+		self.playersAnswers.sort(function (answer1, answer2) {
 			if (answer1.value == 'void') {
 				return 1;
 			}
@@ -59,8 +73,8 @@ function Game(playersArray, tableSocket, io) {
 				return -1;
 			}
 			
-			var answerOffset1 = Math.abs(answer1.value - question.answer);
-			var answerOffset2 = Math.abs(answer2.value - question.answer);
+			var answerOffset1 = Math.abs(answer1.value - self.question.answer);
+			var answerOffset2 = Math.abs(answer2.value - self.question.answer);
 			console.log(" sort : answer1 : "+answerOffset1+" answer2 : "+answerOffset2);
 			if (answerOffset1 == answerOffset2) {
 				return answer1.time - answer2.time;
@@ -71,12 +85,12 @@ function Game(playersArray, tableSocket, io) {
 		var orderedPlayers = new Array();
 		
 		for (var i = 0; i < self.playersAnswers.length; ++i) {
-			orderedPlayers.push(playersAnswers[i].id);
+			orderedPlayers.push(self.playersAnswers[i].id);
 		}
 		console.log("ordered players : " + orderedPlayers);
 		
 		// send the number of territories each player have to capture
-		phase1.count = PLAYER_NUMBER;
+
 		self.table.emit('captureTerritories', {'orderedPlayers' : orderedPlayers});
 	}
 
@@ -100,11 +114,6 @@ function Game(playersArray, tableSocket, io) {
 
 		var phase1 = this;
 	
-		// parse question database file
-		var questionsFile = require('./questions.js');
-		var questions = new questionsFile();
-		//current question
-		var question;
 		
 		
 		function sendNewQuestion()
@@ -112,19 +121,19 @@ function Game(playersArray, tableSocket, io) {
 			phase1.playerCaptureCount = PLAYER_NUMBER;
 			self.playersAnswers.length = 0;
 			// Pick a question from the database (not like that, a random question)
-			question = questions[0];
+			self.question = self.questions[0];
 
-			question.id = self.currentQuestion++;
+			self.question.id = ++self.currentQuestion;
 
 			for (var i = 0; i < self.players.length; ++i) {
 
 				var p = self.players[i];
 
 				console.log("send question");
-				p.playerSocket.emit('question', question);
+				p.playerSocket.emit('question', self.question);
 			}
 
-			self.table.emit('question', question);
+			self.table.emit('question', self.question);
 		}
 
 		
@@ -151,7 +160,6 @@ function Game(playersArray, tableSocket, io) {
 				var gameID = message.gameID;
 				var territories = message.territories;
 				console.log("captured zones : "+territories);
-				var majChart = [];
 				for (var i = 0; i < territories.length; ++i) {
 					console.log("adding captured zone : " + territories[i]);
 					var territory = new Territory(territories[i]);
@@ -159,11 +167,14 @@ function Game(playersArray, tableSocket, io) {
 					changeTerritoryOwner(self.players[gameID], territory);
 
 					self.table.emit('majPlayerInfo', self.players[gameID].serialize());
-					majChart.push(self.players[i].serialize());
 
 					// self.players[gameID].playerSocket.emit('majPlayerInfo', self.players[gameID].serialize());
 					// self.io.sockets.emit('majPlayerInfo', self.players[i].serialize());
 
+				}
+				var majChart = [];
+				for (var j = 0; j < self.players.length; ++j) {
+					majChart.push(self.players[j].serialize());
 				}
 				io.sockets.emit ('majChart', majChart);
 
@@ -186,7 +197,7 @@ function Game(playersArray, tableSocket, io) {
 				return function (message) {
 					var answer = message.answer;
 					var time = message.time;
-					var gameID = message.gameID;
+
 					var questionID = message.id;
 
 					if (questionID != self.currentQuestion) {
@@ -300,6 +311,8 @@ function Game(playersArray, tableSocket, io) {
 			this.players[i].play();
 		}
 		this.currentTurn++;
+
+		// change the processAnswers method
 	};
 
 
