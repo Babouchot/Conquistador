@@ -21,7 +21,7 @@
 		console.log("receive question");
         var answer = Math.random()*100;
         var time = Math.random()*100;
-        socket.emit('answer', {'answer' : answer, 'time' : time});
+        socket.emit('answer', {'answer' : answer, 'time' : time, 'id': question.id});
       });
 	  
 	  socket.on('startGame', function(msg)

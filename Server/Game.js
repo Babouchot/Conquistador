@@ -8,20 +8,93 @@ var Territory = require('./Territory.js');
 var TERRITORIES = 16;
 var PLAYER_NUMBER = 4;
 
-function Game(playersArray, tableSocket) {
+function Game(playersArray, tableSocket, io) {
 	this.players = playersArray;
 	this.table = tableSocket;
+	this.io = io;
 	this.MAXTURNS = 12;
 	this.currentTurn = 0;
+	this.playersAnswers = [];
+
+	this.currentQuestion = 0;
 
 	this.territories = new Array();
 
 	var self = this;
 
+	this.table.on('timeout', function (message) {
+		console.log ('TIMEOUT !!!');
+		var questionID = message.id;
+		if (questionID == this.currentQuestion) {
+
+			var playersDidNotAnswer = [];
+			for (var i = 0; i < self.players; ++i) {
+				playersDidNotAnswer.push(self.players[i].gameID);
+				self.players[i].playerSocket.emit('timeout', message);
+			}
+			for (var j = 0; j < playersAnswers.length; ++j) {
+				var index = playersDidNotAnswer.indexOf(self.playersAnswers[j].id);
+				if (index > -1) {
+					playersDidNotAnswer.splice(index, 1);
+				}
+			}
+			for (var k = 0; k < playersDidNotAnswer.length; ++k) {
+				self.playersAnswers.push({'id' : playersDidNotAnswer[k], 'value' : "void", 'time': -1});
+			}
+			checkIfAllAnswers();
+		}
+	});
+
+
+
+	function processAnswers()
+	{
+		// find winner and attribute territories
+
+		playersAnswers.sort(function (answer1, answer2) {
+			if (answer1.value == 'void') {
+				return 1;
+			}
+			else if (answer2.value == 'void') {
+				return -1;
+			}
+			
+			var answerOffset1 = Math.abs(answer1.value - question.answer);
+			var answerOffset2 = Math.abs(answer2.value - question.answer);
+			console.log(" sort : answer1 : "+answerOffset1+" answer2 : "+answerOffset2);
+			if (answerOffset1 == answerOffset2) {
+				return answer1.time - answer2.time;
+			}
+			return answerOffset1 - answerOffset2;
+		});
+		
+		var orderedPlayers = new Array();
+		
+		for (var i = 0; i < self.playersAnswers.length; ++i) {
+			orderedPlayers.push(playersAnswers[i].id);
+		}
+		console.log("ordered players : " + orderedPlayers);
+		
+		// send the number of territories each player have to capture
+		phase1.count = PLAYER_NUMBER;
+		self.table.emit('captureTerritories', {'orderedPlayers' : orderedPlayers});
+	}
+
+	// wait for answers
+	function checkIfAllAnswers() {
+		if (self.playersAnswers.length < self.players.length) {
+			console.log('some players did not answer');
+		}else{
+			console.log('all players answered');
+			processAnswers();
+		}
+	}
+
+
+
 	//	Phase 1 : Prise des territoires (Attribution des territoires sur question)
 	this.phase1 = function () {
 
-		var playersAnswers = [];
 		console.log('phase 1 started');
 		this.playerCaptureCount = PLAYER_NUMBER;
 
@@ -37,65 +110,40 @@ function Game(playersArray, tableSocket) {
 		function sendNewQuestion()
 		{
 			phase1.playerCaptureCount = PLAYER_NUMBER;
-			playersAnswers.length = 0;
+			self.playersAnswers.length = 0;
 			// Pick a question from the database (not like that, a random question)
 			question = questions[0];
+
+			question.id = self.currentQuestion++;
+
 			for (var i = 0; i < self.players.length; ++i) {
 
 				var p = self.players[i];
 
 				console.log("send question");
 				p.playerSocket.emit('question', question);
-				self.table.emit('question', question);
 			}
+
+			self.table.emit('question', question);
 		}
 
-		function processAnswers()
-		{
-			// find winner and attribute territories
-			playersAnswers.sort(function (answer1, answer2) {
-				
-				var answerOffset1 = Math.abs(answer1.value - question.answer);
-				var answerOffset2 = Math.abs(answer2.value - question.answer);
-				console.log(" sort : answer1 : "+answerOffset1+" answer2 : "+answerOffset2);
-				if (answerOffset1 == answerOffset2) {
-					return answer1.time - answer2.time;
-				}
-				return answerOffset1 - answerOffset2;
-			});
-			
-			var orderedPlayers = new Array();
-			
-			for (var i = 0; i < playersAnswers.length; ++i) {
-				orderedPlayers.push(playersAnswers[i].id);
-			}
-			console.log("ordered players : " + orderedPlayers);
-			
-			// send the number of territories each player have to capture
-			phase1.count = PLAYER_NUMBER;
-			self.table.emit('captureTerritories', {'orderedPlayers' : orderedPlayers});
-		}
-
-		// wait for answers
-		function checkIfAllAnswers() {
-			if (playersAnswers.length < self.players.length) {
-				console.log('some players did not answer');
-			}else{
-				console.log('all players answered');
-				processAnswers();
-			}
-		}
+		
 		
 		this.init = function () {
 			// give one territory to each player
 			// Attributing random territories
+			var majChart = [];
 			for (var i = 0; i < self.players.length; ++i) {
 
 				var territory = new Territory(Math.floor(Math.random()*3 + i*4));
 				self.territories.push(territory);
 				changeTerritoryOwner(self.players[i], territory);
 				self.table.emit('majPlayerInfo', self.players[i].serialize());
+				majChart.push(self.players[i].serialize());
+				// self.players[i].playerSocket.emit('majPlayerInfo', self.players[i].serialize());
+				// self.io.sockets.emit('majPlayerInfo', self.players[i].serialize());
 			}
+			io.sockets.emit ('majChart', majChart);
 
 			// get the new territories
 			self.table.on('capturedTerritories', function (message) {
@@ -103,6 +151,7 @@ function Game(playersArray, tableSocket) {
 				var gameID = message.gameID;
 				var territories = message.territories;
 				console.log("captured zones : "+territories);
+				var majChart = [];
 				for (var i = 0; i < territories.length; ++i) {
 					console.log("adding captured zone : " + territories[i]);
 					var territory = new Territory(territories[i]);
@@ -110,7 +159,14 @@ function Game(playersArray, tableSocket) {
 					changeTerritoryOwner(self.players[gameID], territory);
 
 					self.table.emit('majPlayerInfo', self.players[gameID].serialize());
+					majChart.push(self.players[i].serialize());
+
+					// self.players[gameID].playerSocket.emit('majPlayerInfo', self.players[gameID].serialize());
+					// self.io.sockets.emit('majPlayerInfo', self.players[i].serialize());
+
 				}
+				io.sockets.emit ('majChart', majChart);
+
 				phase1.playerCaptureCount--;
 				console.log("phase1.playerCaptureCount " + phase1.playerCaptureCount);
 				//check if all capture have been done
@@ -128,15 +184,23 @@ function Game(playersArray, tableSocket) {
 			function answerEventGenerator(pla)
 			{
 				return function (message) {
-
-					console.log("answer");
 					var answer = message.answer;
 					var time = message.time;
 					var gameID = message.gameID;
-					playersAnswers.push({'id' : pla.gameID, 'value' : answer, 'time': time});
-					console.log('id:' + pla.gameID + '/answer:' + answer + '/time:' + time);
-					checkIfAllAnswers();
-				}
+					var questionID = message.id;
+
+					if (questionID != self.currentQuestion) {
+						console.log('Timeout answer');
+						console.log('questionID : ' + questionID);
+						console.log('currentQuestion : ' + self.currentQuestion);
+					}
+					else {
+						console.log("answer");
+						self.playersAnswers.push({'id' : pla.gameID, 'value' : answer, 'time': time});
+						console.log('id:' + pla.gameID + '/answer:' + answer + '/time:' + time);
+						checkIfAllAnswers();
+					}
+				};
 			}
 
 			//Event binding for each player
@@ -154,7 +218,7 @@ function Game(playersArray, tableSocket) {
 					var answer = message.answer;
 					var time = message.time;
 					var gameID = message.gameID;
-					playersAnswers.push({'id' : p.gameID, 'answer' : answer, 'time': time});
+					self.playersAnswers.push({'id' : p.gameID, 'answer' : answer, 'time': time});
 					console.log('id:' + p.gameID + '/answer:' + answer + '/time:' + time);
 					checkIfAllAnswers();
 				});
@@ -220,7 +284,7 @@ function Game(playersArray, tableSocket) {
 
 		this.nextPhase = function () {
 			console.log("phase 2 over, phase 3 not implemented yet");
-			self.phase3;
+			self.phase3();
 		};
 
 	};

@@ -90,7 +90,7 @@ function launchGame () {
 		console.log("Player " + players[i].pseudo + players[i].gameID + " startGame");
 		players[i].playerSocket.emit('startGame', {'id' : i});
 	}
-	var game = new Game(players, table);
+	var game = new Game(players, table, io);
 	console.log("Game launched");
 
 	table.on("startGame", function () {

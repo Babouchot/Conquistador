@@ -53,5 +53,7 @@ Player.prototype.play = function () {
 
 
 Player.prototype.serialize = function () {
-	return {'gameID' : this.gameID, 'pseudo': this.pseudo, 'score': this.score, 'territories' : this.getTerritories()};
+	// TODO put the score instead of territories.length in 'score' field
+	var territories = this.getTerritories();
+	return {'gameID' : this.gameID, 'pseudo': this.pseudo, 'score': territories.length, 'territories' : territories};
 };
