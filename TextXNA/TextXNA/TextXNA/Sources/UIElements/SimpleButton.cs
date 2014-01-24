@@ -66,8 +66,9 @@ namespace TestXNA.Sources.UIElements
 
         public override void draw()
         {
-            MyGame.SpriteBatch.Draw(_buttonTexture, Area, _isTouched ? Color.Gray : Color.White );
-            MyGame.SpriteBatch.DrawString(MyGame.BasicFont, _text, _position, Color.Black, _angle,
+            MyGame.SpriteBatch.Draw(_buttonTexture, Area
+                , _isTouched ? MyGame.ColorPanel.buttonTouchedColor : MyGame.ColorPanel.buttonTouchedColor );
+            MyGame.SpriteBatch.DrawString(MyGame.BasicFont, _text, _position, MyGame.ColorPanel.textColor, _angle,
                 MyGame.BasicFont.MeasureString(_text) / 2f, _scale, SpriteEffects.None, 0f);
         }
 

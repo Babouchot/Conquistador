@@ -99,6 +99,15 @@ namespace TestXNA.Sources.GameRooms
             public Dictionary<int, List<int> > zonePicked;
         }
 
+
+        //Question Timeout data
+
+        private float _timeSinceLastQuestion = 0f;
+        private float _questionMaxAllowedTime = 20f;
+        private int _questionId = 0;
+        private UIElements.ProgressBar _progressBar = null;
+
+
         #endregion
 
         public WarRoom()
@@ -123,6 +132,11 @@ namespace TestXNA.Sources.GameRooms
             if (_currentDialog != null)
             {
                 _currentDialog.draw();
+            }
+
+            if (_progressBar != null)
+            {
+                _progressBar.draw();
             }
         }
 
@@ -151,6 +165,9 @@ namespace TestXNA.Sources.GameRooms
                 initPickZoneDialog(players[_pickZoneData.currentIndex],
                     nbOfZones[_pickZoneData.currentIndex]);
            }
+
+
+            updatePlayersUI(dt);
 
             if (pickZonesForPlayer(players[_pickZoneData.currentIndex]
                 , nbOfZones[_pickZoneData.currentIndex], dt))
@@ -284,6 +301,8 @@ namespace TestXNA.Sources.GameRooms
                 initCommandersInstructionsDialog();
             }
 
+            updatePlayersUI(dt);
+
             if (_currentDialog.IsShown)
             {
                 updateDialogBox(dt);
@@ -396,6 +415,66 @@ namespace TestXNA.Sources.GameRooms
 
         #endregion
 
+
+        #region Question Timeout
+
+        private void onQuestion(SocketIOClient.Messages.IMessage data)
+        {
+
+            Console.WriteLine("\n\n");
+            Console.WriteLine(data.Json.ToJsonString());
+            Console.WriteLine("\n\n");
+
+
+            QuestionData questionInfo;
+            QuestionDataRoot obj = Newtonsoft.Json.JsonConvert.DeserializeObject<QuestionDataRoot>(data.Json.ToJsonString());
+            questionInfo = obj.args[0];
+
+
+            _timeSinceLastQuestion = 0f;
+            _questionId = questionInfo.id;
+
+            Rectangle progressArea = new Rectangle((int)MyGame.ScreenCenter.X - 200, (int)MyGame.ScreenCenter.Y - 300
+                , 400, 50);
+            _progressBar = new UIElements.ProgressBar(_UIBackground, _UIBackground, progressArea);
+
+            MessageDialogBox msgBox = new MessageDialogBox("You should be answering questions on your phone right now",
+                new Rectangle(0, 0, 200, 100));
+            msgBox.Position = MyGame.ScreenCenter;
+            msgBox.Show();
+
+            _currentDialog = msgBox;
+
+            UpdateAction = questionWaitUpdate;
+        }
+
+        private void questionWaitUpdate(float dt)
+        {
+
+            updatePlayersUI(dt);
+
+            _timeSinceLastQuestion += dt;
+            //display progress bar
+            _progressBar.Progress = _timeSinceLastQuestion / _questionMaxAllowedTime;
+
+            //send timeout onEnd
+            if (_timeSinceLastQuestion >= _questionMaxAllowedTime)
+            {
+                Console.WriteLine("send timeout");
+                ServerCom.Instance.Socket.Emit("timeout", new
+                {
+                    id = _questionId
+                });
+
+                _progressBar = null;
+                _currentDialog = null;
+                UpdateAction = emptyUpdate;
+            }
+        }
+
+        #endregion
+
+
         #region Play Turn
 
         //Wait for the player X to make a move
@@ -406,6 +485,9 @@ namespace TestXNA.Sources.GameRooms
 
         private void onCaptureTerritories(SocketIOClient.Messages.IMessage data)
         {
+            _progressBar = null;
+            _currentDialog = null;
+
             Console.WriteLine("\n oncaptureteritories \n" + data.Json.ToJsonString());
             //Switch update to pick zone
             List<int> players;
@@ -440,6 +522,7 @@ namespace TestXNA.Sources.GameRooms
 
         private void emptyUpdate(float dt)
         {
+            updatePlayersUI(dt);
         }
 
         public void oldUpdate(float dt)
@@ -541,6 +624,7 @@ namespace TestXNA.Sources.GameRooms
             NodeJSClient.ServerCom.Instance.majPlayerInfoCB = MajPlayerInfo;
             NodeJSClient.ServerCom.Instance.captureZonesCB = onCaptureTerritories;
             NodeJSClient.ServerCom.Instance.placeCommandersCB= onPlaceCommanders;
+            NodeJSClient.ServerCom.Instance.questionCB = onQuestion;
  
             //My initialization logic
             _displayedPopups = new List<WarRoom.PopupStr>();
@@ -718,6 +802,14 @@ namespace TestXNA.Sources.GameRooms
         /// <param name="dt">time since last frame in seconds</param>
         private void updatePlayersUI(float dt)
         {
+            ReadOnlyTouchPointCollection touches = MyGame.TouchTarget.GetState();
+
+            foreach (TouchPoint touch in touches)
+            {
+                checkForUIDrag(touch, dt);
+            }
+
+            
             for (int i = 0; i < _miniUIs.Count; ++i)
             {
                 SmallPlayerUI ui = _miniUIs[i];

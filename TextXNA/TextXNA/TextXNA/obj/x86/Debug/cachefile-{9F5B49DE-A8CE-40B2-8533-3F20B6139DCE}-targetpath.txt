@@ -23,4 +23,5 @@ Content\Images\Zones\15.xnb
 Content\Images\Zones\16.xnb
 Content\Images\UIBack.xnb
 Content\Images\RoundedRect.xnb
+Content\Images\WaitingBack.xnb
 Content\Images\GameThumbnail.png

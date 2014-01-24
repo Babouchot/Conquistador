@@ -71,9 +71,9 @@ namespace TestXNA.Sources
             {
                 Color backColor = new Color(1f, 1f, 1f, backAlpha);
                 Vector2 areaCenter = new Vector2(_area.Center.X, _area.Center.Y);
-                MyGame.SpriteBatch.Draw(MyGame.Black, MyGame.ScreenArea, backColor);
+                MyGame.SpriteBatch.Draw(MyGame.White, MyGame.MapArea, backColor);
                 MyGame.SpriteBatch.DrawString(MyGame.BasicFont, _message, _position
-                    , Color.OrangeRed, _angle, areaCenter, 1f, SpriteEffects.None, 0f);
+                    , MyGame.ColorPanel.textColor, _angle, areaCenter, 1f, SpriteEffects.None, 0f);
 
             }
             base.draw();

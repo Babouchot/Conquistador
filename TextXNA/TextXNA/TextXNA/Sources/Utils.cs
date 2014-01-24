@@ -97,7 +97,6 @@ namespace TestXNA.Sources
             {
                 return "";
             }
-
             IPHostEntry host;
             string localIP = "";
             host = Dns.GetHostEntry(Dns.GetHostName());
@@ -109,7 +108,10 @@ namespace TestXNA.Sources
                     break;
                 }
             }
-            return localIP;
+            //return "http://"+localIP+":8080";
+            return "http://192.168.1.6:8080";
+            //return "http://192.168.1.23:8080";
+            //return "http://127.0.0.1:8080";
         }
     }
 }

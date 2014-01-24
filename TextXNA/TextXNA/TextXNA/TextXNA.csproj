@@ -112,6 +112,7 @@
     <Compile Include="Sources\DialogBoxes\ButtonDialogBox.cs" />
     <Compile Include="Sources\DialogBoxes\TargetedDialogBox.cs" />
     <Compile Include="Sources\GameData\Commander.cs" />
+    <Compile Include="Sources\GameData\GraphicColors.cs" />
     <Compile Include="Sources\GameData\Map.cs" />
     <Compile Include="Sources\GameData\PlayerData.cs" />
     <Compile Include="Sources\GameRooms\IRoom.cs" />
@@ -125,6 +126,7 @@
     <Compile Include="Sources\DialogBoxes\MessageDialogBox.cs" />
     <Compile Include="Sources\UIElements\IDrawable.cs" />
     <Compile Include="Sources\UIElements\LargePLayerUI.cs" />
+    <Compile Include="Sources\UIElements\ProgressBar.cs" />
     <Compile Include="Sources\UIElements\SmallPlayerUI.cs" />
     <Compile Include="Sources\Program.cs" />
     <Compile Include="Sources\MyGame.cs" />

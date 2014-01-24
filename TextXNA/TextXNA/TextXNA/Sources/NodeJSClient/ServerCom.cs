@@ -37,6 +37,7 @@ namespace TestXNA.Sources.NodeJSClient
         public Action<SocketIOClient.Messages.IMessage> majPlayerInfoCB;
         public Action<SocketIOClient.Messages.IMessage> captureZonesCB;
         public Action<SocketIOClient.Messages.IMessage> placeCommandersCB;
+        public Action<SocketIOClient.Messages.IMessage> questionCB;
 
 
         public void Execute()
@@ -44,7 +45,8 @@ namespace TestXNA.Sources.NodeJSClient
             Console.WriteLine("Starting TestSocketIOClient Example...");
 
             //socket = new Client("http://192.168.1.2:8080"); // url to the nodejs / socket.io instance
-            socket = new Client("http://127.0.0.1:8080"); 
+            //socket = new Client("http://127.0.0.1:8080"); 
+            socket = new Client(Utils.LocalIPAddress());
 
             socket.Opened += SocketOpened;
             socket.Message += SocketMessage;
@@ -65,6 +67,16 @@ namespace TestXNA.Sources.NodeJSClient
                 //socket.Emit("partInfo", newPart);
 
             });
+
+            socket.On("question", (fn) =>
+            {
+                Console.WriteLine("received question");
+                if (questionCB != null)
+                {
+                    questionCB(fn);
+                }
+            });
+
 
             socket.On("requestIdentity", (mes) =>
             {

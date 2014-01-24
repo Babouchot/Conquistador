@@ -27,7 +27,7 @@ namespace TestXNA
         private static ContentManager _content;
 
         private static TouchTarget touchTarget;
-        private Color backgroundColor = Color.White;
+        private Color backgroundColor;
         private bool applicationLoadCompleteSignalled;
 
         private UserOrientation currentOrientation = UserOrientation.Bottom;
@@ -47,6 +47,7 @@ namespace TestXNA
         private static Vector2 screenCenter;
         private static Texture2D black;
         private static Texture2D white;
+        private static TestXNA.Sources.GameData.GraphicColors _colorPanel;
 
         private int borderWidth = 100;
 
@@ -330,6 +331,8 @@ namespace TestXNA
 
         private void myInitialize()
         {
+            _colorPanel = new TestXNA.Sources.GameData.GraphicColors();
+            backgroundColor = _colorPanel.backgroundColor;
             screenCenter = new Vector2(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
 
             mapArea = new Rectangle(borderWidth, borderWidth, GraphicsDevice.Viewport.Width - borderWidth * 2,
@@ -432,7 +435,12 @@ namespace TestXNA
         {
             get { return _NUMBER_OF_PLAYER; }
         }
-        
+
+        public static TestXNA.Sources.GameData.GraphicColors ColorPanel
+        {
+            get { return MyGame._colorPanel; }
+        }
+
         #endregion
     }
 }
