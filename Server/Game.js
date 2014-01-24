@@ -313,6 +313,9 @@ function Game(playersArray, tableSocket, io) {
 		this.currentTurn++;
 
 		// change the processAnswers method
+		self.processAnswers = function () {
+
+		};
 	};
 
 
