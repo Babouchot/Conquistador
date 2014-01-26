@@ -314,6 +314,50 @@ function Game(playersArray, tableSocket, io) {
 
 		// change the processAnswers method
 		self.processAnswers = function () {
+			// find winner and attribute territories
+
+			self.playersAnswers.sort(function (answer1, answer2) {
+				if (answer1.value == 'void') {
+					return 1;
+				}
+				else if (answer2.value == 'void') {
+					return -1;
+				}
+				
+				if (self.question.type == 'qcm') {
+					if (answer1.value == answer1.value) {
+						return answer1.time - answer2.time;
+					}
+					else if (answer1.value == self.question.answer) {
+						return -1;
+					}
+					else if (answer2.value == self.question.answer) {
+						return 1;
+					}
+				}
+				else {
+					var answerOffset1 = Math.abs(answer1.value - self.question.answer);
+					var answerOffset2 = Math.abs(answer2.value - self.question.answer);
+					console.log(" sort : answer1 : "+answerOffset1+" answer2 : "+answerOffset2);
+					if (answerOffset1 == answerOffset2) {
+						return answer1.time - answer2.time;
+					}
+					return answerOffset1 - answerOffset2;
+				}
+				return answer1.time - answer2.time;
+			});
+
+			
+			var orderedPlayers = new Array();
+			
+			for (var i = 0; i < self.playersAnswers.length; ++i) {
+				orderedPlayers.push(self.playersAnswers[i].id);
+			}
+			console.log("ordered players : " + orderedPlayers);
+			
+			// send the number of territories each player have to capture
+
+			self.table.emit('captureTerritories', {'orderedPlayers' : orderedPlayers});
 
 		};
 	};
