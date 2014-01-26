@@ -27,20 +27,25 @@ function Game(playersArray, tableSocket, io) {
 	this.territories = new Array();
 
 	var self = this;
+	
 
 	this.table.on('timeout', function (message) {
+	
 		console.log ('TIMEOUT !!!');
 		var questionID = message.id;
 		console.log("QuestionId : " + questionID);
 		console.log("currentQuestion : " + self.currentQuestion);
+		
 		if (questionID == self.currentQuestion) {
 			console.log("gnééééééééééééé");
 			var playersDidNotAnswer = new Array();
+			
 			for (var i = 0; i < self.players.length; ++i) {
 				console.log ("i : " + i);
 				playersDidNotAnswer.push(self.players[i].gameID);
 				self.players[i].playerSocket.emit('timeout', message);
 			}
+			
 			for (var j = 0; j < self.playersAnswers.length; ++j) {
 				console.log(self.playersAnswers[j].id);
 				var index = playersDidNotAnswer.indexOf(self.playersAnswers[j].id);
@@ -51,10 +56,12 @@ function Game(playersArray, tableSocket, io) {
 				}
 			}
 			console.log(playersDidNotAnswer);
+			
 			for (var k = 0; k < playersDidNotAnswer.length; ++k) {
 				self.playersAnswers.push({'id' : playersDidNotAnswer[k], 'value' : "void", 'time': -1});
 				console.log(playersDidNotAnswer);
 			}
+			
 			checkIfAllAnswers();
 		}
 	});
@@ -82,16 +89,21 @@ function Game(playersArray, tableSocket, io) {
 			return answerOffset1 - answerOffset2;
 		});
 		
-		var orderedPlayers = new Array();
+		/*var orderedPlayers = new Array();
 		
 		for (var i = 0; i < self.playersAnswers.length; ++i) {
-			orderedPlayers.push(self.playersAnswers[i].id);
+			orderedPlayers.push({'player' : self.playersAnswers[i].id
+								, 'answer' : self.playersAnswers[i].value
+								, 'time' : self.playersAnswers[i].time});
 		}
-		console.log("ordered players : " + orderedPlayers);
-		
+		console.log("ordered answers : " + orderedPlayers);
+		*/
 		// send the number of territories each player have to capture
+		
+		//send message to the table
+		self.table.emit('questionAnswered', {'orderedAnswers' : self.playersAnswers});
 
-		self.table.emit('captureTerritories', {'orderedPlayers' : orderedPlayers});
+
 	}
 
 	// wait for answers
@@ -104,8 +116,30 @@ function Game(playersArray, tableSocket, io) {
 		}
 	}
 
+	processTerritoriesToCapture = function()
+	{
+		var orderedPlayers = new Array();
+		
+		for (var i = 0; i < self.playersAnswers.length; ++i) {
+			orderedPlayers.push(self.playersAnswers[i].id);
+		}
+		console.log("ordered players : " + orderedPlayers);
+		
+		// send the number of territories each player have to capture
+		
+		//send message to the table
+		self.table.emit('captureTerritories', {'orderedPlayers' : orderedPlayers});
+	}
+	
+	function next(msg)
+	{
+		// send the number of territories each player have to capture
+		processTerritoriesToCapture();
+	}
 
-
+	self.table.on('next', next);
+	
+	
 	//	Phase 1 : Prise des territoires (Attribution des territoires sur question)
 	this.phase1 = function () {
 
@@ -114,8 +148,6 @@ function Game(playersArray, tableSocket, io) {
 
 		var phase1 = this;
 	
-		
-		
 		function sendNewQuestion()
 		{
 			phase1.playerCaptureCount = PLAYER_NUMBER;
@@ -238,7 +270,7 @@ function Game(playersArray, tableSocket, io) {
 				//----FIX----
 				p.playerSocket.on('answer', (answerEventGenerator(p)));
 			}
-			
+
 			sendNewQuestion();
 
 		};
@@ -311,7 +343,8 @@ function Game(playersArray, tableSocket, io) {
 			this.players[i].play();
 		}
 		this.currentTurn++;
-
+		
+		//Faudrais peut etre override 'next' plutot
 		// change the processAnswers method
 		self.processAnswers = function () {
 			// find winner and attribute territories
@@ -379,6 +412,7 @@ function Game(playersArray, tableSocket, io) {
 
 	this.currentPhase = this.phase1;
 
+	
 	this.start = function () {
 		/*var phase1 = new this.phase1();
 		phase1.init();*/
