@@ -19,7 +19,7 @@
 
       socket.on('question', function (question) {
 		console.log("receive question");
-        var answer = Math.random()*100;
+        var answer = Math.floor( Math.random()*100);
         var time = Math.random()*100;
         // socket.emit('answer', {'answer' : answer, 'time' : time, 'id': question.id});
       });
