@@ -17,6 +17,7 @@ namespace TestXNA.Sources
 
         private Vector2 _velocity = Vector2.Zero;
         private float _width = -1f;
+        private float _height = -1f;
         private Rectangle _area;
         private float _weigth = 0.7f;
 
@@ -132,7 +133,7 @@ namespace TestXNA.Sources
             if (!outRect.Contains(_area))
             {
                 Vector2 correctionVector = Vector2.Zero;
-                float correctionAmountPerSec = 50f;
+                float correctionAmountPerSec = 30f;
                 float correction = correctionAmountPerSec * dt;
                 if (_area.Left < outRect.Left)
                 {
@@ -165,7 +166,7 @@ namespace TestXNA.Sources
 
             if (inRect.Intersects(_area) || inRect.Contains(_area))
             {
-                float correctionAmountPerSec = 100f;
+                float correctionAmountPerSec = 50f;
                 float correction = correctionAmountPerSec * dt;
 
                 Vector2 correctionVector = Vector2.Zero;
@@ -221,32 +222,39 @@ namespace TestXNA.Sources
 
         public override void draw()
         {
-            string _name = GameData.PlayerData.Instance[_player].Name;
-            Vector2 size = _playerUIFont.MeasureString(_name + "\n" + _name + "\n" + _name);
-            Vector2 position = Utils.pointToVector2(_area.Center) -size / 2f;
+            string name = GameData.PlayerData.Instance[_player].Name;
+            //Vector2 size = _playerUIFont.MeasureString(name);
+            Texture2D avatar = GameData.PlayerData.Instance[_player].FaceImage;
+            Vector2 size = new Vector2((float)avatar.Width, (float)avatar.Height);
 
             MyGame.SpriteBatch.Draw(_image, _area, GameData.PlayerData.Instance[_player].HighlitColor);
 
-            MyGame.SpriteBatch.DrawString(_playerUIFont, _name + "\n" + _name + "\n" + _name, Utils.pointToVector2(_area.Center), Color.Black, _angle, size / 2f, 1f,
-                SpriteEffects.None, 0f);
+            /*MyGame.SpriteBatch.DrawString(_playerUIFont, name, Utils.pointToVector2(_area.Center), Color.Black, _angle, size / 2f, 1f,
+                SpriteEffects.None, 0f*/
+
+            MyGame.SpriteBatch.Draw(avatar, Utils.pointToVector2(_area.Center), null,
+                Color.White, _angle, size / 2f, _width / size.X * 0.9f, SpriteEffects.None, 0f); 
         }
 
         public void initializeArea(SpriteFont font)
         {
             _playerUIFont = font;
             _width = computeUISize(this, font).X;
+            _height = computeUISize(this, font).Y;
             _area = computeUIArea(this);
         }
 
-        private static Rectangle computeUIArea(SmallPlayerUI ui)
+        private Rectangle computeUIArea(SmallPlayerUI ui)
         {
             return new Rectangle((int)(ui._position.X - ui._width / 2f),
                 (int)(ui._position.Y - ui._width / 2f), (int)ui._width, (int)ui._width);
         }
 
-        private static Vector2 computeUISize(SmallPlayerUI ui, SpriteFont font)
+        private Vector2 computeUISize(SmallPlayerUI ui, SpriteFont font)
         {
-            return font.MeasureString(GameData.PlayerData.Instance[ui._player].Name);
+            float val = (float)MyGame.MapArea.X * 0.75f;
+            return new Vector2(val, val);
+            //return font.MeasureString(" " + GameData.PlayerData.Instance[ui._player].Name + " ");
         }
     }
 }

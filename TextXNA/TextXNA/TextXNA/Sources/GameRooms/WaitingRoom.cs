@@ -29,7 +29,7 @@ namespace TestXNA.Sources.GameRooms
         public System.Action startGameCallback = null;
 
         private int _buttonWidth = 400;
-        private int _buttonHeight = 150;
+        private int _buttonHeight = 175;
         private UIElements.SimpleButton _startButton;
 
         private List<UIElements.LargePLayerUI> _playerUIs;
@@ -40,25 +40,35 @@ namespace TestXNA.Sources.GameRooms
         private Texture2D _QRCode = null;
         private Rectangle _QrCodeArea;
 
-        Texture2D _UIBackRect;
-        Texture2D _roomBackground;
+        private Texture2D _buttonBack;
+        private Texture2D _playerUIBack;
+        private Texture2D _roomBackground;
+
+        private RadialUIContainer radial;
 
         public WaitingRoom()
         {
             Microsoft.Xna.Framework.Rectangle area = new Microsoft.Xna.Framework.Rectangle(
                 (int)MyGame.ScreenCenter.X - _buttonWidth / 2
-                , (int)(MyGame.ScreenCenter.Y * 1.8f) - _buttonHeight / 2
+                , (int)(MyGame.ScreenCenter.Y * 1.75f) - _buttonHeight / 2
                 , _buttonWidth
                 , _buttonHeight);
             
-            _UIBackRect = MyGame.ContentManager.Load<Texture2D>("Images/RoundedRect");
+            _buttonBack = MyGame.ContentManager.Load<Texture2D>("Images/buttonScroll");
             _roomBackground = MyGame.ContentManager.Load<Texture2D>("Images/WaitingBack");
+            _playerUIBack = MyGame.ContentManager.Load<Texture2D>("Images/playerScroll");
 
-            _startButton = new UIElements.SimpleButton(_UIBackRect, area, "Start Game");
+            Texture2D messageBack = MyGame.ContentManager.Load<Texture2D>("Images/messageScroll");
+
+            Rectangle stretchAreaButton = new Rectangle(15, 20, 70, 60);
+
+            UIElements.StretchableImage stretchButtonTexture = new UIElements.StretchableImage(_buttonBack, stretchAreaButton);
+
+            _startButton = new UIElements.SimpleButton(stretchButtonTexture, area, "Start Game");
 
             _playerUIs = new List<UIElements.LargePLayerUI>();
 
-            _posStart = new Vector2(MyGame.ScreenArea.Width / 5, 500f);
+            _posStart = new Vector2(MyGame.ScreenArea.Width / 5, 450f);
             _offset = new Vector2(MyGame.ScreenArea.Width / 5, 0f);
 
 
@@ -71,13 +81,19 @@ namespace TestXNA.Sources.GameRooms
 
             if (ip == "")
             {
+
+                Rectangle stretchAreaMessage = new Rectangle(30, 30, 40, 40);
+                UIElements.StretchableImage stretchImg = new UIElements.StretchableImage(messageBack, stretchAreaMessage);
+
                 Console.WriteLine("Creating dialog");
                 _dialog = new ConditionalDialogBox(
                     delegate() { return Utils.LocalIPAddress() != ""; }
                     , "Network could not be reached\n"
                     + "Please find de way to connect to a reliable, working network\n"
                     + "(Unice hotsport is NOT one of those networks...)"
-                    , new Microsoft.Xna.Framework.Rectangle((int)MyGame.ScreenCenter.X , (int)MyGame.ScreenCenter.Y , 400, 400));
+                    , new Microsoft.Xna.Framework.Rectangle((int)MyGame.ScreenCenter.X , (int)MyGame.ScreenCenter.Y , 600, 600)
+                    , stretchImg);
+
                 _dialog.Position = MyGame.ScreenCenter;
                 _dialog.Show();
             }
@@ -105,21 +121,13 @@ namespace TestXNA.Sources.GameRooms
 
                 int recWidth = MyGame.ScreenArea.Width / 8;
                 _QrCodeArea = new Rectangle((int)(MyGame.ScreenCenter.X - recWidth / 2), 10, recWidth, recWidth);
+
+                NodeJSClient.ServerCom.Instance.playerConnectCB = OnPlayerConnect;
+                NodeJSClient.ServerCom.Instance.Execute();
+
+                //initializeRadialUI();
             }
 
-            //
-
-            /*
-            for (int i = 0; i < 4; ++i)
-            {
-                UIElements.LargePLayerUI ui = new UIElements.LargePLayerUI(i, avat, uiBack);
-                ui.Position = posStart;
-                _playerUIs.Add(ui);
-                posStart += offset;
-            }
-            */
-            NodeJSClient.ServerCom.Instance.playerConnectCB = OnPlayerConnect;
-            NodeJSClient.ServerCom.Instance.Execute();
         }
 
         //TODO
@@ -135,6 +143,11 @@ namespace TestXNA.Sources.GameRooms
             {
                 _dialog.update(dt);
                 return;
+            }
+
+            if (radial != null)
+            {
+                radial.update(dt);
             }
 
             _startButton.update(dt);
@@ -153,14 +166,14 @@ namespace TestXNA.Sources.GameRooms
         public void draw()
         {
 
-            MyGame.SpriteBatch.Draw(_roomBackground, MyGame.ScreenArea, Color.White);
+            MyGame.SpriteBatch.Draw(_roomBackground, MyGame.MapArea, Color.White);
 
             if (_QRCode != null)
             {
                 MyGame.SpriteBatch.Draw(_QRCode, _QrCodeArea, Color.White);
             }
 
-            foreach (UIElements.LargePLayerUI ui in _playerUIs)
+            foreach (UIElements.LargePLayerUI ui in _playerUIs.ToArray())
             {
                 ui.draw();
             }
@@ -171,6 +184,10 @@ namespace TestXNA.Sources.GameRooms
                 _dialog.draw();
             }
 
+            if (radial != null)
+            {
+                radial.draw();
+            }
             //MyGame.SpriteBatch.Draw(uiBack, MyGame.ScreenArea, Color.Red);
         }
 
@@ -186,7 +203,7 @@ namespace TestXNA.Sources.GameRooms
             PlayerInfoRoot obj = Newtonsoft.Json.JsonConvert.DeserializeObject<PlayerInfoRoot>(message.Json.ToJsonString());
             player = obj.args[0];
             Console.WriteLine("player name " + player.pseudo);
-            if (PlayerData.Instance[player.gameID].Name == null || PlayerData.Instance[player.gameID].Name.Length > 0)
+            if (PlayerData.Instance[player.gameID].Name == null || PlayerData.Instance[player.gameID].Name.Length == 0)
             {
                 PlayerData.Instance[player.gameID].Name = player.pseudo;
                 InitPlayerUI(player.gameID);
@@ -195,34 +212,43 @@ namespace TestXNA.Sources.GameRooms
 
         private void InitPlayerUI(int gamerID)
         {
-            Texture2D avat = MyGame.ContentManager.Load<Texture2D>("Images/trollFace");
-
-            UIElements.LargePLayerUI ui = new UIElements.LargePLayerUI(gamerID, avat, _UIBackRect);
+            UIElements.LargePLayerUI ui = new UIElements.LargePLayerUI(gamerID, _playerUIBack);
             ui.Position = _posStart;
             _playerUIs.Add(ui);
             _posStart += _offset;
-
         }
 
-
+        /// <summary>
+        /// Check for bug here
+        /// </summary>
+        /// <returns></returns>
         private bool canStartGame()
         {
-            int nbPlayer = 0;
             foreach (PlayerData play in PlayerData.Instance)
             {
+                Console.WriteLine("\n player : " + play.Name + "\n");
                 if (play.Name == null || play.Name.Length == 0)
                 {
                     return false;
                 }
-                /*else
-                {
-                    ++nbPlayer;
-                }*/
             }
 
             return true;// nbPlayer >= 2;
         }
-        
+
+        private void initializeRadialUI()
+        {
+            Texture2D center = MyGame.ContentManager.Load<Texture2D>("Images/centralRose");
+            radial = new UIElements.RadialAnswerContainer(center, 400f, 250f);
+
+            for (int i = 0; i < 4; ++i)
+            {
+                UIElements.AnswerUI ansUI = new UIElements.AnswerUI(i, i == 1, "ans : " + i, _playerUIBack);
+                radial.ContainedUIs.Add(ansUI);
+            }
+
+            radial.Position = MyGame.ScreenCenter;
+        }
 
 
     }

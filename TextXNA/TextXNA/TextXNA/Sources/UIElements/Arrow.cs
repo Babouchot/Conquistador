@@ -15,61 +15,47 @@ namespace TestXNA.Sources
         public const float ANIM_DURATION = 0.5f;
 
         private Vector2     _position;
+        private Vector2     _target;
         private float       _angle;
         private float       _scale;
         private float       _targetScale;
         private float       _upTime = 0f;
-        private int         _tagID = -1;
-        private bool        _upToDate = true;
 
         private Texture2D _image;
 
         private static Vector2 arrowOrigin;
 
 
-        public Arrow(Texture2D img, Vector2 position, Vector2 target, int tagID)
+        public Arrow(Texture2D img, Vector2 position, Vector2 target)
         {
+            //Console.WriteLine("new arrow : position : " + position + " target : " + target);
             _image = img;
 
             arrowOrigin = new Vector2(_image.Width / 2, 0);
 
             _position       = position;
             _angle          = Utils.lookAt(_position, target);
-            _targetScale    = (target - _position).Length() / _image.Height;
-            _upToDate       = true;
-            _tagID          = tagID;
+            _targetScale    = (target - _position).Length() / (float)_image.Height;
+            _target         = target;
         }
 
 
-        public bool updateArrowWithTag(TouchPoint touch, Vector2 newTarget, float dt)
+        public void update(float dt)
         {
-                if (_tagID == touch.Id)
-                {
-                    _position       = new Vector2(touch.X, touch.Y);
-                    _angle          = Utils.lookAt(_position, newTarget);
-                    _upTime         += dt;
-                    _upTime         = Math.Min(_upTime, ANIM_DURATION);
-                    _targetScale    = (newTarget - _position).Length() / _image.Height;
-                    _scale          = MathHelper.Lerp(0f, _targetScale, Utils.hill(_upTime / ANIM_DURATION));
+            //Console.WriteLine("arrow update time : " + _upTime + " duration : " + ANIM_DURATION + " target scale " + _targetScale + " scale " + _scale);
+            _angle          = Utils.lookAt(_position, _target);
+            _upTime         += dt;
+            _upTime         = Math.Min(_upTime, ANIM_DURATION);
+            _targetScale    = (_target - _position).Length() / _image.Height;
+            _scale          = MathHelper.Lerp(0f, _targetScale, Utils.hill(_upTime / ANIM_DURATION));
 
-                    _upToDate       = true;
-
-                    return true;
-                }
-                return false;
-        }
+         }
 
         public void draw()
         {
+            //Console.WriteLine("arrow dranw : " + _scale);
             MyGame.SpriteBatch.Draw(_image, Position, null, Color.White, Angle, arrowOrigin,
                     Scale, SpriteEffects.None, 0f);
-        }
-
-
-        public bool UpToDate
-        {
-            get { return _upToDate; }
-            set { _upToDate = value; }
         }
 
         public Vector2 Position
@@ -78,6 +64,16 @@ namespace TestXNA.Sources
             set { _position = value; }
         }
 
+        public Vector2 Target
+        {
+            get { return _target; }
+            set {
+                _target = value;
+                _angle = Utils.lookAt(_position, _target);
+                _targetScale = (_target - _position).Length() / _image.Height;
+            }
+        }
+        
         public float Scale
         {
             get { return _scale; }

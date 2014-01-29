@@ -42,19 +42,29 @@ namespace TestXNA
         private const int _NUMBER_OF_PLAYER = 4;
 
         private static SpriteFont basicFont;
+        private static SpriteFont basicFontBold;
+        private static SpriteFont titleFont;
+        private static SpriteFont basicFontSmall;
+
         private static Rectangle mapArea;
         private static Rectangle screenArea;
         private static Vector2 screenCenter;
         private static Texture2D black;
         private static Texture2D white;
+
         private static TestXNA.Sources.GameData.GraphicColors _colorPanel;
 
+        private Texture2D _tableBack;
+        private Texture2D _tableBorder;
+        private Rectangle _borderArea;
+
+        private int borderStart = 70;
         private int borderWidth = 100;
 
         private IRoom _currentRoom;
         private WarRoom _warRoom;
         private WaitingRoom _waitingRoom;
-
+        
         /// <summary>
         /// The target receiving all surface input for the application.
         /// </summary>
@@ -180,15 +190,17 @@ namespace TestXNA
             Color[] blackArray = Enumerable.Range(0, 100).Select(i => Color.Black).ToArray();
             black = new Texture2D(GraphicsDevice, 10, 10, false, SurfaceFormat.Color);
             black.SetData(blackArray);
-            
-            /*popupImage = Content.Load<Texture2D>("Images/trollFace.png");
-            iconImage = Content.Load<Texture2D>("Images/GameThumbnail.png");
-            arrowImage = Content.Load<Texture2D>("Images/Arrow.png");
-            mapBackground = Content.Load<Texture2D>("Images/icon.png");
-             */
+
+            _tableBack = Content.Load<Texture2D>("Images/table");
+            _tableBorder = Content.Load<Texture2D>("Images/tableBorder");
 
             _content = Content;
-            basicFont = Content.Load<SpriteFont>("Fonts/MaturaScript");
+            basicFont = Content.Load<SpriteFont>("Fonts/Text");
+            basicFontBold = Content.Load<SpriteFont>("Fonts/TextBold");
+            titleFont = Content.Load<SpriteFont>("Fonts/Title");
+            basicFontSmall = Content.Load<SpriteFont>("Fonts/TextSmall");
+
+            Sources.GameData.PlayerData.loadImages(_content);
 
             secondInitialize();
         }
@@ -248,6 +260,9 @@ namespace TestXNA
             //TODO: Avoid any expensive logic if application is neither active nor previewed
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied);
             //spriteBatch.Begin();
+
+            spriteBatch.Draw(_tableBack, screenArea, Color.White);
+            spriteBatch.Draw(_tableBorder, _borderArea, Color.White);
             drawRoom();
 
             spriteBatch.End();
@@ -339,6 +354,9 @@ namespace TestXNA
                 GraphicsDevice.Viewport.Height - borderWidth * 2);
 
             screenArea = new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
+
+            _borderArea = new Rectangle(borderStart, borderStart, GraphicsDevice.Viewport.Width - borderStart * 2,
+                GraphicsDevice.Viewport.Height - borderStart * 2);
 
         }
 
@@ -440,6 +458,23 @@ namespace TestXNA
         {
             get { return MyGame._colorPanel; }
         }
+
+        public static SpriteFont TitleFont
+        {
+            get { return MyGame.titleFont; }
+        }
+
+        public static SpriteFont BasicFontBold
+        {
+            get { return MyGame.basicFontBold; }
+        }
+
+        public static SpriteFont BasicFontSmall
+        {
+            get { return MyGame.basicFontSmall; }
+            set { MyGame.basicFontSmall = value; }
+        }
+
 
         #endregion
     }

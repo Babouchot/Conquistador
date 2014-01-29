@@ -26,7 +26,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Arrow.xnb</Output>
-      <Time>2014-01-02T18:09:04.7277617+01:00</Time>
+      <Time>2014-01-29T21:08:43.1268586+01:00</Time>
     </Item>
     <Item>
       <Source>Images\Map.png</Source>
@@ -71,7 +71,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Zones\01.xnb</Output>
-      <Time>2014-01-03T17:00:18.4401084+01:00</Time>
+      <Time>2014-01-29T20:33:08.9763456+01:00</Time>
     </Item>
     <Item>
       <Source>Images\Zones\02.png</Source>
@@ -80,7 +80,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Zones\02.xnb</Output>
-      <Time>2014-01-03T17:00:18.4701085+01:00</Time>
+      <Time>2014-01-29T20:33:09.0263456+01:00</Time>
     </Item>
     <Item>
       <Source>Images\Zones\03.png</Source>
@@ -89,7 +89,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Zones\03.xnb</Output>
-      <Time>2014-01-03T17:00:18.4701085+01:00</Time>
+      <Time>2014-01-29T20:33:09.0263456+01:00</Time>
     </Item>
     <Item>
       <Source>Images\Zones\04.png</Source>
@@ -98,7 +98,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Zones\04.xnb</Output>
-      <Time>2014-01-03T17:00:18.4801085+01:00</Time>
+      <Time>2014-01-29T20:33:09.0263456+01:00</Time>
     </Item>
     <Item>
       <Source>Images\Zones\05.png</Source>
@@ -107,7 +107,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Zones\05.xnb</Output>
-      <Time>2014-01-03T17:00:18.4901085+01:00</Time>
+      <Time>2014-01-29T20:33:09.0363456+01:00</Time>
     </Item>
     <Item>
       <Source>Images\Zones\06.png</Source>
@@ -116,7 +116,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Zones\06.xnb</Output>
-      <Time>2014-01-03T17:00:18.4901085+01:00</Time>
+      <Time>2014-01-29T20:33:09.0363456+01:00</Time>
     </Item>
     <Item>
       <Source>Images\Zones\07.png</Source>
@@ -125,7 +125,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Zones\07.xnb</Output>
-      <Time>2014-01-03T17:00:18.5001085+01:00</Time>
+      <Time>2014-01-29T20:33:09.0363456+01:00</Time>
     </Item>
     <Item>
       <Source>Images\Zones\08.png</Source>
@@ -134,7 +134,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Zones\08.xnb</Output>
-      <Time>2014-01-03T17:00:18.5201086+01:00</Time>
+      <Time>2014-01-29T20:33:09.0363456+01:00</Time>
     </Item>
     <Item>
       <Source>Images\Zones\09.png</Source>
@@ -143,7 +143,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Zones\09.xnb</Output>
-      <Time>2014-01-03T17:00:18.5301086+01:00</Time>
+      <Time>2014-01-29T20:33:09.0463457+01:00</Time>
     </Item>
     <Item>
       <Source>Images\Zones\10.png</Source>
@@ -152,7 +152,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Zones\10.xnb</Output>
-      <Time>2014-01-03T17:00:18.5301086+01:00</Time>
+      <Time>2014-01-29T20:33:09.0463457+01:00</Time>
     </Item>
     <Item>
       <Source>Images\Zones\11.png</Source>
@@ -161,7 +161,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Zones\11.xnb</Output>
-      <Time>2014-01-03T17:00:18.5301086+01:00</Time>
+      <Time>2014-01-29T20:33:09.0463457+01:00</Time>
     </Item>
     <Item>
       <Source>Images\Zones\12.png</Source>
@@ -170,7 +170,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Zones\12.xnb</Output>
-      <Time>2014-01-03T17:00:18.5401086+01:00</Time>
+      <Time>2014-01-29T20:33:09.0463457+01:00</Time>
     </Item>
     <Item>
       <Source>Images\Zones\13.png</Source>
@@ -179,7 +179,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Zones\13.xnb</Output>
-      <Time>2014-01-03T17:00:18.5401086+01:00</Time>
+      <Time>2014-01-29T20:33:09.0463457+01:00</Time>
     </Item>
     <Item>
       <Source>Images\Zones\14.png</Source>
@@ -188,7 +188,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Zones\14.xnb</Output>
-      <Time>2014-01-03T17:00:18.5401086+01:00</Time>
+      <Time>2014-01-29T20:33:09.0463457+01:00</Time>
     </Item>
     <Item>
       <Source>Images\Zones\15.png</Source>
@@ -197,7 +197,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Zones\15.xnb</Output>
-      <Time>2014-01-03T17:00:18.5401086+01:00</Time>
+      <Time>2014-01-29T20:33:09.0463457+01:00</Time>
     </Item>
     <Item>
       <Source>Images\Zones\16.png</Source>
@@ -206,7 +206,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Zones\16.xnb</Output>
-      <Time>2014-01-03T17:00:18.5501086+01:00</Time>
+      <Time>2014-01-29T20:33:09.0463457+01:00</Time>
     </Item>
     <Item>
       <Source>Images\UIBack.png</Source>
@@ -234,6 +234,186 @@
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\WaitingBack.xnb</Output>
       <Time>2014-01-24T16:03:16.3639187+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Fonts\Title.spritefont</Source>
+      <Name>Fonts\Title</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+      <Options>None</Options>
+      <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Fonts\Title.xnb</Output>
+      <Time>2014-01-24T16:48:42.7585648+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Fonts\Text.spritefont</Source>
+      <Name>Fonts\Text</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+      <Options>None</Options>
+      <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Fonts\Text.xnb</Output>
+      <Time>2014-01-24T16:48:08.3942518+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Images\Commanders\Conqui1.png</Source>
+      <Name>Images\Commanders\Conqui1</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Commanders\Conqui1.xnb</Output>
+      <Time>2014-01-25T09:00:24.6749711+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Images\Commanders\Conqui2.png</Source>
+      <Name>Images\Commanders\Conqui2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Commanders\Conqui2.xnb</Output>
+      <Time>2014-01-25T09:00:24.6749711+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Images\Commanders\Conqui3.png</Source>
+      <Name>Images\Commanders\Conqui3</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Commanders\Conqui3.xnb</Output>
+      <Time>2014-01-25T09:00:24.7217712+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Images\Commanders\Conqui4.png</Source>
+      <Name>Images\Commanders\Conqui4</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Commanders\Conqui4.xnb</Output>
+      <Time>2014-01-25T09:00:24.7529712+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Images\buttonScroll.png</Source>
+      <Name>Images\buttonScroll</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\buttonScroll.xnb</Output>
+      <Time>2014-01-25T15:58:37.0777828+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Images\messageScroll.png</Source>
+      <Name>Images\messageScroll</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\messageScroll.xnb</Output>
+      <Time>2014-01-25T13:31:27.4747584+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Images\playerScroll.png</Source>
+      <Name>Images\playerScroll</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\playerScroll.xnb</Output>
+      <Time>2014-01-25T12:11:31.9604707+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Fonts\TextBold.spritefont</Source>
+      <Name>Fonts\TextBold</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+      <Options>None</Options>
+      <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Fonts\TextBold.xnb</Output>
+      <Time>2014-01-25T12:22:36.5474829+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Images\Commanders\ConquiFace1.png</Source>
+      <Name>Images\Commanders\ConquiFace1</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Commanders\ConquiFace1.xnb</Output>
+      <Time>2014-01-25T12:40:04.040396+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Images\Commanders\ConquiFace2.png</Source>
+      <Name>Images\Commanders\ConquiFace2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Commanders\ConquiFace2.xnb</Output>
+      <Time>2014-01-25T13:06:41.8537857+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Images\Commanders\ConquiFace3.png</Source>
+      <Name>Images\Commanders\ConquiFace3</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Commanders\ConquiFace3.xnb</Output>
+      <Time>2014-01-25T13:06:42.8458425+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Images\Commanders\ConquiFace4.png</Source>
+      <Name>Images\Commanders\ConquiFace4</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Commanders\ConquiFace4.xnb</Output>
+      <Time>2014-01-25T12:40:04.1073999+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Fonts\TextSmall.spritefont</Source>
+      <Name>Fonts\TextSmall</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+      <Options>None</Options>
+      <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Fonts\TextSmall.xnb</Output>
+      <Time>2014-01-25T14:54:16.0659456+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Images\table.png</Source>
+      <Name>Images\table</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\table.xnb</Output>
+      <Time>2014-01-25T17:00:08.4179154+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Images\tableBorder.png</Source>
+      <Name>Images\tableBorder</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\tableBorder.xnb</Output>
+      <Time>2014-01-25T16:55:32.7791497+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Images\fire.png</Source>
+      <Name>Images\fire</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\fire.xnb</Output>
+      <Time>2014-01-25T18:05:45.0810796+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Images\rope.png</Source>
+      <Name>Images\rope</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\rope.xnb</Output>
+      <Time>2014-01-25T18:08:36.9109077+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Images\centralRose.png</Source>
+      <Name>Images\centralRose</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\centralRose.xnb</Output>
+      <Time>2014-01-26T10:03:09.5064411+01:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>

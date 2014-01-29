@@ -38,7 +38,9 @@ namespace TestXNA.Sources.NodeJSClient
         public Action<SocketIOClient.Messages.IMessage> captureZonesCB;
         public Action<SocketIOClient.Messages.IMessage> placeCommandersCB;
         public Action<SocketIOClient.Messages.IMessage> questionCB;
-
+        public Action<SocketIOClient.Messages.IMessage> answersReceivedCB;
+        public Action<SocketIOClient.Messages.IMessage> playerMoveCB;
+        public Action<SocketIOClient.Messages.IMessage> battleResultCB;
 
         public void Execute()
         {
@@ -74,6 +76,33 @@ namespace TestXNA.Sources.NodeJSClient
                 if (questionCB != null)
                 {
                     questionCB(fn);
+                }
+            });
+
+            socket.On("playerMoveAsked", (fn) =>
+            {
+                Console.WriteLine("\nreceived playerMoveAsked");
+                if (playerMoveCB != null)
+                {
+                    playerMoveCB(fn);
+                }
+            });
+
+            socket.On("battleResult", (fn) =>
+            {
+                Console.WriteLine("received battleResult");
+                if (battleResultCB != null)
+                {
+                    battleResultCB(fn);
+                }
+            });
+
+            socket.On("questionAnswered", (fn) =>
+            {
+                Console.WriteLine("\nreceived answers to question\n");
+                if (answersReceivedCB != null)
+                {
+                    answersReceivedCB(fn);
                 }
             });
 

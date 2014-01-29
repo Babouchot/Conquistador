@@ -18,7 +18,7 @@ namespace TestXNA.Sources.NodeJSClient.MessageData
         public string pseudo { get; set; }
         public int score { get; set; }
         public List<int> territories { get; set; }
-    }
+    };
 
     public class CaptureInfoRoot
     {
@@ -38,12 +38,41 @@ namespace TestXNA.Sources.NodeJSClient.MessageData
         public string title { get; set; }
         public int answer { get; set; }
         public int id { get; set; }
-    }
+    };
 
     public class QuestionDataRoot
     {
         public string name { get; set; }
         public List<QuestionData> args { get; set; }
+    };
+
+
+    public class OrderedAnswer
+    {
+        public int id { get; set; }
+        public object value { get; set; }
+        public double time { get; set; }
+    };
+
+    public class AnswerList
+    {
+        public List<OrderedAnswer> orderedAnswers { get; set; }
+    };
+
+    public class AnswersRoot
+    {
+        public string name { get; set; }
+        public List<AnswerList> args { get; set; }
+    };
+
+    public class MoveData
+    {
+        public int id { get; set; }
     }
 
+    public class MoveRoot
+    {
+        public string name { get; set; }
+        public List<MoveData> args { get; set; }
+    }
 }

@@ -8,16 +8,15 @@ namespace TestXNA.Sources.DialogBoxes
 {
     class ButtonDialogBox : MessageDialogBox
     {
-        private UIElements.SimpleButton _button;
-        private float _distFromMes;
+        protected UIElements.SimpleButton _button;
 
-        public ButtonDialogBox(UIElements.SimpleButton button, string message, Rectangle messageArea)
-            : base(message, messageArea)
+        public ButtonDialogBox(UIElements.SimpleButton button, string message, Rectangle messageArea, UIElements.StretchableImage back)
+            : base(message, messageArea, back)
         {
             _button = button;
         }
 
-        public override bool processTouch(TouchPoint touch, float dt)
+        protected override bool processTouch(TouchPoint touch, float dt)
         {
             _button.update(dt);
             if (_button.isTouchOn(Utils.touchPointToV2(touch)))

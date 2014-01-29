@@ -108,10 +108,87 @@ namespace TestXNA.Sources
                     break;
                 }
             }
-            //return "http://"+localIP+":8080";
-            return "http://192.168.1.6:8080";
-            //return "http://192.168.1.23:8080";
-            //return "http://127.0.0.1:8080";
+            return "http://"+localIP+":8080";
+            
         }
+
+        #region Create Part Image
+        /// <summary>
+        /// Creates a new image from an existing image.
+        /// </summary>
+        /// <param name="bounds">Area to use as the new image.</param>
+        /// <param name="source">Source image used for getting a part image.</param>
+        /// <returns>Texture2D.</returns>
+        public static Texture2D CreatePartImage(Rectangle bounds, Texture2D source, GraphicsDevice graphicsDevice)
+        {
+
+            Console.WriteLine("\n\n bounds : \n" + bounds.X + ", " + bounds.Y + ", " + bounds.Width + ", " + bounds.Height
+                + "\n images : " + source.Width +", "+source.Height);
+
+            //Declare variables
+            Texture2D result;
+            Color[]
+                sourceColors,
+                resultColors;
+
+            //Setup the result texture
+            result = new Texture2D(graphicsDevice, bounds.Width, bounds.Height);
+
+            //Setup the color arrays
+            sourceColors = new Color[source.Height * source.Width];
+            resultColors = new Color[bounds.Height * bounds.Width];
+
+            //Get the source colors
+            source.GetData<Color>(sourceColors);
+
+            //Loop through colors on the y axis
+            for (int y = bounds.Y; y < bounds.Height + bounds.Y; y++)
+            {
+                //Loop through colors on the x axis
+                for (int x = bounds.X; x < bounds.Width + bounds.X; x++)
+                {
+                    //Get the current color
+                    resultColors[x - bounds.X + (y - bounds.Y) * bounds.Width] =
+                        sourceColors[x + y * source.Width];
+                }
+            }
+
+            //Set the color data of the result image
+            result.SetData<Color>(resultColors);
+
+            Console.WriteLine("\n It worked ! \n");
+            //return the result
+            return result;
+        }
+        #endregion
+
+
+        public static string fitText(string text, SpriteFont font, Rectangle area)
+        {
+            string fittedText = "";
+
+            string[] words = text.Split(' ');
+            int lineStart = 0;
+
+            while (lineStart < words.Length)
+            {
+                string line = "";
+
+                while (lineStart < words.Length &&
+                    (font.MeasureString(line + words[lineStart]).X < area.Width
+                    ||
+                    line == "" && lineStart == words.Length - 1))
+                {
+                    line += words[lineStart] + " ";
+                    ++lineStart;
+                }
+
+                line += "\n";
+                fittedText += line;
+            }
+
+            return fittedText;
+        }
+
     }
 }

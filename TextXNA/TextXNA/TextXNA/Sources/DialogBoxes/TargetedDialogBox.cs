@@ -11,18 +11,27 @@ namespace TestXNA.Sources.DialogBoxes
 {
     class TargetedDialogBox : ButtonDialogBox
     {
-
-        private UIElements.SimpleButton _button;
-        private float _distFromMes;
         private SmallPlayerUI _target;
+        protected float _distFromMes;
 
-        public TargetedDialogBox(SmallPlayerUI target, UIElements.SimpleButton button, float distanceFromMessage, string message, Rectangle messageArea)
-            : base(button, message, messageArea)
+        public TargetedDialogBox(SmallPlayerUI target, UIElements.SimpleButton button, float distanceFromMessage,
+            string message, Rectangle messageArea, UIElements.StretchableImage back)
+
+            : base(button, message, messageArea, back)
         {
             _target = target;
             _distFromMes = distanceFromMessage;
-            _button = button;
             followTarget();
+        }
+
+        protected override bool processTouch(TouchPoint touch, float dt)
+        {
+            _button.update(dt);
+            if (_button.isTouchOn(Utils.touchPointToV2(touch)))
+            {
+                Hide();
+            }
+            return false;
         }
 
         private void followTarget()
@@ -39,6 +48,7 @@ namespace TestXNA.Sources.DialogBoxes
 
         public override void update(float dt)
         {
+            _angle = 0f;
             base.update(dt);
             _button.update(dt);
             followTarget();

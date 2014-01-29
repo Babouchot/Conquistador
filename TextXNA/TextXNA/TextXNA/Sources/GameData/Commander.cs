@@ -1,4 +1,6 @@
 ﻿using System.Windows.Forms;
+using System;
+using System.Collections.Generic;
 using Microsoft.Surface;
 using Microsoft.Surface.Core;
 using Microsoft.Xna.Framework;
@@ -20,19 +22,32 @@ namespace TestXNA.Sources.GameData
         private Texture2D _highlight;
         private int _owner = -1;
 
+        private List<Arrow> _arrows;
 
         public Commander(Texture2D highlight)
         {
             _highlight = highlight;
+            _arrows = new List<Arrow>();
         }
 
         public override void update(float dt)
         {
+            foreach (Arrow arrow in _arrows)
+            {
+                arrow.update(dt);
+                arrow.Position = _position;
+            }
+
             base.update(dt);
         }
 
         public override void draw()
         {
+            foreach (Arrow arrow in _arrows)
+            {
+                arrow.draw();
+            }
+
             float scale = Draw_Scale;
             Color col = PlayerData.Instance[_owner].BaseColor;
 
@@ -57,6 +72,13 @@ namespace TestXNA.Sources.GameData
         {
             get { return _owner; }
             set { _owner = value; }
+        }
+
+
+        public List<Arrow> Arrows
+        {
+            get { return _arrows; }
+            set { _arrows = value; }
         }
 
     }

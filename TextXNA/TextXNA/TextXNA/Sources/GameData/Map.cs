@@ -27,6 +27,7 @@ namespace TestXNA
 
             private int _owner = -1;
             private int _alphaBlend = 10;
+            public List<int> accecibleZones;
 
 
             public ZoneData(int owner)
@@ -77,6 +78,30 @@ namespace TestXNA
             }
         }
 
+
+        private static List<int>[] _nearFieldData = new List<int>[] 
+            {
+                new List<int>() {2, 3, 4}, //zone 1
+                new List<int>() {1, 4, 5}, //zone 2
+                new List<int>() {1, 4, 6, 7}, //zone 3
+                new List<int>() {3, 5, 6, 9}, //zone 4
+                new List<int>() {2, 4, 9, 8}, //zone 5
+                new List<int>() {3, 4, 7, 11, 9}, //zone 6
+                new List<int>() {3, 6, 11}, //zone 7
+                new List<int>() {5, 9, 10, 15}, //zone 8
+                new List<int>() {5, 4, 6, 10, 8}, //zone 9
+                new List<int>() {9, 8, 15, 14, 12}, //zone 10
+                new List<int>() {6, 7, 12}, //zone 11
+                new List<int>() {11, 10, 14, 13}, //zone 12
+                new List<int>() {12, 14, 16}, //zone 13
+                new List<int>() {12, 13, 16, 10, 15}, //zone 14
+                new List<int>() {8, 10, 14, 16}, //zone 15
+                new List<int>() {15, 14, 13} //zone 16
+            };
+
+        private static Dictionary<int, Vector2> _zoneCenters = new Dictionary<int, Vector2>();
+
+
         private const int NB_OF_ZONES = 16;
 
         private string _zoneImagesPath = "Images/Zones/";
@@ -124,6 +149,7 @@ namespace TestXNA
                 Texture2D zoneTex = MyGame.ContentManager.Load<Texture2D>(_zoneImagesPath + (i < 10 ? "0" : "") + i);
                 _zoneTextures.Add(zoneTex);
                 _zoneData.Add(new ZoneData(-1));
+                _zoneData[i - 1].accecibleZones = _nearFieldData[i - 1];
             }
 
 
@@ -203,10 +229,16 @@ namespace TestXNA
                 {
                     for (int x = 0; x < _mapWidth / _step; ++x)
                     {
+                        Color zoneColor = zoneColors[x * _step + _step / 2, y * _step + _step / 2];
                         //if this coordinate is in the current zone
-                        if (zoneColors[x * _step + _step / 2, y * _step + _step / 2].A != 0)
+                        if (zoneColor.A != 0)
                         {
+                            if (zoneColor.R == 0)
+                            {
+                                _zoneCenters[zoneInd + 1] = new Vector2(x, y);
+                            }
                             _map[x, y] = zoneInd + 1;
+
                         }
                     }
                 }
@@ -221,6 +253,17 @@ namespace TestXNA
             for (int i = 0; i < _zoneTextures.Count; ++i)
             {
                 MyGame.SpriteBatch.Draw(_zoneTextures[i], MyGame.MapArea, _zoneData[i].CurrentColor);
+            }
+
+            //drawDebug();
+        }
+
+        public void drawDebug()
+        {
+
+            for (int i = 0; i < _zoneTextures.Count; ++i)
+            {
+                MyGame.SpriteBatch.Draw(_zoneTextures[i], MyGame.MapArea, Color.White);
             }
         }
 
@@ -277,6 +320,65 @@ namespace TestXNA
             {
                 return -1;
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="zone">between 1 to 16</param>
+        /// <returns></returns>
+        public Vector2 getCenterOfZone(int zone)
+        {
+            Vector2 center = Vector2.Zero;
+
+            /*List<Vector2> points = new List<Vector2>();
+
+            for (int x = 0; x < _mapWidth / _step; ++x)
+            {
+                for (int y = 0; y < _mapHeight / _step; ++y)
+                {
+                    if (_map[x, y] == zone)
+                    {
+                        points.Add(new Vector2(x, y));
+                    }
+                }
+            }
+            */
+            Vector2 sum = Vector2.Zero;
+
+            /*foreach (Vector2 point in points)
+            {
+                sum += point;
+            }
+
+            sum /= points.Count;
+            */
+
+            sum = _zoneCenters[zone];
+
+            sum.X *= _step;
+            sum.Y *= _step;
+
+            float xRatio = (float)_mapWidth / (float)MyGame.MapArea.Width;
+            float yRatio = (float)_mapHeight / (float)MyGame.MapArea.Height;
+
+            Console.WriteLine("xratio : " + xRatio + " yratio : " + yRatio);
+
+            center = new Vector2(sum.X / xRatio, sum.Y / yRatio);
+            center.X += MyGame.MapArea.X;
+            center.Y += MyGame.MapArea.Y;
+
+            return center;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="zone">1 .. 16</param>
+        /// <returns></returns>
+        public List<int> getZonesReachableFrom(int zone)
+        {
+            return _zoneData[zone - 1].accecibleZones;
         }
 
     }

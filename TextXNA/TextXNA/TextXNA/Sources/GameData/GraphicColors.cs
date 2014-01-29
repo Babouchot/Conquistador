@@ -10,8 +10,9 @@ namespace TestXNA.Sources.GameData
     {
         public Color backgroundColor = new Color(236, 240, 241, 255);
         public Color backgroundColorBis = new Color(52, 152, 219, 255);
-        public Color textColor = new Color(44, 62, 80, 255);
-        public Color buttonColor = new Color(41, 128, 185, 255);
-        public Color buttonTouchedColor = new Color(41, 128, 185, 128);
+        public Color textColor = new Color(0, 0, 0, 255);
+        public Color buttonColor = new Color(255, 255, 255, 255);
+        public Color buttonTouchedColor = new Color(255, 255, 255, 128);
+        public Color dialogBackColor = new Color(0, 0, 0, 175);
     }
 }

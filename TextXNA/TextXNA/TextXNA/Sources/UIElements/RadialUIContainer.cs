@@ -11,9 +11,9 @@ namespace TestXNA.Sources
 {
     class RadialUIContainer : TouchRotatable
     {
-        private List<RotatableUI> _containedUIs;
-        private float _outterRadius = 0f;
-        private float _innerRadius = 0f;
+        protected List<RotatableUI> _containedUIs;
+        protected float _outterRadius = 0f;
+        protected float _innerRadius = 0f;
 
 
         public RadialUIContainer(float outterRad, float innerRad, float touchedScale = 1.3f)
@@ -47,7 +47,6 @@ namespace TestXNA.Sources
                 {
                     ui.Scale = 1f;
                 }
-
                 ui.update(dt);
 
                 uiAngle += angleOffset;

@@ -12,8 +12,7 @@ function Game(playersArray, tableSocket, io) {
 	this.players = playersArray;
 	this.table = tableSocket;
 	this.io = io;
-	this.MAXTURNS = 12;
-	this.currentTurn = 0;
+	this.MAXTURNS = 7;
 	this.playersAnswers = [];
 
 	this.currentQuestion = 0;
@@ -131,13 +130,13 @@ function Game(playersArray, tableSocket, io) {
 		self.table.emit('captureTerritories', {'orderedPlayers' : orderedPlayers});
 	}
 	
-	function next(msg)
+	function nextPhase1(msg)
 	{
 		// send the number of territories each player have to capture
 		processTerritoriesToCapture();
 	}
 
-	self.table.on('next', next);
+	self.table.on('nextPhase1', nextPhase1);
 	
 	
 	//	Phase 1 : Prise des territoires (Attribution des territoires sur question)
@@ -212,6 +211,7 @@ function Game(playersArray, tableSocket, io) {
 
 				phase1.playerCaptureCount--;
 				console.log("phase1.playerCaptureCount " + phase1.playerCaptureCount);
+				
 				//check if all capture have been done
 				if(phase1.playerCaptureCount == 0){
 					console.log("nb ter " +self.territories.length+" to : " + TERRITORIES); 
@@ -250,24 +250,7 @@ function Game(playersArray, tableSocket, io) {
 			for (var i = 0; i < self.players.length; ++i) {
 
 				var p = self.players[i];
-				/* -----CANNOT WORK----- ! See : http://blog.jbrantly.com/2010/04/creating-javascript-function-inside.html
-				* The reason that this is true is somewhat complex, but in basic terms,
-				* the function is only actually created once (instead of once each iteration of the loop)
-				* and that one function points to the last known values of the variables it uses.
 				
-				p.playerSocket.on('answer', function (message) {
-
-					console.log("answer");
-					var answer = message.answer;
-					var time = message.time;
-					var gameID = message.gameID;
-					self.playersAnswers.push({'id' : p.gameID, 'answer' : answer, 'time': time});
-					console.log('id:' + p.gameID + '/answer:' + answer + '/time:' + time);
-					checkIfAllAnswers();
-				});
-				*/
-				
-				//----FIX----
 				p.playerSocket.on('answer', (answerEventGenerator(p)));
 			}
 
@@ -301,7 +284,7 @@ function Game(playersArray, tableSocket, io) {
 
 
 		this.nextPhase = function () {
-			console.log("phase 1 over, phase 2 not implemented yet");
+			console.log("phase 1 over");
 			self.phase2();
 		};
 		
@@ -326,7 +309,7 @@ function Game(playersArray, tableSocket, io) {
 		});
 
 		this.nextPhase = function () {
-			console.log("phase 2 over, phase 3 not implemented yet");
+			 console.log("phase 2 over");
 			self.phase3();
 		};
 
@@ -336,20 +319,16 @@ function Game(playersArray, tableSocket, io) {
 	//	Phase 3 : Conquête du monde
 	this.phase3 =  function () {
 		console.log('phase 3 started');
-		if (this.currentTurn > this.MAXTURNS) {
-			this.currentPhase++;
-		}
-		for (var i = 0; i < this.players.length; ++i) {
-			this.players[i].play();
-		}
-		this.currentTurn++;
+		
+		var phase3 = this;
 		
 		//Faudrais peut etre override 'next' plutot
 		// change the processAnswers method
 		self.processAnswers = function () {
 			// find winner and attribute territories
 
-			self.playersAnswers.sort(function (answer1, answer2) {
+			self.playersAnswers.sort(function (answer1, answer2)
+			{
 				if (answer1.value == 'void') {
 					return 1;
 				}
@@ -358,7 +337,7 @@ function Game(playersArray, tableSocket, io) {
 				}
 				
 				if (self.question.type == 'qcm') {
-					if (answer1.value == answer1.value) {
+					if (answer1.value == answer2.value) {
 						return answer1.time - answer2.time;
 					}
 					else if (answer1.value == self.question.answer) {
@@ -381,6 +360,7 @@ function Game(playersArray, tableSocket, io) {
 			});
 
 			
+			
 			var orderedPlayers = new Array();
 			
 			for (var i = 0; i < self.playersAnswers.length; ++i) {
@@ -388,11 +368,97 @@ function Game(playersArray, tableSocket, io) {
 			}
 			console.log("ordered players : " + orderedPlayers);
 			
-			// send the number of territories each player have to capture
-
-			self.table.emit('captureTerritories', {'orderedPlayers' : orderedPlayers});
-
+			//Send the battle results to the tables
+			//Emit a tout le monde ?
+			self.table.emit('battleResult', {'winner' : orderedPlayers[0], 'loser' : orderedPlayers[1]});
+			
 		};
+		
+		
+		self.checkIfAllAnswers = function() {
+			if (self.playersAnswers.length < 2) {
+				console.log('some players did not answer');
+			}else{
+				console.log('all players answered');
+				self.processAnswers();
+			}
+		}
+		//Réordonner la liste des joueurs par ordre inverse du nombre de zone (sisi, cette phrase à un sens)
+		var phase3players = self.players;
+		
+		//self.table.emit('startPhase3', {});
+		
+		//number of turns played since beginning of phase
+		var turnCount = 0;
+		
+		var nbMovesInTurn = 0;
+		
+		function nextPhase3()
+		{
+			console.log("phase 3 next, turnCount : " + turnCount +" nbMOvesInTurn : "+nbMovesInTurn);
+			
+			nbMovesInTurn += 1;
+			
+			if(nbMovesInTurn >= phase3players.length)
+			{
+				nbMovesInTurn = 0;
+				turnCount += 1;
+			}
+			
+			if(turnCount >= self.MAXTURNS)
+			{
+				console.log("phase 3 over");
+				self.phase4();
+			}
+			else
+			{
+				console.log('send : play player :' + phase3players[nbMovesInTurn].gameID);
+				io.sockets.emit('playerMoveAsked', {'id' : phase3players[nbMovesInTurn].gameID});
+			}
+		}
+		
+		self.table.on('startBattle', function(msg)
+			{
+				console.log('start battle asked');
+				var play1 = self.players[msg.player1];
+				var play2 = self.players[msg.player2];
+				
+				//send question to both players (and to the table)
+				
+				self.playersAnswers.length = 0;
+				// Pick a question from the database (not like that, a random question)
+				self.question = self.questions[0];
+
+				self.question.id = ++self.currentQuestion;
+
+				play1.playerSocket.emit('question', self.question);
+				play2.playerSocket.emit('question', self.question);
+				self.table.emit('question', self.question);
+				
+			});
+
+		self.table.on('nextPhase3', nextPhase3);
+		
+		self.table.on('territoryWon', function(msg)
+			{
+				
+				var zone = msg.zone;
+				var owner = msg.owner;
+				
+				console.log('territory : '+zone+' by : '+owner);
+				
+				for(var i = 0; i < self.territories.length; ++i)
+				{
+					if(self.territories[i].zone == zone)
+					{
+						changeTerritoryOwner(owner, self.territories[i]);
+					}
+				}
+			});
+		
+		//Start first move
+		io.sockets.emit('playerMoveAsked', {'id' : phase3players[nbMovesInTurn].gameID});
+		
 	};
 
 

@@ -33,7 +33,7 @@ namespace TestXNA.Sources
             return false;
         }
 
-        public virtual bool processTouch(TouchPoint touch, float dt)
+        protected virtual bool processTouch(TouchPoint touch, float dt)
         {
             Vector2 touchPos = Utils.touchPointToV2(touch);
             float dist = Vector2.Distance(touchPos, _position);
@@ -83,6 +83,14 @@ namespace TestXNA.Sources
 
         public override void update(float dt)
         {
+
+            ReadOnlyTouchPointCollection touches = MyGame.TouchTarget.GetState();
+
+            foreach (TouchPoint touch in touches)
+            {
+                processTouch(touch, dt);
+            }
+
             if (_touchReleased)
             {
                 _touchId = -1;

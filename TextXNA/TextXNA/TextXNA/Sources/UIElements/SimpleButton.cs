@@ -11,7 +11,7 @@ namespace TestXNA.Sources.UIElements
 {
     class SimpleButton : RotatableUI
     {
-        private Texture2D _buttonTexture;
+        private UIElements.StretchableImage _buttonTexture;
         private Rectangle _area;
         private string _text;
         private bool _isTouched = false;
@@ -19,7 +19,7 @@ namespace TestXNA.Sources.UIElements
         private int _width;
         private int _height;
 
-        public SimpleButton(Texture2D texture, Rectangle area, string text)
+        public SimpleButton(UIElements.StretchableImage texture, Rectangle area, string text)
             : base()
         {
             _text = text;
@@ -66,13 +66,13 @@ namespace TestXNA.Sources.UIElements
 
         public override void draw()
         {
-            MyGame.SpriteBatch.Draw(_buttonTexture, Area
-                , _isTouched ? MyGame.ColorPanel.buttonTouchedColor : MyGame.ColorPanel.buttonTouchedColor );
+            _buttonTexture.draw(_area, _isTouched ? MyGame.ColorPanel.buttonTouchedColor : MyGame.ColorPanel.buttonColor);
+
             MyGame.SpriteBatch.DrawString(MyGame.BasicFont, _text, _position, MyGame.ColorPanel.textColor, _angle,
                 MyGame.BasicFont.MeasureString(_text) / 2f, _scale, SpriteEffects.None, 0f);
         }
 
-        public Texture2D ButtonTexture
+        public UIElements.StretchableImage ButtonTexture
         {
             get { return _buttonTexture; }
             set { _buttonTexture = value; }

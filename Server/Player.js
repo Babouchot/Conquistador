@@ -46,12 +46,6 @@ Player.prototype.removeTerritory = function (territory) {
 	}
 };
 
-Player.prototype.play = function () {
-	this.playerSocket.emit ('play', {});
-//	this.tableSocket.emit ('play');
-};
-
-
 Player.prototype.serialize = function () {
 	// TODO put the score instead of territories.length in 'score' field
 	var territories = this.getTerritories();

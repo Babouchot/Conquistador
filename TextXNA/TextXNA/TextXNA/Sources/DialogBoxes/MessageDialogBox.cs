@@ -12,13 +12,15 @@ namespace TestXNA.Sources
 {
     class MessageDialogBox : DialogBox
     {
-        protected float backAlpha = 0.7f;
+        private int imgOffset = 80;
         protected string _message;
         protected Rectangle _area;
+        protected UIElements.StretchableImage _backTexture;
 
-        public MessageDialogBox(string content, Rectangle area)
+        public MessageDialogBox(string content, Rectangle area, UIElements.StretchableImage back)
         {
-            _message = fitText(content, MyGame.BasicFont, area);
+            _backTexture = back;
+            _message = Utils.fitText(content, MyGame.BasicFont, area);
             updateArea();
         }
 
@@ -38,40 +40,24 @@ namespace TestXNA.Sources
             return Vector2.Distance(touch, _position) < vec.Length();
         }
 
-        protected string fitText(string text, SpriteFont font, Rectangle area)
-        {
-            string fittedText = "";
-
-            string[] words = text.Split(' ');
-            int lineStart = 0;
-
-            while (lineStart < words.Length)
-            {
-                string line = "";
-
-                while (lineStart < words.Length &&
-                    (font.MeasureString(line + words[lineStart]).X < area.Width
-                    ||
-                    line == "" && lineStart == words.Length - 1))
-                {
-                    line += words[lineStart] + " ";
-                    ++lineStart;
-                }
-
-                line += "\n";
-                fittedText += line;
-            }
-
-            return fittedText;
-        }
-
         public override void draw()
         {
             if (IsShown)
             {
-                Color backColor = new Color(1f, 1f, 1f, backAlpha);
+                Color backColor = MyGame.ColorPanel.dialogBackColor;
                 Vector2 areaCenter = new Vector2(_area.Center.X, _area.Center.Y);
                 MyGame.SpriteBatch.Draw(MyGame.White, MyGame.MapArea, backColor);
+
+                Rectangle imgRect = new Rectangle((int)_position.X - _area.Width / 2, (int)_position.Y - _area.Height / 2, _area.Width, _area.Height);
+                imgRect.X -= imgOffset;
+                imgRect.Y -= imgOffset;
+                imgRect.Width += imgOffset * 2;
+                imgRect.Height += imgOffset * 2;
+
+                //MyGame.SpriteBatch.Draw(MyGame.Black, imgRect, Color.White);
+
+                _backTexture.draw(imgRect, Color.White);
+
                 MyGame.SpriteBatch.DrawString(MyGame.BasicFont, _message, _position
                     , MyGame.ColorPanel.textColor, _angle, areaCenter, 1f, SpriteEffects.None, 0f);
 

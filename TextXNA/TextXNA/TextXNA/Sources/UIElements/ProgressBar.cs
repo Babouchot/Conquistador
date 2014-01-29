@@ -10,10 +10,10 @@ namespace TestXNA.Sources.UIElements
 {
     class ProgressBar
     {
-        private float _progress = 0f; //0 to 1
-        private Texture2D _barTexture;
-        private Texture2D _backgroundTexture;
-        private Rectangle _area;
+        protected float _progress = 0f; //0 to 1
+        protected Texture2D _barTexture;
+        protected Texture2D _backgroundTexture;
+        protected Rectangle _area;
 
         public ProgressBar(Texture2D barText, Texture2D backgroundText, Rectangle area)
         {
@@ -38,8 +38,18 @@ namespace TestXNA.Sources.UIElements
 
         public void draw()
         {
+            drawBack();
+            drawBar();
+        }
+
+        protected virtual void drawBack()
+        {
             MyGame.SpriteBatch.Draw(_backgroundTexture, _area, MyGame.ColorPanel.backgroundColor);
-            MyGame.SpriteBatch.Draw(_barTexture, getCurrentArea(), MyGame.ColorPanel.buttonColor);
+        }
+
+        protected virtual void drawBar()
+        {
+
         }
     }
 }

@@ -14,8 +14,8 @@ namespace TestXNA.Sources
     {
         private Utils.conditionChecker _conditionTest;
 
-        public ConditionalDialogBox(Utils.conditionChecker checker, string content, Rectangle area)
-            : base(content, area)
+        public ConditionalDialogBox(Utils.conditionChecker checker, string content, Rectangle area, UIElements.StretchableImage back)
+            : base(content, area, back)
         {
             _conditionTest = checker;
         }

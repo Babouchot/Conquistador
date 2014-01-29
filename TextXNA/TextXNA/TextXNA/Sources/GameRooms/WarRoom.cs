@@ -52,10 +52,20 @@ namespace TestXNA.Sources.GameRooms
         private Texture2D _arrowImage;
         private Texture2D _mapBackground;
         private Texture2D _mapOverlay;
-        private Texture2D _UIBackground;
+        private Texture2D _buttonTexture;
         private Texture2D _commanderHighlight;
         private Texture2D _commanderImage;
+        private Texture2D _messageTexture;
+        private Texture2D _UIBack;
+        private Texture2D _fireSprite;
+        private Texture2D _ropeSprite;
+        private Texture2D _radialUICenter;
+        private Texture2D _playerUIBack;
         private List<Texture2D> _mapZones = null;
+
+        private UIElements.StretchableImage _buttonStretchImage;
+        private UIElements.StretchableImage _messageStretchImage;
+
 
         private int _zonesCount = 0;
         private long _firstTagValue = 0xD0;
@@ -63,11 +73,7 @@ namespace TestXNA.Sources.GameRooms
         private List<PopupStr> _displayedPopups;
         private float _popupLifeDuration = 2f;
 
-        private List<Arrow> _directionArrows;
-
         private List<SmallPlayerUI> _miniUIs;
-
-        private List<RadialUIContainer> _radialUIs;
 
         private Vector2 _userPosition;
 
@@ -106,7 +112,12 @@ namespace TestXNA.Sources.GameRooms
         private float _questionMaxAllowedTime = 20f;
         private int _questionId = 0;
         private UIElements.ProgressBar _progressBar = null;
+        private UIElements.AnimatedTexture _animatedFire = null;
 
+        // Answer display Data
+        private RadialUIContainer _radialUI;
+        private float _timeSinceAnswerDisplayStart;
+        private float _answerDisplayDuration = 10f;
 
         #endregion
 
@@ -167,7 +178,7 @@ namespace TestXNA.Sources.GameRooms
            }
 
 
-            updatePlayersUI(dt);
+            commonUpdate(dt);
 
             if (pickZonesForPlayer(players[_pickZoneData.currentIndex]
                 , nbOfZones[_pickZoneData.currentIndex], dt))
@@ -265,17 +276,18 @@ namespace TestXNA.Sources.GameRooms
         private void initPickZoneDialog(int player, int nbOfZone)
         {
             UIElements.SimpleButton button = new UIElements.SimpleButton(
-            _UIBackground,
-            new Rectangle(0, 0, 100, 50),
+            _buttonStretchImage,
+            new Rectangle(0, 0, 150, 90),
             "OK");
 
-            Rectangle boxArea = new Rectangle(0, 0, 300, 300);
+            Rectangle boxArea = new Rectangle(0, 0, 400, 600);
 
             _pickZoneDialog = new DialogBoxes.TargetedDialogBox(
-                _miniUIs[player], button, 0.8f,
+                _miniUIs[player], button, 0.7f,
                 PlayerData.Instance[player].Name + "\n"
                 + "Please, pick " + nbOfZone + " free territories",
-                boxArea);
+                boxArea
+                , _messageStretchImage);
 
             _pickZoneDialog.Position = MyGame.ScreenCenter;
             _pickZoneDialog.Show();
@@ -301,7 +313,7 @@ namespace TestXNA.Sources.GameRooms
                 initCommandersInstructionsDialog();
             }
 
-            updatePlayersUI(dt);
+            commonUpdate(dt);
 
             if (_currentDialog.IsShown)
             {
@@ -339,18 +351,22 @@ namespace TestXNA.Sources.GameRooms
 
         private void initCommandersInstructionsDialog()
         {
+
+
+
             UIElements.SimpleButton button = new UIElements.SimpleButton(
-            _UIBackground,
-            new Rectangle((int)MyGame.ScreenCenter.X - 300, (int)MyGame.ScreenCenter.Y + MyGame.ScreenArea.Height / 4
-                , 600, 100),
+            _buttonStretchImage,
+            new Rectangle((int)MyGame.ScreenCenter.X - 400, (int)MyGame.ScreenCenter.Y + MyGame.ScreenArea.Height / 4
+                , 800, 200),
             "OK, and stop bothering  with messages !");
 
-            Rectangle boxArea = new Rectangle(0, 0, 300, 300);
+            Rectangle boxArea = new Rectangle(0, 0, 400, 600);
 
             _commanderInstructionsDialog = new DialogBoxes.ButtonDialogBox(
                 button,
                 "Place commanders & stuff",
-                boxArea);
+                boxArea,
+                _messageStretchImage);
 
             _commanderInstructionsDialog.Position = MyGame.ScreenCenter;
             _commanderInstructionsDialog.Show();
@@ -434,12 +450,15 @@ namespace TestXNA.Sources.GameRooms
             _timeSinceLastQuestion = 0f;
             _questionId = questionInfo.id;
 
-            Rectangle progressArea = new Rectangle((int)MyGame.ScreenCenter.X - 200, (int)MyGame.ScreenCenter.Y - 300
-                , 400, 50);
-            _progressBar = new UIElements.ProgressBar(_UIBackground, _UIBackground, progressArea);
+            Rectangle progressArea = new Rectangle((int)MyGame.ScreenCenter.X - 300, (int)MyGame.ScreenCenter.Y - 300
+                , 600, 50);
+            //_progressBar = new UIElements.ProgressBar(_UIBack, _UIBack, progressArea);
+            _animatedFire = new UIElements.AnimatedTexture(_fireSprite, _fireSprite.Width / 4, _fireSprite.Height, 0.1f, true);
+            _animatedFire.Scale = 0.3f;
+            _progressBar = new UIElements.AnimatedProgressBar(_animatedFire, _ropeSprite, progressArea);
 
             MessageDialogBox msgBox = new MessageDialogBox("You should be answering questions on your phone right now",
-                new Rectangle(0, 0, 200, 100));
+                new Rectangle(0, 0, 400, 600), _messageStretchImage);
             msgBox.Position = MyGame.ScreenCenter;
             msgBox.Show();
 
@@ -450,8 +469,12 @@ namespace TestXNA.Sources.GameRooms
 
         private void questionWaitUpdate(float dt)
         {
+            if (_animatedFire != null)
+            {
+                _animatedFire.update(dt);
+            }
 
-            updatePlayersUI(dt);
+            commonUpdate(dt);
 
             _timeSinceLastQuestion += dt;
             //display progress bar
@@ -474,6 +497,57 @@ namespace TestXNA.Sources.GameRooms
 
         #endregion
 
+        #region Question Answers
+
+        private void onQuestionAnswered(SocketIOClient.Messages.IMessage data)
+        {
+            Console.WriteLine(" on question answer message : \n" + data.Json.ToJsonString());
+
+            AnswerList answers;
+            AnswersRoot obj = Newtonsoft.Json.JsonConvert.DeserializeObject<AnswersRoot>(data.Json.ToJsonString());
+
+            answers = obj.args[0];
+
+            _radialUI = new UIElements.RadialAnswerContainer(_radialUICenter, 500f, 150f);
+
+            bool best = true;
+
+            foreach (OrderedAnswer answer in answers.orderedAnswers)
+            {
+                UIElements.AnswerUI ansUI = new UIElements.AnswerUI(
+                    answer.id
+                    , best
+                    , "answer : " +  answer.value.ToString()
+                    , _playerUIBack);
+
+                _radialUI.ContainedUIs.Add(ansUI);
+                best = false;
+            }
+
+            _radialUI.Position = MyGame.ScreenCenter;
+
+            _timeSinceAnswerDisplayStart = 0f;
+            UpdateAction = answersDisplayUpdate;
+        }
+
+        private void answersDisplayUpdate(float dt)
+        {
+            updateRadialUI(dt);
+            commonUpdate(dt);
+            _timeSinceAnswerDisplayStart += dt;
+
+            if (_timeSinceAnswerDisplayStart > _answerDisplayDuration)
+            {
+                _radialUI = null;
+
+                ServerCom.Instance.sendSimpleMessage("nextPhase1");
+                UpdateAction = emptyUpdate;
+            }
+            
+        }
+
+
+        #endregion
 
         #region Play Turn
 
@@ -481,7 +555,73 @@ namespace TestXNA.Sources.GameRooms
         //Scan for other players moves
         //Scan for illegual player moves
 
+        private void onMoveRequested(SocketIOClient.Messages.IMessage data)
+        {
+            Console.WriteLine("\nmessage : \n" + data.Json.ToJsonString() + "\n");
+
+            //do stuff
+            MoveData move;
+            MoveRoot root = Newtonsoft.Json.JsonConvert.DeserializeObject<MoveRoot>(data.Json.ToJsonString());
+            move = root.args[0];
+
+            Console.WriteLine(" \n player to move is : " + move.id + "\n");
+
+            initMove(move.id);
+        }
+
+        private void initMove(int player)
+        {
+            //init arrows for each commanders
+
+            foreach (Commander command in _commanders)
+            {
+                command.Arrows.Clear();
+            }
+
+            foreach (Commander command in _commanders)
+            {
+                Console.WriteLine("commander : " + command.Owner);
+                if (command.Owner == player)
+                {
+                    int zone = _map.getZoneAt(command.Position);
+
+                    List<int> reachables = _map.getZonesReachableFrom(zone);
+                    
+                    //for(int reach = 1; reach <= 16; ++reach)
+                    foreach (int reach in reachables)
+                    {
+                        Vector2 center = _map.getCenterOfZone(reach);
+                        Console.WriteLine("target : " + center);
+                        Arrow arrow = new Arrow(_arrowImage, command.Position, center);
+                        command.Arrows.Add(arrow);
+                    }
+                }
+            }
+
+
+            //set update action
+            UpdateAction = delegate(float dt) { moveUpdate(dt, player); };
+
+        }
+
+        private void moveUpdate(float dt, int player)
+        {
+            //display arrows
+            commonUpdate(dt);
+            updateCommanders(dt);
+
+            //TODO
+            //check to stuff
+            //Wait for the player X to make a move
+            //Scan for other players moves
+            //Scan for illegual player moves
+            //Process Move (battle or move)
+
+        }
+
         #endregion
+
+        #region Capture Territories
 
         private void onCaptureTerritories(SocketIOClient.Messages.IMessage data)
         {
@@ -520,100 +660,21 @@ namespace TestXNA.Sources.GameRooms
             }
         }
 
+        #endregion
+
         private void emptyUpdate(float dt)
         {
-            updatePlayersUI(dt);
-        }
+            commonUpdate(dt);
+            /*ReadOnlyTouchPointCollection touches = MyGame.TouchTarget.GetState();
 
-        public void oldUpdate(float dt)
-        {
-            // TODO: Process touches, 
-            // use the following code to get the state of all current touch points.
-            ReadOnlyTouchPointCollection touches = MyGame.TouchTarget.GetState();
-
-            List<Vector2> tagPositions = new List<Vector2>();
-            List<TouchPoint> unknownTags = new List<TouchPoint>();
-
-            Vector2 arrowTarget = Vector2.Zero;
-
-            //first pass to record touches && known tags
             foreach (TouchPoint touch in touches)
             {
-                bool isUIDrag = checkForUIDrag(touch, dt);
-
-
-                if (touch.IsTagRecognized)
+                if (touch.Tag != null && touch.Tag.Value == 0xD0)
                 {
-                    //C0 tag = user position test
-                    if (touch.Tag.Value == 0xC0)
-                    {
-                        _userPosition = new Vector2(touch.X, touch.Y);
-                    }
-                    //C1 tag = arrow Target test
-                    else if (touch.Tag.Value == 0xC1)
-                    {
-                        arrowTarget = new Vector2(touch.X, touch.Y);
-                    }
-                    //C2 tag = arrow start test
-                    else if (touch.Tag.Value == 0xC2)
-                    {
-                        unknownTags.Add(touch);
-                    }
-                    //Commander tag
-                    /* else if (touch.Tag.Value >= 0xD0 && touch.Tag.Value <= 0xD7)
-                    {
-                        addCommanderTag(touch);
-                    }
-                    */
-                    //TODO remove this
-                    else if (touch.Tag.Value >= 0x0)
-                    {
-                        List<int> players = new List<int>() { 2, 1, 3, 0 };
-                        List<int> nbZones = new List<int>() { 4, 2, 2, 1 };
-                        _updateAction = delegate(float delta) { pickZonesForPLayers(players, nbZones, delta); };
-
-                    }
+                    addCommanderTag(touch, getOwnerForTag(touch.Tag.Value));
+                    initMove(getOwnerForTag(touch.Tag.Value));
                 }
-                else
-                {
-                    bool isPopup = true;
-                    //Check if an UI is beeing moved
-                    isPopup = !isUIDrag;
-
-                    foreach (RadialUIContainer cont in _radialUIs.Reverse<RadialUIContainer>())
-                    {
-                        if (cont.processTouch(touch, dt))
-                        {
-                            isPopup = false;
-                            break;
-                        }
-                    }
-
-                    if (isPopup)
-                    {
-
-                        //Add popup
-                        PopupStr newPopup = new PopupStr();
-                        newPopup.position = new Vector2(touch.X, touch.Y);
-                        newPopup.scale = 0f;
-                        newPopup.alpha = 1f;
-                        newPopup.livedTime = 0f;
-                        newPopup.angleInRadians = Utils.lookAt(newPopup.position, _userPosition);
-
-                        _displayedPopups.Add(newPopup);
-                    }
-                }
-            }
-
-            // TODO: Add your update logic here
-
-            updateArrows(unknownTags, arrowTarget, dt);
-            updatePopups(dt);
-            updatePlayersUI(dt);
-            updateRadialUIs(dt);
-            updateCommanders(dt);
-            updateDialogBox(dt);
-
+            }*/
         }
 
         #endregion
@@ -625,10 +686,12 @@ namespace TestXNA.Sources.GameRooms
             NodeJSClient.ServerCom.Instance.captureZonesCB = onCaptureTerritories;
             NodeJSClient.ServerCom.Instance.placeCommandersCB= onPlaceCommanders;
             NodeJSClient.ServerCom.Instance.questionCB = onQuestion;
- 
+            NodeJSClient.ServerCom.Instance.answersReceivedCB = onQuestionAnswered;
+            NodeJSClient.ServerCom.Instance.playerMoveCB = onMoveRequested;
+
             //My initialization logic
             _displayedPopups = new List<WarRoom.PopupStr>();
-            _directionArrows = new List<Arrow>();
+
             _commanders = new List<Commander>();
 
             _userPosition = new Vector2(MyGame.ScreenCenter.X, MyGame.ScreenArea.Height - 100);
@@ -643,15 +706,26 @@ namespace TestXNA.Sources.GameRooms
             _arrowImage = MyGame.ContentManager.Load<Texture2D>("Images/Arrow");
             _mapBackground = MyGame.ContentManager.Load<Texture2D>("Images/Map");
             _mapOverlay = MyGame.ContentManager.Load<Texture2D>("Images/MapOverlay");
-            _UIBackground = MyGame.ContentManager.Load<Texture2D>("Images/RoundedRect");
-
-
+            _buttonTexture = MyGame.ContentManager.Load<Texture2D>("Images/buttonScroll");
+            _messageTexture = MyGame.ContentManager.Load<Texture2D>("Images/messageScroll");
+            _UIBack = MyGame.ContentManager.Load<Texture2D>("Images/RoundedRect");
             _commanderHighlight = MyGame.ContentManager.Load<Texture2D>("Images/TagHighlight");
+            _fireSprite = MyGame.ContentManager.Load<Texture2D>("Images/fire");
+            _ropeSprite = MyGame.ContentManager.Load<Texture2D>("Images/rope");
+            _radialUICenter = MyGame.ContentManager.Load<Texture2D>("Images/centralRose");
+            _playerUIBack = MyGame.ContentManager.Load<Texture2D>("Images/playerScroll");
 
-            _updateAction = oldUpdate;
+            Rectangle stretchAreaButton = new Rectangle(15, 20, 70, 60);
+            _buttonStretchImage = new UIElements.StretchableImage(_buttonTexture, stretchAreaButton);
+
+            Rectangle stretchAreaMessage = new Rectangle(40, 30, 20, 40);
+            _messageStretchImage = new UIElements.StretchableImage(_messageTexture, stretchAreaMessage);
+
+            _updateAction = emptyUpdate;
 
             initializePlayerUIs();
-            initializeRadialUI();
+            //initializeRadialUI();
+
 
         }
 
@@ -659,55 +733,29 @@ namespace TestXNA.Sources.GameRooms
         private void initializePlayerUIs()
         {
             //hack
-            GameData.PlayerData.Instance[0].Name = "Gwenn";
+            /*GameData.PlayerData.Instance[0].Name = "Gwenn";
             GameData.PlayerData.Instance[1].Name = "Aurel";
             GameData.PlayerData.Instance[2].Name = "Jerom";
-            GameData.PlayerData.Instance[3].Name = "Bastien";
+            GameData.PlayerData.Instance[3].Name = "Bastien";*/
 
             _miniUIs = new List<SmallPlayerUI>();
 
-            SmallPlayerUI playerUI = new SmallPlayerUI(_UIBackground, new Vector2(50f, 50f), 0);
+            SmallPlayerUI playerUI = new SmallPlayerUI(_buttonTexture, new Vector2(50f, 50f), 0);
             _miniUIs.Add(playerUI);
 
-            playerUI = new SmallPlayerUI(_UIBackground, new Vector2(200f, 50f), 1);
+            playerUI = new SmallPlayerUI(_buttonTexture, new Vector2(200f, 50f), 1);
             _miniUIs.Add(playerUI);
 
-            playerUI = new SmallPlayerUI(_UIBackground, new Vector2(400f, 50f), 2);
+            playerUI = new SmallPlayerUI(_buttonTexture, new Vector2(400f, 50f), 2);
             _miniUIs.Add(playerUI);
 
-            playerUI = new SmallPlayerUI(_UIBackground, new Vector2(600f, 50f), 3);
+            playerUI = new SmallPlayerUI(_buttonTexture, new Vector2(600f, 50f), 3);
             _miniUIs.Add(playerUI);
 
             //now that the font i s;oaded we can compute the size of each UI
             foreach (SmallPlayerUI ui in _miniUIs)
             {
-                ui.initializeArea(MyGame.BasicFont);
-            }
-        }
-
-        private void initializeRadialUI()
-        {
-            int nbUI = 3;
-
-            _radialUIs = new List<RadialUIContainer>();
-
-            RadialUIContainer baseRadial = new RadialUIContainer(300f, 200f);
-            baseRadial.Position = MyGame.ScreenCenter;
-            _radialUIs.Add(baseRadial);
-
-            int NbContainer = 0;// 3;
-
-            for (int h = 0; h < NbContainer; ++h)
-            {
-                RadialUIContainer container = new RadialUIContainer(150f, 100f);
-                baseRadial.ContainedUIs.Add(container);
-                _radialUIs.Add(container);
-
-                for (int i = 0; i < nbUI; ++i)
-                {
-                    SimpleRotatableUI ui = new SimpleRotatableUI(_popupImage, "Nb : " + i, MyGame.BasicFont);
-                    container.ContainedUIs.Add(ui);
-                }
+                ui.initializeArea(MyGame.BasicFontSmall);
             }
         }
 
@@ -731,14 +779,13 @@ namespace TestXNA.Sources.GameRooms
                 {
 
                     drawPopups();
-                    drawArrows();
                 }
             }
 
             MyGame.SpriteBatch.Draw(_iconImage, _userPosition, Color.White);
 
             drawPlayersUI();
-            drawRadialUIs();
+            drawRadialUI();
 
             foreach (Commander commander in _commanders)
             {
@@ -758,17 +805,11 @@ namespace TestXNA.Sources.GameRooms
             }
         }
 
-        private void drawRadialUIs()
+        private void drawRadialUI()
         {
-            _radialUIs[0].draw();
-        }
-
-        private void drawArrows()
-        {
-            //draw arrows
-            foreach (Arrow arrow in _directionArrows)
+            if (_radialUI != null)
             {
-                arrow.draw();
+                _radialUI.draw();
             }
         }
 
@@ -781,18 +822,16 @@ namespace TestXNA.Sources.GameRooms
             }
         }
 
+        private void commonUpdate(float dt)
+        {
+            updatePlayersUI(dt);
+        }
+
         private void updateDialogBox(float dt)
         {
             if (_currentDialog != null)
             {
                 _currentDialog.update(dt);
-
-                ReadOnlyTouchPointCollection touches = MyGame.TouchTarget.GetState();
-
-                foreach (TouchPoint touch in touches)
-                {
-                    _currentDialog.processTouch(touch, dt);
-                }
             }
         }
 
@@ -820,12 +859,23 @@ namespace TestXNA.Sources.GameRooms
 
         private void updateCommanders(float dt)
         {
-            /*foreach (Commander commander in _commanders)
+            ReadOnlyTouchPointCollection touches = MyGame.TouchTarget.GetState();
+
+            foreach (TouchPoint touch in touches)
             {
-                commander.update(dt);
-                commander.Angle = Utils.lookAt(commander.Position, _userPosition);
-                _map.setZoneOwner(_map.getZoneAt(commander.Position), commander.Owner);
-            }*/
+                foreach (Commander command in _commanders)
+                {
+                    if (touch.Tag != null && command.TagValue == touch.Tag.Value)
+                    {
+                        command.Position = Utils.touchPointToV2(touch);
+                    }
+                }
+            }
+
+            foreach (Commander command in _commanders)
+            {
+                command.update(dt);
+            }
         }
 
         private void updatePopups(float dt)
@@ -867,53 +917,12 @@ namespace TestXNA.Sources.GameRooms
         }
 
 
-        private void updateRadialUIs(float dt)
+        private void updateRadialUI(float dt)
         {
-            _radialUIs[0].update(dt);
-        }
-
-        /// <summary>
-        /// Clean arrows with no tag and update animation timers
-        /// </summary>
-        private void updateArrows(List<TouchPoint> unknownTags, Vector2 arrowTarget, float dt)
-        {
-            //reset id checker
-            foreach (Arrow arrow in _directionArrows)
+            if (_radialUI != null)
             {
-                arrow.UpToDate = false;
+                _radialUI.update(dt);
             }
-
-            foreach (TouchPoint touch in unknownTags)
-            {
-                if (!lookForArrowWithTag(touch, arrowTarget, dt))
-                {
-                    Arrow arrow = new Arrow(_arrowImage, new Vector2(touch.X, touch.Y),
-                        arrowTarget, touch.Id);
-
-                    _directionArrows.Add(arrow);
-                }
-            }
-
-            //remove arrow without tag
-            foreach (Arrow arrow in _directionArrows.ToArray())
-            {
-                if (!arrow.UpToDate)
-                {
-                    _directionArrows.Remove(arrow);
-                }
-            }
-        }
-
-        private bool lookForArrowWithTag(TouchPoint touch, Vector2 newTarget, float dt)
-        {
-            foreach (Arrow arrow in _directionArrows)
-            {
-                if (arrow.updateArrowWithTag(touch, newTarget, dt))
-                {
-                    return true;
-                }
-            }
-            return false;
         }
 
         public System.Action<float> UpdateAction
