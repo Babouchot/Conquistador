@@ -61,16 +61,20 @@ function Game(playersArray, tableSocket, io) {
 				console.log(playersDidNotAnswer);
 			}
 			
-			checkIfAllAnswers();
+			self.checkIfAllAnswers();
 		}
 	});
+	
+	function nextPhase1(msg)
+	{
+		// send the number of territories each player have to capture
+		processTerritoriesToCapture();
+	}
 
-
-
-	function processAnswers()
+	self.processAnswers = function()
 	{
 		// find winner and attribute territories
-
+		console.log("process answer phase 1");
 		self.playersAnswers.sort(function (answer1, answer2) {
 			if (answer1.value == 'void') {
 				return 1;
@@ -100,18 +104,20 @@ function Game(playersArray, tableSocket, io) {
 		// send the number of territories each player have to capture
 		
 		//send message to the table
-		self.table.emit('questionAnswered', {'orderedAnswers' : self.playersAnswers});
-
+		//self.table.emit('questionAnswered', {'orderedAnswers' : self.playersAnswers});
+		nextPhase1();
 
 	}
 
 	// wait for answers
-	function checkIfAllAnswers() {
+	self.checkIfAllAnswers = function() {
+	
+		console.log("check if all answer phase 1");
 		if (self.playersAnswers.length < self.players.length) {
 			console.log('some players did not answer');
 		}else{
 			console.log('all players answered');
-			processAnswers();
+			self.processAnswers();
 		}
 	}
 
@@ -128,12 +134,6 @@ function Game(playersArray, tableSocket, io) {
 		
 		//send message to the table
 		self.table.emit('captureTerritories', {'orderedPlayers' : orderedPlayers});
-	}
-	
-	function nextPhase1(msg)
-	{
-		// send the number of territories each player have to capture
-		processTerritoriesToCapture();
 	}
 
 	self.table.on('nextPhase1', nextPhase1);
@@ -241,7 +241,7 @@ function Game(playersArray, tableSocket, io) {
 						console.log("answer");
 						self.playersAnswers.push({'id' : pla.gameID, 'value' : answer, 'time': time});
 						console.log('id:' + pla.gameID + '/answer:' + answer + '/time:' + time);
-						checkIfAllAnswers();
+						self.checkIfAllAnswers();
 					}
 				};
 			}
@@ -326,7 +326,8 @@ function Game(playersArray, tableSocket, io) {
 		// change the processAnswers method
 		self.processAnswers = function () {
 			// find winner and attribute territories
-
+			
+			console.log("process answer phase 3");
 			self.playersAnswers.sort(function (answer1, answer2)
 			{
 				if (answer1.value == 'void') {
@@ -376,6 +377,7 @@ function Game(playersArray, tableSocket, io) {
 		
 		
 		self.checkIfAllAnswers = function() {
+			console.log("check if all answer phase 3");
 			if (self.playersAnswers.length < 2) {
 				console.log('some players did not answer');
 			}else{
@@ -451,7 +453,7 @@ function Game(playersArray, tableSocket, io) {
 				{
 					if(self.territories[i].zone == zone)
 					{
-						changeTerritoryOwner(owner, self.territories[i]);
+						changeTerritoryOwner(self.players[owner], self.territories[i]);
 					}
 				}
 				var majChart = [];
