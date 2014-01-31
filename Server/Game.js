@@ -35,8 +35,8 @@ function Game(playersArray, tableSocket, io) {
 		console.log("QuestionId : " + questionID);
 		console.log("currentQuestion : " + self.currentQuestion);
 		
-		if (questionID == self.currentQuestion) {
-			console.log("gnééééééééééééé");
+		// if (questionID == self.currentQuestion) {
+
 			var playersDidNotAnswer = new Array();
 			
 			for (var i = 0; i < self.players.length; ++i) {
@@ -62,7 +62,7 @@ function Game(playersArray, tableSocket, io) {
 			}
 			
 			self.checkIfAllAnswers();
-		}
+		// }
 	});
 	
 	function nextPhase1(msg)
@@ -152,8 +152,11 @@ function Game(playersArray, tableSocket, io) {
 			phase1.playerCaptureCount = PLAYER_NUMBER;
 			self.playersAnswers.length = 0;
 			// Pick a question from the database (not like that, a random question)
-			self.question = self.questions[0];
-
+			var q = null;
+			while (q == null || q.type != 'open') {
+				q = self.questions[Math.floor(Math.random()* self.questions.length)];
+			}
+			self.question = q;
 			self.question.id = ++self.currentQuestion;
 
 			for (var i = 0; i < self.players.length; ++i) {
@@ -165,6 +168,7 @@ function Game(playersArray, tableSocket, io) {
 			}
 
 			self.table.emit('question', self.question);
+			console.log("question emitted");
 		}
 
 		
@@ -429,7 +433,7 @@ function Game(playersArray, tableSocket, io) {
 				
 				self.playersAnswers.length = 0;
 				// Pick a question from the database (not like that, a random question)
-				self.question = self.questions[0];
+				self.question = self.questions[Math.floor(Math.random()* self.questions.length)];
 
 				self.question.id = ++self.currentQuestion;
 
