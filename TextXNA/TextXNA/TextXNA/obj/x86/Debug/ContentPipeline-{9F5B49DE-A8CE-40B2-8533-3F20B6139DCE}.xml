@@ -71,7 +71,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Zones\01.xnb</Output>
-      <Time>2014-01-29T20:33:08.9763456+01:00</Time>
+      <Time>2014-01-31T12:21:21.8409984+01:00</Time>
     </Item>
     <Item>
       <Source>Images\Zones\02.png</Source>
@@ -80,7 +80,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Zones\02.xnb</Output>
-      <Time>2014-01-29T20:33:09.0263456+01:00</Time>
+      <Time>2014-01-31T12:21:21.904002+01:00</Time>
     </Item>
     <Item>
       <Source>Images\Zones\03.png</Source>
@@ -89,7 +89,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Zones\03.xnb</Output>
-      <Time>2014-01-29T20:33:09.0263456+01:00</Time>
+      <Time>2014-01-31T12:21:21.9220031+01:00</Time>
     </Item>
     <Item>
       <Source>Images\Zones\04.png</Source>
@@ -98,7 +98,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Zones\04.xnb</Output>
-      <Time>2014-01-29T20:33:09.0263456+01:00</Time>
+      <Time>2014-01-31T12:21:21.938004+01:00</Time>
     </Item>
     <Item>
       <Source>Images\Zones\05.png</Source>
@@ -107,7 +107,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Zones\05.xnb</Output>
-      <Time>2014-01-29T20:33:09.0363456+01:00</Time>
+      <Time>2014-01-31T12:21:21.9450044+01:00</Time>
     </Item>
     <Item>
       <Source>Images\Zones\06.png</Source>
@@ -116,7 +116,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Zones\06.xnb</Output>
-      <Time>2014-01-29T20:33:09.0363456+01:00</Time>
+      <Time>2014-01-31T12:21:21.9530048+01:00</Time>
     </Item>
     <Item>
       <Source>Images\Zones\07.png</Source>
@@ -125,7 +125,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Zones\07.xnb</Output>
-      <Time>2014-01-29T20:33:09.0363456+01:00</Time>
+      <Time>2014-01-31T12:21:21.9640055+01:00</Time>
     </Item>
     <Item>
       <Source>Images\Zones\08.png</Source>
@@ -134,7 +134,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Zones\08.xnb</Output>
-      <Time>2014-01-29T20:33:09.0363456+01:00</Time>
+      <Time>2014-01-31T12:21:21.9670056+01:00</Time>
     </Item>
     <Item>
       <Source>Images\Zones\09.png</Source>
@@ -143,7 +143,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Zones\09.xnb</Output>
-      <Time>2014-01-29T20:33:09.0463457+01:00</Time>
+      <Time>2014-01-31T12:21:21.9710059+01:00</Time>
     </Item>
     <Item>
       <Source>Images\Zones\10.png</Source>
@@ -152,7 +152,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Zones\10.xnb</Output>
-      <Time>2014-01-29T20:33:09.0463457+01:00</Time>
+      <Time>2014-01-31T12:21:21.9830065+01:00</Time>
     </Item>
     <Item>
       <Source>Images\Zones\11.png</Source>
@@ -161,7 +161,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Zones\11.xnb</Output>
-      <Time>2014-01-29T20:33:09.0463457+01:00</Time>
+      <Time>2014-01-31T12:21:21.991007+01:00</Time>
     </Item>
     <Item>
       <Source>Images\Zones\12.png</Source>
@@ -170,7 +170,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Zones\12.xnb</Output>
-      <Time>2014-01-29T20:33:09.0463457+01:00</Time>
+      <Time>2014-01-31T12:21:21.9950072+01:00</Time>
     </Item>
     <Item>
       <Source>Images\Zones\13.png</Source>
@@ -179,7 +179,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Zones\13.xnb</Output>
-      <Time>2014-01-29T20:33:09.0463457+01:00</Time>
+      <Time>2014-01-31T12:21:22.0070079+01:00</Time>
     </Item>
     <Item>
       <Source>Images\Zones\14.png</Source>
@@ -188,7 +188,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Zones\14.xnb</Output>
-      <Time>2014-01-29T20:33:09.0463457+01:00</Time>
+      <Time>2014-01-31T12:21:22.0400098+01:00</Time>
     </Item>
     <Item>
       <Source>Images\Zones\15.png</Source>
@@ -197,7 +197,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Zones\15.xnb</Output>
-      <Time>2014-01-29T20:33:09.0463457+01:00</Time>
+      <Time>2014-01-31T12:21:22.0480103+01:00</Time>
     </Item>
     <Item>
       <Source>Images\Zones\16.png</Source>
@@ -206,7 +206,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Zones\16.xnb</Output>
-      <Time>2014-01-29T20:33:09.0463457+01:00</Time>
+      <Time>2014-01-31T12:21:22.0560107+01:00</Time>
     </Item>
     <Item>
       <Source>Images\UIBack.png</Source>
@@ -414,6 +414,15 @@
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\centralRose.xnb</Output>
       <Time>2014-01-26T10:03:09.5064411+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Images\fleche.png</Source>
+      <Name>Images\fleche</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\fleche.xnb</Output>
+      <Time>2014-01-31T13:10:29.2665815+01:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>

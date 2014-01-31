@@ -81,22 +81,22 @@ namespace TestXNA
 
         private static List<int>[] _nearFieldData = new List<int>[] 
             {
-                new List<int>() {2, 3, 4}, //zone 1
-                new List<int>() {1, 4, 5}, //zone 2
-                new List<int>() {1, 4, 6, 7}, //zone 3
-                new List<int>() {3, 5, 6, 9}, //zone 4
-                new List<int>() {2, 4, 9, 8}, //zone 5
-                new List<int>() {3, 4, 7, 11, 9}, //zone 6
-                new List<int>() {3, 6, 11}, //zone 7
-                new List<int>() {5, 9, 10, 15}, //zone 8
-                new List<int>() {5, 4, 6, 10, 8}, //zone 9
-                new List<int>() {9, 8, 15, 14, 12}, //zone 10
-                new List<int>() {6, 7, 12}, //zone 11
-                new List<int>() {11, 10, 14, 13}, //zone 12
-                new List<int>() {12, 14, 16}, //zone 13
-                new List<int>() {12, 13, 16, 10, 15}, //zone 14
-                new List<int>() {8, 10, 14, 16}, //zone 15
-                new List<int>() {15, 14, 13} //zone 16
+                new List<int>() {2, 3, 6, 7}, //zone 1
+                new List<int>() {1, 3, 4, 5, 7, 10}, //zone 2
+                new List<int>() {1, 2, 4}, //zone 3
+                new List<int>() {2, 3, 5}, //zone 4
+                new List<int>() {2, 4, 10, 9}, //zone 5
+                new List<int>() {1, 7, 16}, //zone 6
+                new List<int>() {6, 1, 2, 10, 16}, //zone 7
+                new List<int>() {9, 10, 11, 12, 13}, //zone 8
+                new List<int>() {8, 5, 10, 13}, //zone 9
+                new List<int>() {2, 7, 5, 9, 8}, //zone 10
+                new List<int>() {8, 12, 15, 16}, //zone 11
+                new List<int>() {8, 11, 13, 15, 14}, //zone 12
+                new List<int>() {14, 9, 8, 12}, //zone 13
+                new List<int>() {12, 13, 15}, //zone 14
+                new List<int>() {11, 12, 14}, //zone 15
+                new List<int>() {11, 7, 6} //zone 16
             };
 
         private static Dictionary<int, Vector2> _zoneCenters = new Dictionary<int, Vector2>();
@@ -220,6 +220,24 @@ namespace TestXNA
 
         private void generateMapFromTex()
         {
+
+            _zoneCenters[1] = new Vector2(292, 812);
+            _zoneCenters[2] = new Vector2(550, 562);
+            _zoneCenters[3] = new Vector2(152, 244);
+            _zoneCenters[4] = new Vector2(482, 164);
+            _zoneCenters[5] = new Vector2(714, 306);
+            _zoneCenters[6] = new Vector2(638, 938);
+            _zoneCenters[7] = new Vector2(712, 750);
+            _zoneCenters[8] = new Vector2(1366, 566);
+            _zoneCenters[9] = new Vector2(1304, 344);
+            _zoneCenters[10] = new Vector2(992, 400);
+            _zoneCenters[11] = new Vector2(1384, 826);
+            _zoneCenters[12] = new Vector2(1532, 642);
+            _zoneCenters[13] = new Vector2(1552, 310);
+            _zoneCenters[14] = new Vector2(1822, 394);
+            _zoneCenters[15] = new Vector2(1616, 874);
+            _zoneCenters[16] = new Vector2(1164, 824);
+
             for (int zoneInd = 0; zoneInd < _zoneTextures.Count; ++zoneInd)
             {
                 Texture2D zone = _zoneTextures[zoneInd];
@@ -233,10 +251,10 @@ namespace TestXNA
                         //if this coordinate is in the current zone
                         if (zoneColor.A != 0)
                         {
-                            if (zoneColor.R == 0)
+                            /*if (zoneColor.R == 0)
                             {
                                 _zoneCenters[zoneInd + 1] = new Vector2(x, y);
-                            }
+                            }*/
                             _map[x, y] = zoneInd + 1;
 
                         }
@@ -255,7 +273,7 @@ namespace TestXNA
                 MyGame.SpriteBatch.Draw(_zoneTextures[i], MyGame.MapArea, _zoneData[i].CurrentColor);
             }
 
-            //drawDebug();
+            drawDebug();
         }
 
         public void drawDebug()
@@ -263,7 +281,9 @@ namespace TestXNA
 
             for (int i = 0; i < _zoneTextures.Count; ++i)
             {
-                MyGame.SpriteBatch.Draw(_zoneTextures[i], MyGame.MapArea, Color.White);
+                //MyGame.SpriteBatch.Draw(_zoneTextures[i], MyGame.MapArea, Color.White);
+                MyGame.SpriteBatch.DrawString(MyGame.BasicFont, (i+1).ToString(), getCenterOfZone(i+1), Color.Black, 0f,
+                    MyGame.BasicFont.MeasureString((i+1).ToString()) / 2f, 2f, SpriteEffects.None, 0f);
             }
         }
 
@@ -330,39 +350,13 @@ namespace TestXNA
         public Vector2 getCenterOfZone(int zone)
         {
             Vector2 center = Vector2.Zero;
-
-            /*List<Vector2> points = new List<Vector2>();
-
-            for (int x = 0; x < _mapWidth / _step; ++x)
-            {
-                for (int y = 0; y < _mapHeight / _step; ++y)
-                {
-                    if (_map[x, y] == zone)
-                    {
-                        points.Add(new Vector2(x, y));
-                    }
-                }
-            }
-            */
+            
             Vector2 sum = Vector2.Zero;
-
-            /*foreach (Vector2 point in points)
-            {
-                sum += point;
-            }
-
-            sum /= points.Count;
-            */
 
             sum = _zoneCenters[zone];
 
-            sum.X *= _step;
-            sum.Y *= _step;
-
             float xRatio = (float)_mapWidth / (float)MyGame.MapArea.Width;
             float yRatio = (float)_mapHeight / (float)MyGame.MapArea.Height;
-
-            Console.WriteLine("xratio : " + xRatio + " yratio : " + yRatio);
 
             center = new Vector2(sum.X / xRatio, sum.Y / yRatio);
             center.X += MyGame.MapArea.X;
@@ -379,6 +373,30 @@ namespace TestXNA
         public List<int> getZonesReachableFrom(int zone)
         {
             return _zoneData[zone - 1].accecibleZones;
+        }
+
+        public int getClosestZoneOfOwner(int owner, int currentZone)
+        {
+            Vector2 currentCenter = getCenterOfZone(currentZone);
+
+            int closestZone = -1;
+            Vector2 closestCenter = new Vector2(-100000, -100000);
+
+            for (int zone = 1; zone <= 16; ++zone)
+            {
+                if (getZoneOwner(zone) == owner)
+                {
+                    Vector2 zoneCenter = getCenterOfZone(zone);
+
+                    if (Vector2.Distance(zoneCenter, currentCenter) < Vector2.Distance(closestCenter, currentCenter))
+                    {
+                        closestCenter = zoneCenter;
+                        closestZone = zone;
+                    }
+                }
+            }
+
+            return closestZone;
         }
 
     }

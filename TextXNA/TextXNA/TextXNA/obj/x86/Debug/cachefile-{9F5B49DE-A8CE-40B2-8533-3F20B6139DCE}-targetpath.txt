@@ -44,4 +44,5 @@ Content\Images\tableBorder.xnb
 Content\Images\fire.xnb
 Content\Images\rope.xnb
 Content\Images\centralRose.xnb
+Content\Images\fleche.xnb
 Content\Images\GameThumbnail.png

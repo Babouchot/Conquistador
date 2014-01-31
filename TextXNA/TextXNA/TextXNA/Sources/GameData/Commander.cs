@@ -22,6 +22,9 @@ namespace TestXNA.Sources.GameData
         private Texture2D _highlight;
         private int _owner = -1;
 
+        private int _attackStartZone = 0;
+        private int _currentZone = 0;
+
         private List<Arrow> _arrows;
 
         public Commander(Texture2D highlight)
@@ -35,7 +38,6 @@ namespace TestXNA.Sources.GameData
             foreach (Arrow arrow in _arrows)
             {
                 arrow.update(dt);
-                arrow.Position = _position;
             }
 
             base.update(dt);
@@ -81,5 +83,17 @@ namespace TestXNA.Sources.GameData
             set { _arrows = value; }
         }
 
+        public int CurrentZone
+        {
+            get { return _currentZone; }
+            set { _currentZone = value; }
+        }
+
+
+        public int AttackStartZone
+        {
+            get { return _attackStartZone; }
+            set { _attackStartZone = value; }
+        }
     }
 }

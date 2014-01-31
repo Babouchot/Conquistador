@@ -75,4 +75,16 @@ namespace TestXNA.Sources.NodeJSClient.MessageData
         public string name { get; set; }
         public List<MoveData> args { get; set; }
     }
+
+    public class BattleResult
+    {
+        public int winner { get; set; }
+        public int loser { get; set; }
+    }
+
+    public class BattleResultRoot
+    {
+        public string name { get; set; }
+        public List<BattleResult> args { get; set; }
+    }
 }

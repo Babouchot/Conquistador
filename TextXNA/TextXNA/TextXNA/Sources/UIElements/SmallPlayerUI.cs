@@ -222,18 +222,27 @@ namespace TestXNA.Sources
 
         public override void draw()
         {
+            bool touch = _touchId != -1;
+
             string name = GameData.PlayerData.Instance[_player].Name;
             //Vector2 size = _playerUIFont.MeasureString(name);
             Texture2D avatar = GameData.PlayerData.Instance[_player].FaceImage;
             Vector2 size = new Vector2((float)avatar.Width, (float)avatar.Height);
 
-            MyGame.SpriteBatch.Draw(_image, _area, GameData.PlayerData.Instance[_player].HighlitColor);
+            Color col = !touch ? GameData.PlayerData.Instance[_player].HighlitColor : GameData.PlayerData.Instance[_player].GrayedColor;
+            /*
+            float mult = 0f
+
+            Rectangle area = _area;
+            area.X -= _area
+            */
+            MyGame.SpriteBatch.Draw(_image, _area, col);
 
             /*MyGame.SpriteBatch.DrawString(_playerUIFont, name, Utils.pointToVector2(_area.Center), Color.Black, _angle, size / 2f, 1f,
                 SpriteEffects.None, 0f*/
 
             MyGame.SpriteBatch.Draw(avatar, Utils.pointToVector2(_area.Center), null,
-                Color.White, _angle, size / 2f, _width / size.X * 0.9f, SpriteEffects.None, 0f); 
+                Color.White, _angle, size / 2f, _width / size.X * ( !touch ? 0.9f : 0.7f), SpriteEffects.None, 0f); 
         }
 
         public void initializeArea(SpriteFont font)

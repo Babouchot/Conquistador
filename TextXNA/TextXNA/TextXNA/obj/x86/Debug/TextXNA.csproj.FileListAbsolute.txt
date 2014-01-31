@@ -62,3 +62,4 @@ D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\tableBorde
 D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\fire.xnb
 D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\rope.xnb
 D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\centralRose.xnb
+D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\fleche.xnb
