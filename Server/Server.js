@@ -52,7 +52,7 @@ function connectionToServer(socket) {
 		
 				var player = new Player(players.length, socket, table, pseudo);
 				players.push(player);
-				player.playerSocket.emit('successfullyConnected', {});
+				player.playerSocket.emit('successfullyConnected', {'id': players.length - 1});
 				console.log("player" + players.length + " " + player.pseudo + " connected");
 				if (table !== undefined) {
 					table.emit('newPlayer', player.serialize());

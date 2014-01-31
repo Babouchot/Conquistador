@@ -371,7 +371,7 @@ function Game(playersArray, tableSocket, io) {
 			//Send the battle results to the tables
 			//Emit a tout le monde ?
 			self.table.emit('battleResult', {'winner' : orderedPlayers[0], 'loser' : orderedPlayers[1]});
-			
+
 		};
 		
 		
@@ -454,6 +454,12 @@ function Game(playersArray, tableSocket, io) {
 						changeTerritoryOwner(owner, self.territories[i]);
 					}
 				}
+				var majChart = [];
+				for (var j = 0; j < self.players.length; ++j) {
+					majChart.push(self.players[j].serialize());
+				}
+				io.sockets.emit ('majChart', majChart);
+
 			});
 		
 		//Start first move
