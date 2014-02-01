@@ -125,7 +125,7 @@
     <Compile Include="Sources\UIElements\AnswerUI.cs" />
     <Compile Include="Sources\UIElements\Arrow.cs" />
     <Compile Include="Sources\DialogBoxes\ConditionalDialogBox.cs" />
-    <Compile Include="Sources\GameData\DialogBox.cs" />
+    <Compile Include="Sources\DialogBoxes\DialogBox.cs" />
     <Compile Include="Sources\DialogBoxes\MessageDialogBox.cs" />
     <Compile Include="Sources\UIElements\IDrawable.cs" />
     <Compile Include="Sources\UIElements\LargePLayerUI.cs" />

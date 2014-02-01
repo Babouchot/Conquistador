@@ -108,8 +108,8 @@ namespace TestXNA.Sources
                     break;
                 }
             }
-            //return "http://"+localIP+":8080";
-            return "http://192.168.1.3:8080";
+            return "http://"+localIP+":8080";
+            //return "http://192.168.1.3:8080";
         }
 
         #region Create Part Image
@@ -121,10 +121,6 @@ namespace TestXNA.Sources
         /// <returns>Texture2D.</returns>
         public static Texture2D CreatePartImage(Rectangle bounds, Texture2D source, GraphicsDevice graphicsDevice)
         {
-
-            Console.WriteLine("\n\n bounds : \n" + bounds.X + ", " + bounds.Y + ", " + bounds.Width + ", " + bounds.Height
-                + "\n images : " + source.Width +", "+source.Height);
-
             //Declare variables
             Texture2D result;
             Color[]
@@ -155,8 +151,7 @@ namespace TestXNA.Sources
 
             //Set the color data of the result image
             result.SetData<Color>(resultColors);
-
-            Console.WriteLine("\n It worked ! \n");
+            
             //return the result
             return result;
         }

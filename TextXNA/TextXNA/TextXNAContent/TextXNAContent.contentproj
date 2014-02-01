@@ -69,11 +69,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Images\Arrow.png">
-      <Name>Arrow</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
     <Compile Include="Images\Map.png">
       <Name>Map</Name>
       <Importer>TextureImporter</Importer>
@@ -331,8 +326,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Images\fleche.png">
-      <Name>fleche</Name>
+    <Compile Include="Images\Arrow2.png">
+      <Name>Arrow2</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

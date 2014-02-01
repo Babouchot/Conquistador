@@ -226,7 +226,7 @@ namespace TestXNA
             _zoneCenters[3] = new Vector2(152, 244);
             _zoneCenters[4] = new Vector2(482, 164);
             _zoneCenters[5] = new Vector2(714, 306);
-            _zoneCenters[6] = new Vector2(638, 938);
+            _zoneCenters[6] = new Vector2(658, 928);
             _zoneCenters[7] = new Vector2(712, 750);
             _zoneCenters[8] = new Vector2(1366, 566);
             _zoneCenters[9] = new Vector2(1304, 344);
@@ -273,7 +273,7 @@ namespace TestXNA
                 MyGame.SpriteBatch.Draw(_zoneTextures[i], MyGame.MapArea, _zoneData[i].CurrentColor);
             }
 
-            drawDebug();
+            //drawDebug();
         }
 
         public void drawDebug()

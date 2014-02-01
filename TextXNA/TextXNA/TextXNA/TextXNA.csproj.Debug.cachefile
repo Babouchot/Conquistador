@@ -1,6 +1,5 @@
 Content\Fonts\MaturaScript.xnb
 Content\Images\TagHighlight.xnb
-Content\Images\Arrow.xnb
 Content\Images\Map.xnb
 Content\Images\trollFace.xnb
 Content\Images\GameThumbnail.xnb
@@ -44,7 +43,7 @@ Content\Images\tableBorder.xnb
 Content\Images\fire.xnb
 Content\Images\rope.xnb
 Content\Images\centralRose.xnb
-Content\Images\fleche.xnb
+Content\Images\Arrow2.xnb
 Content\Images\GameThumbnail.png
 Resources\icon.png
 TextXNA.xml

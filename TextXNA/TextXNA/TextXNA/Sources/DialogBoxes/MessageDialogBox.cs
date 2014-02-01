@@ -36,7 +36,7 @@ namespace TestXNA.Sources
         protected override bool isTouchOnUI(Vector2 touch)
         {
             Vector2 vec = new Vector2(_area.Right, _area.Bottom);
-
+    
             return Vector2.Distance(touch, _position) < vec.Length();
         }
 

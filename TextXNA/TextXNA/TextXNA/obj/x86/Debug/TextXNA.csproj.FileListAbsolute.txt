@@ -8,7 +8,6 @@ D:\Cours\Surface\TextXNA\TextXNA\TextXNA\obj\x86\Debug\TextXNA.exe
 D:\Cours\Surface\TextXNA\TextXNA\TextXNA\obj\x86\Debug\TextXNA.pdb
 D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Fonts\MaturaScript.xnb
 D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\TagHighlight.xnb
-D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Arrow.xnb
 D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Map.xnb
 D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\UIBack.xnb
 D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\trollFace.xnb
@@ -62,4 +61,4 @@ D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\tableBorde
 D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\fire.xnb
 D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\rope.xnb
 D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\centralRose.xnb
-D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\fleche.xnb
+D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Arrow2.xnb

@@ -38,6 +38,7 @@ namespace TestXNA.Sources.GameData
             foreach (Arrow arrow in _arrows)
             {
                 arrow.update(dt);
+                arrow.Position = _position;
             }
 
             base.update(dt);
@@ -51,7 +52,7 @@ namespace TestXNA.Sources.GameData
             }
 
             float scale = Draw_Scale;
-            Color col = PlayerData.Instance[_owner].BaseColor;
+            Color col = PlayerData.Instance[_owner].HighlitColor;
 
             Vector2 highlightCenter = new Vector2(_highlight.Width / 2f, _highlight.Height / 2f);
 
@@ -95,5 +96,8 @@ namespace TestXNA.Sources.GameData
             get { return _attackStartZone; }
             set { _attackStartZone = value; }
         }
+
+        public bool PositionLocked
+        { get; set; }
     }
 }

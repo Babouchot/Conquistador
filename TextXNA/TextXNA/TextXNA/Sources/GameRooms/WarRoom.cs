@@ -324,6 +324,13 @@ namespace TestXNA.Sources.GameRooms
                 return;
             }
 
+            KeyboardState keyState = Keyboard.GetState();
+            if (keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Enter)
+                && keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Space))
+            {
+                cheatAddCommanders();   
+            }
+
             ReadOnlyTouchPointCollection touches = MyGame.TouchTarget.GetState();
             foreach (TouchPoint touch in touches)
             {
@@ -352,10 +359,32 @@ namespace TestXNA.Sources.GameRooms
             updateCommanders(dt, true, -1, null);
         }
 
+        private void cheatAddCommanders()
+        {
+            long lastAddedTag = _firstTagValue;
+            Random rand = new Random();
+
+            while (_commanders.Count < MyGame.NUMBER_OF_PLAYER * 2)
+
+            {
+                int owner = getOwnerForTag(lastAddedTag);
+                int zone = rand.Next(1, 17); //1..16
+                if (zone >= 0 && _map.getZoneOwner(zone) == owner)
+                {
+                    Commander command = new Commander(_commanderHighlight);
+                    command.Position = _map.getCenterOfZone(zone);
+                    command.CurrentZone = zone;
+                    command.Owner = owner;
+                    command.TagValue = lastAddedTag;
+
+                    _commanders.Add(command);
+                    ++lastAddedTag;
+                }
+            }
+        }
+
         private void initCommandersInstructionsDialog()
         {
-
-
 
             UIElements.SimpleButton button = new UIElements.SimpleButton(
             _buttonStretchImage,
@@ -419,6 +448,7 @@ namespace TestXNA.Sources.GameRooms
                 if (commander.TagValue == touch.Tag.Value)
                 {
                     commander.Position = Utils.touchPointToV2(touch);
+                    commander.CurrentZone = _map.getZoneAt(commander.Position);
                     return; //Our work here is done
                 }
             }
@@ -439,7 +469,7 @@ namespace TestXNA.Sources.GameRooms
 
         private void onQuestion(SocketIOClient.Messages.IMessage data)
         {
-
+            Console.WriteLine("\nonQuestion\n");
             Console.WriteLine("\n\n");
             Console.WriteLine(data.Json.ToJsonString());
             Console.WriteLine("\n\n");
@@ -472,29 +502,42 @@ namespace TestXNA.Sources.GameRooms
 
         private void questionWaitUpdate(float dt)
         {
-            if (_animatedFire != null)
+            lock (_progressBar)
             {
-                _animatedFire.update(dt);
-            }
-
-            commonUpdate(dt);
-
-            _timeSinceLastQuestion += dt;
-            //display progress bar
-            _progressBar.Progress = _timeSinceLastQuestion / _questionMaxAllowedTime;
-
-            //send timeout onEnd
-            if (_timeSinceLastQuestion >= _questionMaxAllowedTime)
-            {
-                Console.WriteLine("send timeout");
-                ServerCom.Instance.Socket.Emit("timeout", new
+                if (_animatedFire != null)
                 {
-                    id = 0//_questionId
-                });
+                    _animatedFire.update(dt);
+                    updateDialogBox(dt);
+                }
 
-                _progressBar = null;
-                _currentDialog = null;
-                UpdateAction = emptyUpdate;
+                commonUpdate(dt);
+
+                _timeSinceLastQuestion += dt;
+                //display progress bar
+                _progressBar.Progress = _timeSinceLastQuestion / _questionMaxAllowedTime;
+
+                bool cheat = false;
+
+                KeyboardState keyState = Keyboard.GetState();
+                if (keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Enter)
+                    && keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Space))
+                {
+                    cheat = true;
+                }
+
+                //send timeout onEnd
+                if (_timeSinceLastQuestion >= _questionMaxAllowedTime || cheat)
+                {
+                    Console.WriteLine("send timeout");
+                    ServerCom.Instance.Socket.Emit("timeout", new
+                    {
+                        id = 0//_questionId
+                    });
+
+                    _progressBar = null;
+                    _currentDialog = null;
+                    UpdateAction = emptyUpdate;
+                }
             }
         }
 
@@ -577,7 +620,7 @@ namespace TestXNA.Sources.GameRooms
         private void initMove(int player)
         {
             //init arrows for each commanders
-
+            clearPositionLock();
             foreach (Commander command in _commanders)
             {
                 command.Arrows.Clear();
@@ -597,9 +640,13 @@ namespace TestXNA.Sources.GameRooms
                     foreach (int reach in reachables)
                     {
                         Vector2 center = _map.getCenterOfZone(reach);
-                        Vector2 startCenter = _map.getCenterOfZone(zone);
+                        //Vector2 startCenter = _map.getCenterOfZone(zone);
+                        Vector2 startCenter = command.Position;
                         Console.WriteLine("target : " + center);
-                        Arrow arrow = new Arrow(_arrowImage, startCenter, center);
+
+                        Color col = PlayerData.Instance[_map.getZoneOwner(reach)].BaseColor;
+
+                        Arrow arrow = new Arrow(_arrowImage, startCenter, center, col);
                         command.Arrows.Add(arrow);
                     }
                 }
@@ -616,14 +663,14 @@ namespace TestXNA.Sources.GameRooms
             //display arrows
             commonUpdate(dt);
 
-            List<int> reachableZones = new List<int>();
+            Dictionary<long, List<int>> reachableZones = new Dictionary<long, List<int>>();
 
             foreach(Commander cmd in _commanders)
             {
                 if(cmd.Owner == player)
                 {
                     int zone = _map.getZoneAt(cmd.Position);
-                    reachableZones.AddRange(_map.getZonesReachableFrom(zone));
+                    reachableZones[cmd.TagValue] = (_map.getZonesReachableFrom(zone));
                 }
             }
 
@@ -671,7 +718,7 @@ namespace TestXNA.Sources.GameRooms
 
                             ServerCom.Instance.battleResultCB = delegate(SocketIOClient.Messages.IMessage data)
                             {
-                                onBattleResult(data, command, zone, command.AttackStartZone);
+                                onBattleResult(data, command, zone);
                             };
 
                             ServerCom.Instance.Socket.Emit("startBattle", new
@@ -697,49 +744,65 @@ namespace TestXNA.Sources.GameRooms
             }
         }
 
-        private void onBattleResult(SocketIOClient.Messages.IMessage data, Commander command, int fightZone, int startZone)
+        private void clearPositionLock()
         {
-            Console.WriteLine("\nonBattleResult\n");
-
-            Console.WriteLine("\n" + data.Json.ToJsonString() + "\n");
-
-            BattleResult br;
-            BattleResultRoot root = Newtonsoft.Json.JsonConvert.DeserializeObject<BattleResultRoot>(data.Json.ToJsonString());
-
-            br = root.args[0];
-
-            Console.WriteLine("winner : " + br.winner + " looser : " + br.loser + " attacker : "+command.Owner + " fightzone : " + fightZone);
-
-            if (command.Owner == br.winner)
+            lock(_commanders)
             {
-                _map.setZoneOwner(fightZone, command.Owner);
-                ServerCom.Instance.Socket.Emit("territoryWon", new
+                foreach (Commander command in _commanders)
                 {
-                    zone = fightZone - 1,
-                    owner = command.Owner
-                });
+                    command.PositionLocked = false;
+                }
+            }
+        }
 
-                foreach (Commander looserCommand in _commanders)
+        private void onBattleResult(SocketIOClient.Messages.IMessage data, Commander command, int fightZone)
+        {
+            lock (_commanders)
+            {
+                Console.WriteLine("\nonBattleResult\n");
+
+                Console.WriteLine("\n" + data.Json.ToJsonString() + "\n");
+
+                BattleResult br;
+                BattleResultRoot root = Newtonsoft.Json.JsonConvert.DeserializeObject<BattleResultRoot>(data.Json.ToJsonString());
+
+                br = root.args[0];
+
+                Console.WriteLine("winner : " + br.winner + " looser : " + br.loser + " attacker : " + command.Owner + " fightzone : " + fightZone);
+
+                if (command.Owner == br.winner)
                 {
-                    if (looserCommand.Owner == br.loser
-                        && _map.getZoneAt(looserCommand.Position) == fightZone)
+                    _map.setZoneOwner(fightZone, command.Owner);
+                    ServerCom.Instance.Socket.Emit("territoryWon", new
                     {
-                        int newZone = _map.getClosestZoneOfOwner(br.loser, fightZone);
-                        looserCommand.Position = _map.getCenterOfZone(newZone);
+                        zone = fightZone - 1,
+                        owner = command.Owner
+                    });
+
+                    foreach (Commander looserCommand in _commanders)
+                    {
+                        if (looserCommand.Owner == br.loser
+                            && _map.getZoneAt(looserCommand.Position) == fightZone)
+                        {
+                            int newZone = _map.getClosestZoneOfOwner(br.loser, fightZone);
+                            looserCommand.Position = _map.getCenterOfZone(newZone);
+                            looserCommand.PositionLocked = true;
+                        }
                     }
+
+                }
+                else
+                {
+                    Console.WriteLine("\nbattle lost, fall back to " + command.AttackStartZone + "\n");
+                    //put attacker back to his start zone
+                    command.Position = _map.getCenterOfZone(command.AttackStartZone);
                 }
 
-            }
-            else
-            {
-                //put attacker back to his start zone
-                command.Position = _map.getCenterOfZone(startZone);
-            }
+                command.PositionLocked = true;
 
-            //handle win/loose commander position
-
-            UpdateAction = emptyUpdate;
-            ServerCom.Instance.sendSimpleMessage("nextPhase3");
+                UpdateAction = emptyUpdate;
+                ServerCom.Instance.sendSimpleMessage("nextPhase3");
+            }
         }
 
         #endregion
@@ -828,7 +891,7 @@ namespace TestXNA.Sources.GameRooms
 
             _iconImage = MyGame.ContentManager.Load<Texture2D>("Images/GameThumbnail");
             _popupImage = MyGame.ContentManager.Load<Texture2D>("Images/trollFace");
-            _arrowImage = MyGame.ContentManager.Load<Texture2D>("Images/Arrow");
+            _arrowImage = MyGame.ContentManager.Load<Texture2D>("Images/Arrow2");
             _mapBackground = MyGame.ContentManager.Load<Texture2D>("Images/Map");
             _mapOverlay = MyGame.ContentManager.Load<Texture2D>("Images/MapOverlay");
             _buttonTexture = MyGame.ContentManager.Load<Texture2D>("Images/buttonScroll");
@@ -886,7 +949,13 @@ namespace TestXNA.Sources.GameRooms
 
         private void clearProgressAndDialog()
         {
-            _progressBar = null;
+            if (_progressBar != null)
+            {
+                lock (_progressBar)
+                {
+                    _progressBar = null;
+                }
+            }
             _currentDialog = null;
         }
 
@@ -982,54 +1051,60 @@ namespace TestXNA.Sources.GameRooms
             }
         }
 
-        private void updateCommanders(float dt, bool phase2, int playingPlayer, List<int> allowedZones)
+        private void updateCommanders(float dt, bool phase2, int playingPlayer, Dictionary<long, List<int>> allowedZones)
         {
-            ReadOnlyTouchPointCollection touches = MyGame.TouchTarget.GetState();
-
-            foreach (TouchPoint touch in touches)
+            lock (_commanders)
             {
-                int zone = _map.getZoneAt(Utils.touchPointToV2(touch));
-                int zoneOwner = _map.getZoneOwner(zone);
 
-                foreach (Commander command in _commanders)
+                ReadOnlyTouchPointCollection touches = MyGame.TouchTarget.GetState();
+
+                foreach (TouchPoint touch in touches)
                 {
-                    if (touch.Tag != null && command.TagValue == touch.Tag.Value)
+                    int zone = _map.getZoneAt(Utils.touchPointToV2(touch));
+                    int zoneOwner = _map.getZoneOwner(zone);
+
+                    foreach (Commander command in _commanders)
                     {
-                        //phase 2, we can put commanders in every zone we own
-                        if (phase2)
+                        if (touch.Tag != null && command.TagValue == touch.Tag.Value && !command.PositionLocked)
                         {
-                            if (zoneOwner == command.Owner)
+                            //phase 2, we can put commanders in every zone we own
+                            if (phase2)
                             {
-                                command.Position = Utils.touchPointToV2(touch);
-                                command.CurrentZone = zone;
-                            }
-                        }
-                        else//phase 3
-                        {
-                            //the currently playing player can move in every reachable zone
-                            if (playingPlayer == command.Owner
-                                && allowedZones.Contains(zone))
-                            {
-                                command.Position = Utils.touchPointToV2(touch);
-                                command.CurrentZone = zone;
-                            }
-                            //other players can only stay in their current zone
-                            else
-                            {
-                                if (zone == command.CurrentZone)
+                                if (zoneOwner == command.Owner)
                                 {
                                     command.Position = Utils.touchPointToV2(touch);
                                     command.CurrentZone = zone;
                                 }
                             }
+                            else//phase 3
+                            {
+
+                                //the currently playing player can move in every reachable zone
+                                if (playingPlayer == command.Owner
+                                    && (allowedZones[command.TagValue].Contains(zone) || zone == command.CurrentZone))
+                                {
+                                    command.Position = Utils.touchPointToV2(touch);
+                                    command.CurrentZone = zone;
+                                }
+                                //other players can only stay in their current zone
+                                else
+                                {
+                                    if (zone == command.CurrentZone)
+                                    {
+                                        command.Position = Utils.touchPointToV2(touch);
+                                        command.CurrentZone = zone;
+                                    }
+                                }
+                            }
                         }
                     }
                 }
-            }
 
-            foreach (Commander command in _commanders)
-            {
-                command.update(dt);
+                foreach (Commander command in _commanders)
+                {
+                    command.update(dt);
+                }
+
             }
         }
 

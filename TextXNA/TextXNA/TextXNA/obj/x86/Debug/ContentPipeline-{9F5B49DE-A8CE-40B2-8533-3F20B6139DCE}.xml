@@ -17,16 +17,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\TagHighlight.xnb</Output>
-      <Time>2014-01-02T17:59:12.3448793+01:00</Time>
-    </Item>
-    <Item>
-      <Source>Images\Arrow.png</Source>
-      <Name>Images\Arrow</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-      <Options>None</Options>
-      <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Arrow.xnb</Output>
-      <Time>2014-01-29T21:08:43.1268586+01:00</Time>
+      <Time>2014-02-01T23:50:42.037452+01:00</Time>
     </Item>
     <Item>
       <Source>Images\Map.png</Source>
@@ -416,13 +407,13 @@
       <Time>2014-01-26T10:03:09.5064411+01:00</Time>
     </Item>
     <Item>
-      <Source>Images\fleche.png</Source>
-      <Name>Images\fleche</Name>
+      <Source>Images\Arrow2.png</Source>
+      <Name>Images\Arrow2</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\fleche.xnb</Output>
-      <Time>2014-01-31T13:10:29.2665815+01:00</Time>
+      <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Arrow2.xnb</Output>
+      <Time>2014-02-01T23:54:59.377171+01:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
