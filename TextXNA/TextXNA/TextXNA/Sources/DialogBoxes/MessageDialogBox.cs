@@ -56,7 +56,7 @@ namespace TestXNA.Sources
 
                 //MyGame.SpriteBatch.Draw(MyGame.Black, imgRect, Color.White);
 
-                _backTexture.draw(imgRect, Color.White);
+                _backTexture.draw(imgRect, Color.White, _angle);
 
                 MyGame.SpriteBatch.DrawString(MyGame.BasicFont, _message, _position
                     , MyGame.ColorPanel.textColor, _angle, areaCenter, 1f, SpriteEffects.None, 0f);

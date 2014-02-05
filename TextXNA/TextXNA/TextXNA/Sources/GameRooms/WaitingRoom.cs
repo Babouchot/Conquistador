@@ -44,8 +44,6 @@ namespace TestXNA.Sources.GameRooms
         private Texture2D _playerUIBack;
         private Texture2D _roomBackground;
 
-        private RadialUIContainer radial;
-
         public WaitingRoom()
         {
             Microsoft.Xna.Framework.Rectangle area = new Microsoft.Xna.Framework.Rectangle(
@@ -145,11 +143,6 @@ namespace TestXNA.Sources.GameRooms
                 return;
             }
 
-            if (radial != null)
-            {
-                radial.update(dt);
-            }
-
             _startButton.update(dt);
             ReadOnlyTouchPointCollection touches = MyGame.TouchTarget.GetState();
 
@@ -183,12 +176,6 @@ namespace TestXNA.Sources.GameRooms
             {
                 _dialog.draw();
             }
-
-            if (radial != null)
-            {
-                radial.draw();
-            }
-            //MyGame.SpriteBatch.Draw(uiBack, MyGame.ScreenArea, Color.Red);
         }
 
 
@@ -234,20 +221,6 @@ namespace TestXNA.Sources.GameRooms
             }
 
             return true;// nbPlayer >= 2;
-        }
-
-        private void initializeRadialUI()
-        {
-            Texture2D center = MyGame.ContentManager.Load<Texture2D>("Images/centralRose");
-            radial = new UIElements.RadialAnswerContainer(center, 400f, 250f);
-
-            for (int i = 0; i < 4; ++i)
-            {
-                UIElements.AnswerUI ansUI = new UIElements.AnswerUI(i, i == 1, "ans : " + i, _playerUIBack);
-                radial.ContainedUIs.Add(ansUI);
-            }
-
-            radial.Position = MyGame.ScreenCenter;
         }
 
 

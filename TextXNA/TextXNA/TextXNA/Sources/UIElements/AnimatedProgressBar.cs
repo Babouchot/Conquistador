@@ -22,10 +22,10 @@ namespace TestXNA.Sources.UIElements
         protected override void drawBack()
         {
             Rectangle subRect = new Rectangle(
-                _area.Left + (int)((float)_area.Width * _progress)
-                , _area.Top
-                , _area.Width - (int)((float)_area.Width * _progress)
-                , _area.Height
+                Area.Left + (int)((float)Area.Width * _progress)
+                , Area.Top
+                , Area.Width - (int)((float)Area.Width * _progress)
+                , Area.Height
                 );
 
             Rectangle source = new Rectangle(
@@ -35,14 +35,14 @@ namespace TestXNA.Sources.UIElements
                 , _backgroundTexture.Height
                 );
 
-            MyGame.SpriteBatch.Draw(_backgroundTexture, _area, new Color(0f, 0f, 0f, 175f));
+            MyGame.SpriteBatch.Draw(_backgroundTexture, Area, new Color(0f, 0f, 0f, 175f));
             MyGame.SpriteBatch.Draw(_backgroundTexture, subRect, source, Color.White);
         }
 
         protected override void drawBar()
         {
-            _barAnim.Position = new Vector2((float)_area.Left + (float)_area.Width * _progress
-                , (float)_area.Center.Y - _area.Height/4f);
+            _barAnim.Position = new Vector2((float)Area.Left + (float)Area.Width * _progress
+                , (float)Area.Center.Y - Area.Height/4f);
             _barAnim.draw();
         }
     }

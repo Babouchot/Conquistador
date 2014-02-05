@@ -13,7 +13,7 @@ namespace TestXNA.Sources.UIElements
         protected float _progress = 0f; //0 to 1
         protected Texture2D _barTexture;
         protected Texture2D _backgroundTexture;
-        protected Rectangle _area;
+        private Rectangle _area;
 
         public ProgressBar(Texture2D barText, Texture2D backgroundText, Rectangle area)
         {
@@ -26,6 +26,12 @@ namespace TestXNA.Sources.UIElements
         {
           get { return _progress; }
           set { _progress = value; }
+        }
+
+        public Rectangle Area
+        {
+            get { return _area; }
+            set { _area = value; }
         }
 
         private Rectangle getCurrentArea()
@@ -49,7 +55,19 @@ namespace TestXNA.Sources.UIElements
 
         protected virtual void drawBar()
         {
+            int startY = _area.Y + (int)( _progress * (float)_area.Height);
+            int height = (int)((1f - _progress) * (float)_area.Height);
 
+            Rectangle partialArea = new Rectangle(_area.X, startY, _area.Width, height);
+
+            Rectangle source = new Rectangle(
+                0
+                ,(int) (_progress * (float)_barTexture.Height)
+                , _barTexture.Width 
+                , (int) ((1f - _progress) * (float)_barTexture.Height));
+
+
+            MyGame.SpriteBatch.Draw(_barTexture, partialArea, source, MyGame.ColorPanel.foregroundColor);
         }
     }
 }

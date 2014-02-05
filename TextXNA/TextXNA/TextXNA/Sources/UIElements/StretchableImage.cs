@@ -161,15 +161,40 @@ namespace TestXNA.Sources.UIElements
             return splitedImg;
         }
 
-        public void draw(Rectangle targetRect, Color color)
+        public void draw(Rectangle targetRect, Color color, float angle)
         {
             SplitedRect drawRect = splitRect2(targetRect);
             Rectangle[] arrayRect = drawRect.toArray();
             Texture2D[] arrayImage = _image.toArray();
 
+            Vector2 imageCenter = Utils.pointToVector2(drawRect.centerR.Center);
+
             for (int i = 0; i < arrayImage.Length; ++i)
             {
-                MyGame.SpriteBatch.Draw(arrayImage[i], arrayRect[i], color);
+                Vector2 rectCenter = Utils.pointToVector2(arrayRect[i].Center);
+                float length = Vector2.Distance(rectCenter, imageCenter);
+                Vector2 origin = new Vector2((float)arrayImage[i].Width / 2f, (float)arrayImage[i].Height / 2f);
+                Vector2 scale = new Vector2((float)arrayRect[i].Width / (float)arrayImage[i].Width, (float)arrayRect[i].Height / (float)arrayImage[i].Height);
+
+
+                Vector2 newCenter;
+
+                if (rectCenter == imageCenter)
+                {
+                    newCenter = rectCenter;
+                }
+                else
+                {
+                    float positionAngle = Utils.directionToAngle(rectCenter - imageCenter);
+                    positionAngle += angle;
+
+                    newCenter = new Vector2((float)Math.Cos(positionAngle), (float)Math.Sin(positionAngle));
+                    newCenter *= length;
+                    newCenter += imageCenter;
+                }
+                MyGame.SpriteBatch.Draw(arrayImage[i], newCenter, null, Color.White, angle, origin, scale, SpriteEffects.None, 0f);
+
+                //MyGame.SpriteBatch.Draw(arrayImage[i], arrayRect[i], color);
             }
             //MyGame.SpriteBatch.Draw(_image._center, drawRect.centerR, color);
             /*MyGame.SpriteBatch.Draw(_image._topLeft, drawRect.topLeftR, color);

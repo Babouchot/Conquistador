@@ -115,6 +115,7 @@
     <Compile Include="Sources\GameData\GraphicColors.cs" />
     <Compile Include="Sources\GameData\Map.cs" />
     <Compile Include="Sources\GameData\PlayerData.cs" />
+    <Compile Include="Sources\GameRooms\EndGameRoom.cs" />
     <Compile Include="Sources\GameRooms\IRoom.cs" />
     <Compile Include="Sources\GameRooms\WaitingRoom.cs" />
     <Compile Include="Sources\GameRooms\WarRoom.cs" />

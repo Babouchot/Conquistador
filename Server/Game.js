@@ -104,8 +104,8 @@ function Game(playersArray, tableSocket, io) {
 		// send the number of territories each player have to capture
 		
 		//send message to the table
-		//self.table.emit('questionAnswered', {'orderedAnswers' : self.playersAnswers});
-		nextPhase1();
+		self.table.emit('questionAnswered', {'orderedAnswers' : self.playersAnswers});
+		//nextPhase1();
 
 	}
 
@@ -375,7 +375,11 @@ function Game(playersArray, tableSocket, io) {
 			
 			//Send the battle results to the tables
 			//Emit a tout le monde ?
-			self.table.emit('battleResult', {'winner' : orderedPlayers[0], 'loser' : orderedPlayers[1]});
+			self.table.emit('battleResult', {
+			'winner' : orderedPlayers[0]
+			, 'loser' : orderedPlayers[1]
+			, 'winVal' : self.playersAnswers[0].value
+			, 'lossVal' : self.playersAnswers[1].value});
 
 		};
 		

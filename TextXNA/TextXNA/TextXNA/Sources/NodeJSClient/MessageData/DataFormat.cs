@@ -80,6 +80,8 @@ namespace TestXNA.Sources.NodeJSClient.MessageData
     {
         public int winner { get; set; }
         public int loser { get; set; }
+        public object winVal { get; set; }
+        public object lossVal { get; set; }
     }
 
     public class BattleResultRoot

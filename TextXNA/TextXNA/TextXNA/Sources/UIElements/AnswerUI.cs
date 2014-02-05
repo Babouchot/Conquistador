@@ -25,6 +25,11 @@ namespace TestXNA.Sources.UIElements
             _player = player;
             _isBest = isBest;
             _answerText = answer;
+
+            if (_answerText == "void")
+            {
+                _answerText = "None";
+            }
         }
 
         public override void draw()

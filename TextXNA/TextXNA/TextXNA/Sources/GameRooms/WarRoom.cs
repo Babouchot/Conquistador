@@ -17,7 +17,7 @@ using TestXNA.Sources.GameData;
 using TestXNA.Sources.DialogBoxes;
 using TestXNA.Sources.NodeJSClient;
 using TestXNA.Sources.NodeJSClient.MessageData;
-
+using TestXNA.Sources.UIElements;
 
 
 namespace TestXNA.Sources.GameRooms
@@ -61,6 +61,7 @@ namespace TestXNA.Sources.GameRooms
         private Texture2D _ropeSprite;
         private Texture2D _radialUICenter;
         private Texture2D _playerUIBack;
+        private Texture2D _radialProgress;
         private List<Texture2D> _mapZones = null;
 
         private UIElements.StretchableImage _buttonStretchImage;
@@ -84,8 +85,6 @@ namespace TestXNA.Sources.GameRooms
         private ButtonDialogBox _commanderInstructionsDialog;
 
         private List<Commander> _commanders;
-
-        private bool isC5 = false;
 
         private System.Action<float> _updateAction;
 
@@ -118,6 +117,10 @@ namespace TestXNA.Sources.GameRooms
         private RadialUIContainer _radialUI;
         private float _timeSinceAnswerDisplayStart;
         private float _answerDisplayDuration = 10f;
+
+        //Move/Turn Data
+        private float _timeSinceAnimStart = 0f;
+        private float _animMoveDuration = 3f;
 
         #endregion
 
@@ -474,12 +477,13 @@ namespace TestXNA.Sources.GameRooms
             Console.WriteLine(data.Json.ToJsonString());
             Console.WriteLine("\n\n");
 
+            initProgressBar();
 
-            /*QuestionData questionInfo;
-            QuestionDataRoot obj = Newtonsoft.Json.JsonConvert.DeserializeObject<QuestionDataRoot>(data.Json.ToJsonString());
-            questionInfo = obj.args[0];
-            */
+            UpdateAction = questionWaitUpdate;
+        }
 
+        private void initProgressBar()
+        {
             _timeSinceLastQuestion = 0f;
             //_questionId = questionInfo.id;
 
@@ -497,11 +501,15 @@ namespace TestXNA.Sources.GameRooms
 
             _currentDialog = msgBox;
 
-            UpdateAction = questionWaitUpdate;
         }
 
         private void questionWaitUpdate(float dt)
         {
+            if (_progressBar == null)
+            {
+                initProgressBar();
+            }
+
             lock (_progressBar)
             {
                 if (_animatedFire != null)
@@ -554,11 +562,28 @@ namespace TestXNA.Sources.GameRooms
 
             answers = obj.args[0];
 
-            _radialUI = new UIElements.RadialAnswerContainer(_radialUICenter, 500f, 150f);
+            initAnswerUI(answers.orderedAnswers);
 
+            _timeSinceAnswerDisplayStart = 0f;
+            UpdateAction = delegate(float dt) { answersDisplayUpdate(dt, afterAnswerDisplayPhase1); };
+        }
+
+        private void afterAnswerDisplayPhase1()
+        {
+            ServerCom.Instance.sendSimpleMessage("nextPhase1");
+            _radialUI = null;
+            UpdateAction = emptyUpdate;
+        }
+
+        private void initAnswerUI(List<OrderedAnswer> orderedAnswers )
+        {
+            RadialAnswerContainer contain = new UIElements.RadialAnswerContainer(_radialUICenter, _radialProgress, 500f, 150f);
+            contain.TouchCenterCallback = fastForwardAnswerWait;
+
+            _radialUI = contain;
             bool best = true;
 
-            foreach (OrderedAnswer answer in answers.orderedAnswers)
+            foreach (OrderedAnswer answer in orderedAnswers)
             {
                 UIElements.AnswerUI ansUI = new UIElements.AnswerUI(
                     answer.id
@@ -571,23 +596,25 @@ namespace TestXNA.Sources.GameRooms
             }
 
             _radialUI.Position = MyGame.ScreenCenter;
-
-            _timeSinceAnswerDisplayStart = 0f;
-            UpdateAction = answersDisplayUpdate;
         }
 
-        private void answersDisplayUpdate(float dt)
+        private void fastForwardAnswerWait(float dt)
+        {
+            _timeSinceAnswerDisplayStart += dt*5f;
+        }
+
+        private void answersDisplayUpdate(float dt, Action endCallback)
         {
             updateRadialUI(dt);
             commonUpdate(dt);
             _timeSinceAnswerDisplayStart += dt;
 
+            RadialAnswerContainer con = (RadialAnswerContainer)_radialUI;
+            con.Progress = _timeSinceAnswerDisplayStart/_answerDisplayDuration;
+
             if (_timeSinceAnswerDisplayStart > _answerDisplayDuration)
             {
-                _radialUI = null;
-
-                ServerCom.Instance.sendSimpleMessage("nextPhase1");
-                UpdateAction = emptyUpdate;
+                endCallback();
             }
 
         }
@@ -687,12 +714,6 @@ namespace TestXNA.Sources.GameRooms
             
         }
 
-        private bool isPositionValid(Vector2 newPos, Commander command)
-        {
-
-            return false;
-        }
-
         private void lookForMove(float dt, int player)
         {
             foreach (Commander command in _commanders)
@@ -757,51 +778,135 @@ namespace TestXNA.Sources.GameRooms
 
         private void onBattleResult(SocketIOClient.Messages.IMessage data, Commander command, int fightZone)
         {
+            Console.WriteLine("\nonBattleResult\n");
+
+            Console.WriteLine("\n" + data.Json.ToJsonString() + "\n");
+
+            BattleResult br;
+            BattleResultRoot root = Newtonsoft.Json.JsonConvert.DeserializeObject<BattleResultRoot>(data.Json.ToJsonString());
+
+            br = root.args[0];
+
+            Console.WriteLine("winner : " + br.winner + " looser : " + br.loser + " attacker : " + command.Owner + " fightzone : " + fightZone);
+
+            //Display answers
+
+            List<OrderedAnswer> answers = new List<OrderedAnswer>();
+            OrderedAnswer answerWin = new OrderedAnswer();
+            answerWin.id = br.winner;
+            answerWin.time = 0f;
+            answerWin.value = br.winVal;
+
+            OrderedAnswer answerLoss = new OrderedAnswer();
+            answerLoss.id = br.loser;
+            answerLoss.time = 0f;
+            answerLoss.value = br.lossVal;
+
+            answers.Add(answerWin);
+            answers.Add(answerLoss);
+
+            _radialUI = null;
+
+            initAnswerUI(answers);
+
+            clearProgressAndDialog();
+
+            Action endCallback = delegate() { processBattleResults(br.winner, br.loser, fightZone, command); };
+
+            _timeSinceAnswerDisplayStart = 0f;
+            UpdateAction = delegate(float dt) {answersDisplayUpdate(dt, endCallback);};          
+        }
+
+
+        private void processBattleResults(int winner, int loser, int fightZone, Commander command)
+        {
+
             lock (_commanders)
             {
-                Console.WriteLine("\nonBattleResult\n");
+                command.PositionLocked = true;
+                _radialUI = null;
+                clearProgressAndDialog();
 
-                Console.WriteLine("\n" + data.Json.ToJsonString() + "\n");
+                Action endCallback;
+                List<Commander> commandsToMove = new List<Commander>();
+                List<Vector2> starts, ends;
+                starts = new List<Vector2>();
+                ends = new List<Vector2>();
 
-                BattleResult br;
-                BattleResultRoot root = Newtonsoft.Json.JsonConvert.DeserializeObject<BattleResultRoot>(data.Json.ToJsonString());
-
-                br = root.args[0];
-
-                Console.WriteLine("winner : " + br.winner + " looser : " + br.loser + " attacker : " + command.Owner + " fightzone : " + fightZone);
-
-                if (command.Owner == br.winner)
+                if (command.Owner == winner)
                 {
                     _map.setZoneOwner(fightZone, command.Owner);
-                    ServerCom.Instance.Socket.Emit("territoryWon", new
-                    {
-                        zone = fightZone - 1,
-                        owner = command.Owner
-                    });
 
                     foreach (Commander looserCommand in _commanders)
                     {
-                        if (looserCommand.Owner == br.loser
+                        if (looserCommand.Owner == loser
                             && _map.getZoneAt(looserCommand.Position) == fightZone)
                         {
-                            int newZone = _map.getClosestZoneOfOwner(br.loser, fightZone);
-                            looserCommand.Position = _map.getCenterOfZone(newZone);
+                            commandsToMove.Add(looserCommand);
+
+                            int newZone = _map.getClosestZoneOfOwner(loser, fightZone);
+                            //looserCommand.Position = _map.getCenterOfZone(newZone);
+                            ends.Add(_map.getCenterOfZone(newZone));
+                            starts.Add(looserCommand.Position);
                             looserCommand.PositionLocked = true;
                         }
                     }
 
+                    endCallback = delegate()
+                    {
+                        ServerCom.Instance.Socket.Emit("territoryWon", new
+                        {
+                            zone = fightZone - 1,
+                            owner = command.Owner
+                        });
+
+                        UpdateAction = emptyUpdate;
+                        ServerCom.Instance.sendSimpleMessage("nextPhase3");
+                        Console.WriteLine("\n\n send nextPhase3\n");
+                    };
                 }
                 else
                 {
                     Console.WriteLine("\nbattle lost, fall back to " + command.AttackStartZone + "\n");
                     //put attacker back to his start zone
-                    command.Position = _map.getCenterOfZone(command.AttackStartZone);
+                    //command.Position = _map.getCenterOfZone(command.AttackStartZone);
+
+                    commandsToMove.Add(command);
+                    starts.Add(command.Position);
+                    ends.Add(_map.getCenterOfZone(command.AttackStartZone));
+
+                    endCallback = delegate()
+                    {
+                        UpdateAction = emptyUpdate;
+                        ServerCom.Instance.sendSimpleMessage("nextPhase3");
+                        Console.WriteLine("\n\n send nextPhase3\n");
+                    };
                 }
 
-                command.PositionLocked = true;
+                _timeSinceAnimStart = 0f;
+                UpdateAction = delegate(float dt)
+                {
+                    animCommanderMoveUpdate(dt, endCallback, starts, ends, commandsToMove);
+                };
+            }
+        }
 
-                UpdateAction = emptyUpdate;
-                ServerCom.Instance.sendSimpleMessage("nextPhase3");
+        private void animCommanderMoveUpdate(float dt, Action endCallBack, List<Vector2> starts, List<Vector2> ends
+            , List<Commander> commands)
+        {
+            commonUpdate(dt);
+
+            _timeSinceAnimStart += dt;
+
+            for(int i = 0; i < commands.Count; ++i)
+            {
+                Commander command = commands[i];
+                command.Position = Vector2.Lerp(starts[i], ends[i], Utils.hill(_timeSinceAnimStart / _animMoveDuration));   
+            }
+
+            if (_timeSinceAnimStart >= _animMoveDuration)
+            {
+                endCallBack();
             }
         }
 
@@ -873,7 +978,7 @@ namespace TestXNA.Sources.GameRooms
             NodeJSClient.ServerCom.Instance.captureZonesCB = onCaptureTerritories;
             NodeJSClient.ServerCom.Instance.placeCommandersCB = onPlaceCommanders;
             NodeJSClient.ServerCom.Instance.questionCB = onQuestion;
-            //NodeJSClient.ServerCom.Instance.answersReceivedCB = onQuestionAnswered;
+            NodeJSClient.ServerCom.Instance.answersReceivedCB = onQuestionAnswered;
             NodeJSClient.ServerCom.Instance.playerMoveCB = onMoveRequested;
             //NodeJSClient.ServerCom.Instance.battleResultCB = onBattleResult; -> done in lookForMove
 
@@ -902,6 +1007,7 @@ namespace TestXNA.Sources.GameRooms
             _ropeSprite = MyGame.ContentManager.Load<Texture2D>("Images/rope");
             _radialUICenter = MyGame.ContentManager.Load<Texture2D>("Images/centralRose");
             _playerUIBack = MyGame.ContentManager.Load<Texture2D>("Images/playerScroll");
+            _radialProgress = MyGame.ContentManager.Load<Texture2D>("Images/centralProgress");
 
             Rectangle stretchAreaButton = new Rectangle(15, 20, 70, 60);
             _buttonStretchImage = new UIElements.StretchableImage(_buttonTexture, stretchAreaButton);
@@ -979,12 +1085,13 @@ namespace TestXNA.Sources.GameRooms
             MyGame.SpriteBatch.Draw(_iconImage, _userPosition, Color.White);
 
             drawPlayersUI();
-            drawRadialUI();
 
             foreach (Commander commander in _commanders)
             {
                 commander.draw();
             }
+
+            drawRadialUI();
         }
 
         private void drawPopups()

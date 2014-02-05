@@ -47,9 +47,10 @@ namespace TestXNA.Sources.UIElements
 
         public void updateArea()
         {
-            int width;
-            int height;
-            if (_angle % (float)Math.PI == 0)
+            int width = _width;
+            int height = _height;
+            
+            /*if (_angle % (float)Math.PI == 0)
             {
                 width = _width;
                 height = _height;
@@ -58,7 +59,7 @@ namespace TestXNA.Sources.UIElements
             {
                 width = _height;
                 height = _width;
-            }
+            }*/
 
             _area = new Rectangle((int)_position.X - _width / 2, (int)_position.Y - height / 2, width, height);
             _position = Utils.pointToVector2(_area.Center);
@@ -66,7 +67,7 @@ namespace TestXNA.Sources.UIElements
 
         public override void draw()
         {
-            _buttonTexture.draw(_area, _isTouched ? MyGame.ColorPanel.buttonTouchedColor : MyGame.ColorPanel.buttonColor);
+            _buttonTexture.draw(_area, _isTouched ? MyGame.ColorPanel.buttonTouchedColor : MyGame.ColorPanel.buttonColor, _angle);
 
             MyGame.SpriteBatch.DrawString(MyGame.BasicFont, _text, _position, MyGame.ColorPanel.textColor, _angle,
                 MyGame.BasicFont.MeasureString(_text) / 2f, _scale, SpriteEffects.None, 0f);
