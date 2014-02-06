@@ -242,7 +242,7 @@
       <Processor>FontDescriptionProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Fonts\Text.xnb</Output>
-      <Time>2014-01-24T16:48:08.3942518+01:00</Time>
+      <Time>2014-02-06T21:48:55.7149333+01:00</Time>
     </Item>
     <Item>
       <Source>Images\Commanders\Conqui1.png</Source>
@@ -314,7 +314,7 @@
       <Processor>FontDescriptionProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Fonts\TextBold.xnb</Output>
-      <Time>2014-01-25T12:22:36.5474829+01:00</Time>
+      <Time>2014-02-06T21:46:34.8598769+01:00</Time>
     </Item>
     <Item>
       <Source>Images\Commanders\ConquiFace1.png</Source>
@@ -359,7 +359,7 @@
       <Processor>FontDescriptionProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Fonts\TextSmall.xnb</Output>
-      <Time>2014-01-25T14:54:16.0659456+01:00</Time>
+      <Time>2014-02-06T21:46:13.8666761+01:00</Time>
     </Item>
     <Item>
       <Source>Images\table.png</Source>

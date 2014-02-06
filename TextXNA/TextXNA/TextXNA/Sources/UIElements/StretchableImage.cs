@@ -62,11 +62,12 @@ namespace TestXNA.Sources.UIElements
 
             Rectangle imgBounds = new Rectangle(0, 0, image.Width, image.Height);
 
-            _rect = splitRect(imgBounds, stretchArea);
+            _rect = initalSplitRect(imgBounds, stretchArea);
             _image = splitImage(_rect, image);
         }
 
-        private SplitedRect splitRect(Rectangle boundingRect, Rectangle stretchArea)
+
+        private SplitedRect initalSplitRect(Rectangle boundingRect, Rectangle stretchArea)
         {
             SplitedRect splited = new SplitedRect();
 
@@ -105,8 +106,12 @@ namespace TestXNA.Sources.UIElements
         }
 
 
-
-        private SplitedRect splitRect2(Rectangle boundingRect)
+        /// <summary>
+        /// Create a splited rect stretched to fit the boudongRect
+        /// </summary>
+        /// <param name="boundingRect"></param>
+        /// <returns></returns>
+        private SplitedRect splitRect(Rectangle boundingRect)
         {
             SplitedRect splited = new SplitedRect();
 
@@ -163,7 +168,7 @@ namespace TestXNA.Sources.UIElements
 
         public void draw(Rectangle targetRect, Color color, float angle)
         {
-            SplitedRect drawRect = splitRect2(targetRect);
+            SplitedRect drawRect = splitRect(targetRect);
             Rectangle[] arrayRect = drawRect.toArray();
             Texture2D[] arrayImage = _image.toArray();
 
@@ -189,32 +194,11 @@ namespace TestXNA.Sources.UIElements
                     positionAngle += angle;
 
                     newCenter = new Vector2((float)Math.Cos(positionAngle), (float)Math.Sin(positionAngle));
-                    newCenter *= length;
+                    newCenter *= (length - 1f);
                     newCenter += imageCenter;
                 }
                 MyGame.SpriteBatch.Draw(arrayImage[i], newCenter, null, Color.White, angle, origin, scale, SpriteEffects.None, 0f);
-
-                //MyGame.SpriteBatch.Draw(arrayImage[i], arrayRect[i], color);
             }
-            //MyGame.SpriteBatch.Draw(_image._center, drawRect.centerR, color);
-            /*MyGame.SpriteBatch.Draw(_image._topLeft, drawRect.topLeftR, color);
-            MyGame.SpriteBatch.Draw(_image._topRight, drawRect.topRightR, color);
-            MyGame.SpriteBatch.Draw(_image._left, drawRect.leftR, color);
-            MyGame.SpriteBatch.Draw(_image._right, drawRect.rightR, color);
-            MyGame.SpriteBatch.Draw(_image._bottomLeft, drawRect.bottomLeftR, color);
-            MyGame.SpriteBatch.Draw(_image._bottomRight, drawRect.bottomRightR, color);
-            MyGame.SpriteBatch.Draw(_image._topCenter, drawRect.topCenterR, color);
-            MyGame.SpriteBatch.Draw(_image._bottomCenter, drawRect.bottomCenterR, color);*/
-
-
-            /*MyGame.SpriteBatch.Draw(_image._topLeft, _rect.topLeftR, color);
-            MyGame.SpriteBatch.Draw(_image._topRight, _rect.topRightR, color);
-            MyGame.SpriteBatch.Draw(_image._left, _rect.leftR, color);
-            MyGame.SpriteBatch.Draw(_image._right, _rect.rightR, color);
-            MyGame.SpriteBatch.Draw(_image._bottomLeft, _rect.bottomLeftR, color);
-            MyGame.SpriteBatch.Draw(_image._bottomRight, _rect.bottomRightR, color);
-            MyGame.SpriteBatch.Draw(_image._topCenter, _rect.topCenterR, color);
-            MyGame.SpriteBatch.Draw(_image._bottomCenter, _rect.bottomCenterR, color);*/
         }
     }
 }

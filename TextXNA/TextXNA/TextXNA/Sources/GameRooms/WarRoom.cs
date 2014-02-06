@@ -107,6 +107,7 @@ namespace TestXNA.Sources.GameRooms
 
         //Question Timeout data
 
+        private string _lastQestionText = "no text";
         private float _timeSinceLastQuestion = 0f;
         private float _questionMaxAllowedTime = 20f;
         private int _questionId = 0;
@@ -391,15 +392,15 @@ namespace TestXNA.Sources.GameRooms
 
             UIElements.SimpleButton button = new UIElements.SimpleButton(
             _buttonStretchImage,
-            new Rectangle((int)MyGame.ScreenCenter.X - 400, (int)MyGame.ScreenCenter.Y + MyGame.ScreenArea.Height / 4
-                , 800, 200),
-            "OK, and stop bothering  with messages !");
+            new Rectangle((int)MyGame.ScreenCenter.X - 200, (int)MyGame.ScreenCenter.Y + MyGame.ScreenArea.Height / 4
+                , 400, 200),
+            "OK");
 
             Rectangle boxArea = new Rectangle(0, 0, 400, 600);
 
             _commanderInstructionsDialog = new DialogBoxes.ButtonDialogBox(
                 button,
-                "Place commanders & stuff",
+                "Spread your commanders on the territories you own.\nChoose wisely.",
                 boxArea,
                 _messageStretchImage);
 
@@ -478,6 +479,11 @@ namespace TestXNA.Sources.GameRooms
             Console.WriteLine("\n\n");
 
             initProgressBar();
+
+            QuestionDataRoot root = Newtonsoft.Json.JsonConvert.DeserializeObject<QuestionDataRoot>(data.Json.ToJsonString());
+            QuestionData questionData = root.args[0];
+
+            _lastQestionText = questionData.title;
 
             UpdateAction = questionWaitUpdate;
         }
@@ -577,7 +583,8 @@ namespace TestXNA.Sources.GameRooms
 
         private void initAnswerUI(List<OrderedAnswer> orderedAnswers )
         {
-            RadialAnswerContainer contain = new UIElements.RadialAnswerContainer(_radialUICenter, _radialProgress, 500f, 150f);
+            RadialAnswerContainer contain = new UIElements.RadialAnswerContainer(_radialUICenter, _radialProgress, 500f, 150f
+                , _lastQestionText);
             contain.TouchCenterCallback = fastForwardAnswerWait;
 
             _radialUI = contain;
@@ -585,7 +592,7 @@ namespace TestXNA.Sources.GameRooms
 
             foreach (OrderedAnswer answer in orderedAnswers)
             {
-                UIElements.AnswerUI ansUI = new UIElements.AnswerUI(
+                UIElements.PlayerResultUI ansUI = new UIElements.PlayerResultUI(
                     answer.id
                     , best
                     , "answer : " + answer.value.ToString()
@@ -820,6 +827,7 @@ namespace TestXNA.Sources.GameRooms
 
         private void processBattleResults(int winner, int loser, int fightZone, Commander command)
         {
+            Console.WriteLine("process battle results");
 
             lock (_commanders)
             {

@@ -349,6 +349,11 @@ namespace TestXNA
         /// <returns></returns>
         public Vector2 getCenterOfZone(int zone)
         {
+            if (zone == -1)
+            {
+                return Vector2.Zero;
+            }
+
             Vector2 center = Vector2.Zero;
             
             Vector2 sum = Vector2.Zero;

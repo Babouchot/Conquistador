@@ -17,8 +17,10 @@ namespace TestXNA.Sources.GameData
     {
         private static PlayerData[] _instance;
 
+        private Color _textColor;
         private Color _baseColor;
         private string _name = "";
+        private int _score = 0;
         private Texture2D _fullImage;
         private Texture2D _faceImage;
 
@@ -41,9 +43,10 @@ namespace TestXNA.Sources.GameData
             set { _name = value; }
         }
 
-        public PlayerData(Color baseCol)
+        public PlayerData(Color baseCol, Color textCol)
         {
             _baseColor = baseCol;
+            _textColor = textCol;
         }
 
         public Color BaseColor
@@ -72,11 +75,7 @@ namespace TestXNA.Sources.GameData
 
         public Color OppositeColor
         {
-            get
-            {
-                Color col = new Color(255 - _baseColor.R, 255 - _baseColor.G, 255 - _baseColor.B, _baseColor.A * 2f);
-                return col;
-            }
+            get { return _textColor; }
         }
 
 
@@ -87,13 +86,19 @@ namespace TestXNA.Sources.GameData
                 if (_instance == null)
                 {
                     _instance = new PlayerData[4];
-                    _instance[0] = new PlayerData(new Color(255, 0, 0, 122));
-                    _instance[1] = new PlayerData(new Color(255, 255, 0, 122));
-                    _instance[2] = new PlayerData(new Color(0, 255, 0, 122));
-                    _instance[3] = new PlayerData(new Color(0, 0, 255, 122));
+                    _instance[0] = new PlayerData(new Color(255, 0, 0, 122), new Color(0, 0, 0, 255));
+                    _instance[1] = new PlayerData(new Color(255, 255, 0, 122), new Color(0, 0, 0, 255));
+                    _instance[2] = new PlayerData(new Color(0, 255, 0, 122), new Color(0, 0, 0, 255));
+                    _instance[3] = new PlayerData(new Color(0, 0, 255, 122), new Color(255, 255, 255, 255));
                 }
                 return PlayerData._instance;
             }
+        }
+
+        public int Score
+        {
+            get { return _score; }
+            set { _score = value; }
         }
 
         public static void loadImages(ContentManager contentLoader)

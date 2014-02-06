@@ -64,6 +64,7 @@ namespace TestXNA
         private IRoom _currentRoom;
         private WarRoom _warRoom;
         private WaitingRoom _waitingRoom;
+        private EndGameRoom _endGameRoom;
         
         /// <summary>
         /// The target receiving all surface input for the application.
@@ -368,6 +369,7 @@ namespace TestXNA
             //construct rooms
             _warRoom = new WarRoom();
             _waitingRoom = new WaitingRoom();
+            _endGameRoom = new EndGameRoom();
             //_currentRoom = _warRoom;
             _currentRoom = _waitingRoom;
             _waitingRoom.startGameCallback = goToWarRoom;
@@ -377,6 +379,7 @@ namespace TestXNA
         {
             Sources.NodeJSClient.ServerCom.Instance.sendSimpleMessage("startGame");
             _currentRoom = _warRoom;
+            //_currentRoom = _endGameRoom;
         }
 
 
