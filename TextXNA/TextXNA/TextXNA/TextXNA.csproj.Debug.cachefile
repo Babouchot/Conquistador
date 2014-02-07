@@ -45,6 +45,12 @@ Content\Images\rope.xnb
 Content\Images\centralRose.xnb
 Content\Images\Arrow2.xnb
 Content\Images\centralProgress.xnb
+Content\Sounds\endMusic.xnb
+Content\Sounds\waitMusic.xnb
+Content\Sounds\warMusic.xnb
+Content\Sounds\endMusic.wma
+Content\Sounds\waitMusic.wma
+Content\Sounds\warMusic.wma
 Content\Images\GameThumbnail.png
 Resources\icon.png
 TextXNA.xml

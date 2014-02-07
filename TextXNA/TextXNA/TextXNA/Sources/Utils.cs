@@ -109,7 +109,7 @@ namespace TestXNA.Sources
                 }
             }
             return "http://"+localIP+":8080";
-            //return "http://192.168.1.192:8080";
+            //return "http://192.168.1.7:8080";
         }
 
         #region Create Part Image

@@ -44,6 +44,9 @@ namespace TestXNA.Sources.GameRooms
         private Texture2D _playerUIBack;
         private Texture2D _roomBackground;
 
+        private SoundEffect _music;
+        private SoundEffectInstance _musicInstance;
+
         public WaitingRoom()
         {
             Microsoft.Xna.Framework.Rectangle area = new Microsoft.Xna.Framework.Rectangle(
@@ -51,7 +54,12 @@ namespace TestXNA.Sources.GameRooms
                 , (int)(MyGame.ScreenCenter.Y * 1.75f) - _buttonHeight / 2
                 , _buttonWidth
                 , _buttonHeight);
-            
+
+            /*_music = MyGame.ContentManager.Load<SoundEffect>("Sounds/waitMusic");
+            _musicInstance = _music.CreateInstance();
+            _musicInstance.IsLooped = true;
+            _musicInstance.Play();*/
+
             _buttonBack = MyGame.ContentManager.Load<Texture2D>("Images/buttonScroll");
             _roomBackground = MyGame.ContentManager.Load<Texture2D>("Images/WaitingBack");
             _playerUIBack = MyGame.ContentManager.Load<Texture2D>("Images/playerScroll");
@@ -66,7 +74,7 @@ namespace TestXNA.Sources.GameRooms
 
             _playerUIs = new List<UIElements.LargePLayerUI>();
 
-            _posStart = new Vector2(MyGame.ScreenArea.Width / 5, 450f);
+            _posStart = new Vector2(MyGame.ScreenArea.Width / 5, 470f);
             _offset = new Vector2(MyGame.ScreenArea.Width / 5, 0f);
 
 
@@ -118,7 +126,7 @@ namespace TestXNA.Sources.GameRooms
                 _QRCode.SetData<Color>(pixels);
 
                 int recWidth = MyGame.ScreenArea.Width / 8;
-                _QrCodeArea = new Rectangle((int)(MyGame.ScreenCenter.X - recWidth / 2), 10, recWidth, recWidth);
+                _QrCodeArea = new Rectangle((int)(MyGame.ScreenCenter.X - recWidth / 2), 30, recWidth, recWidth);
 
                 NodeJSClient.ServerCom.Instance.playerConnectCB = OnPlayerConnect;
                 NodeJSClient.ServerCom.Instance.Execute();
@@ -163,6 +171,12 @@ namespace TestXNA.Sources.GameRooms
 
             if (_QRCode != null)
             {
+                Rectangle rect = _QrCodeArea;
+                rect.X -= 10;
+                rect.Y -= 10;
+                rect.Width += 20;
+                rect.Height += 20;
+                MyGame.SpriteBatch.Draw(MyGame.White, rect, Color.White);
                 MyGame.SpriteBatch.Draw(_QRCode, _QrCodeArea, Color.White);
             }
 

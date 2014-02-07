@@ -66,6 +66,9 @@ namespace TestXNA.Sources.GameRooms
         private Texture2D _radialProgress;
         private List<Texture2D> _mapZones = null;
 
+        private SoundEffect _music;
+        private SoundEffectInstance _musicInstance;
+
         private UIElements.StretchableImage _buttonStretchImage;
         private UIElements.StretchableImage _messageStretchImage;
 
@@ -111,7 +114,7 @@ namespace TestXNA.Sources.GameRooms
 
         private string _lastQestionText = "no text";
         private float _timeSinceLastQuestion = 0f;
-        private float _questionMaxAllowedTime = 20f;
+        private float _questionMaxAllowedTime = 40f;
         private int _questionId = 0;
         private UIElements.ProgressBar _progressBar = null;
         private UIElements.AnimatedTexture _animatedFire = null;
@@ -573,6 +576,12 @@ namespace TestXNA.Sources.GameRooms
 
             initAnswerUI(answers.orderedAnswers);
 
+            clearProgressAndDialog();
+            /*ServerCom.Instance.Socket.Emit("timeout", new
+            {
+                id = 0//_questionId
+            });*/
+
             _timeSinceAnswerDisplayStart = 0f;
             UpdateAction = delegate(float dt) { answersDisplayUpdate(dt, afterAnswerDisplayPhase1); };
         }
@@ -593,16 +602,24 @@ namespace TestXNA.Sources.GameRooms
             _radialUI = contain;
             bool best = true;
 
+            int count = 0;
+
             foreach (OrderedAnswer answer in orderedAnswers)
             {
+                if (count >= 4)
+                {
+                    break;
+                }
+
                 UIElements.PlayerResultUI ansUI = new UIElements.PlayerResultUI(
                     answer.id
                     , best
-                    , "answer : " + answer.value.ToString()
+                    , "answer : " + (answer.value.ToString() == "void" ? "Timeout" : answer.value.ToString())
                     , _playerUIBack);
 
                 _radialUI.ContainedUIs.Add(ansUI);
                 best = false;
+                ++count;
             }
 
             _radialUI.Position = MyGame.ScreenCenter;
@@ -670,6 +687,7 @@ namespace TestXNA.Sources.GameRooms
                     int zone = _map.getZoneAt(command.Position);
 
                     command.AttackStartZone = zone;
+                    command.IsPlaying = true;
 
                     List<int> reachables = _map.getZonesReachableFrom(zone);
 
@@ -686,6 +704,10 @@ namespace TestXNA.Sources.GameRooms
                         Arrow arrow = new Arrow(_arrowImage, startCenter, center, col);
                         command.Arrows.Add(arrow);
                     }
+                }
+                else
+                {
+                    command.IsPlaying = false;
                 }
             }
 
@@ -1017,6 +1039,11 @@ namespace TestXNA.Sources.GameRooms
             _map = new TestXNA.Map(MyGame.SURFACE_WIDTH, MyGame.SURFACE_HEIGHT);
             _map.loadMap();
 
+            /*_music = MyGame.ContentManager.Load<SoundEffect>("Sounds/warMusic");
+            _musicInstance = _music.CreateInstance();
+            _musicInstance.IsLooped = true;
+            _musicInstance.Play();*/
+
             GraphicsDevice GraphicsDevice = MyGame.SpriteBatch.GraphicsDevice;
 
             _iconImage = MyGame.ContentManager.Load<Texture2D>("Images/GameThumbnail");
@@ -1107,7 +1134,7 @@ namespace TestXNA.Sources.GameRooms
                 }
             }
 
-            MyGame.SpriteBatch.Draw(_iconImage, _userPosition, Color.White);
+            //MyGame.SpriteBatch.Draw(_iconImage, _userPosition, Color.White);
 
             drawPlayersUI();
 

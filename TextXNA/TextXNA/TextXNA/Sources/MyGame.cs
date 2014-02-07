@@ -58,8 +58,8 @@ namespace TestXNA
         private Texture2D _tableBorder;
         private Rectangle _borderArea;
 
-        private int borderStart = 70;
-        private int borderWidth = 100;
+        private int borderStart = 90;
+        private int borderWidth = 120;
 
         private IRoom _currentRoom;
         private WarRoom _warRoom;
@@ -77,9 +77,10 @@ namespace TestXNA
         /// <summary>
         /// Default constructor.
         /// </summary>
-        public MyGame()
+        public MyGame() : base()
         {
             graphics = new GraphicsDeviceManager(this);
+            
             Content.RootDirectory = "Content";
         }
 
@@ -163,6 +164,10 @@ namespace TestXNA
             {
                 //screenTransform = inverted;
             }
+
+            //graphics.IsFullScreen = true;
+            //graphics.PreferredBackBufferHeight = GraphicsDevice.Viewport.Height;
+            //graphics.PreferredBackBufferWidth = GraphicsDevice.Viewport.Width;
 
             myInitialize();
 

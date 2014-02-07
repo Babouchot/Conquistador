@@ -25,6 +25,10 @@ namespace TestXNA.Sources.GameData
         private int _attackStartZone = 0;
         private int _currentZone = 0;
 
+        private float _time = 0f;
+        private float _maxTime = 0.5f;
+        private float _coef = 1f;
+
         private List<Arrow> _arrows;
 
         public Commander(Texture2D highlight)
@@ -41,6 +45,19 @@ namespace TestXNA.Sources.GameData
                 arrow.Position = _position;
             }
 
+            if (_time >= _maxTime)
+            {
+                _coef = -1f;
+            }
+            else if(_time <= 0f)
+            {
+                _coef = 1f;
+            }
+
+            _time += _coef*dt;
+            _time = Math.Min(_time, _maxTime);
+            _time = Math.Max(_time, 0f);
+
             base.update(dt);
         }
 
@@ -52,7 +69,15 @@ namespace TestXNA.Sources.GameData
             }
 
             float scale = Draw_Scale;
-            Color col = PlayerData.Instance[_owner].HighlitColor;
+
+            float dx = _time/_maxTime;
+            dx = 0.5f + dx/2f;
+
+            Color col = IsPlaying ? PlayerData.Instance[_owner].HighlitColor : PlayerData.Instance[_owner].BaseColor;
+            if (IsPlaying)
+            {
+                col.A = (byte) ((float)col.A * dx);
+            }
 
             Vector2 highlightCenter = new Vector2(_highlight.Width / 2f, _highlight.Height / 2f);
 
@@ -98,6 +123,9 @@ namespace TestXNA.Sources.GameData
         }
 
         public bool PositionLocked
+        { get; set; }
+
+        public bool IsPlaying 
         { get; set; }
     }
 }

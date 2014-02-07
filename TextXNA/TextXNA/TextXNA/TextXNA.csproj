@@ -124,7 +124,7 @@
     <Compile Include="Sources\UIElements\AnimatedProgressBar.cs" />
     <Compile Include="Sources\UIElements\AnimatedTexture.cs" />
     <Compile Include="Sources\UIElements\PlayerResultUI.cs" />
-    <Compile Include="Sources\UIElements\Arrow.cs" />
+    <Compile Include="Sources\GameData\Arrow.cs" />
     <Compile Include="Sources\DialogBoxes\ConditionalDialogBox.cs" />
     <Compile Include="Sources\DialogBoxes\DialogBox.cs" />
     <Compile Include="Sources\DialogBoxes\MessageDialogBox.cs" />
