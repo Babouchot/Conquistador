@@ -12,7 +12,7 @@ function Game(playersArray, tableSocket, io) {
 	this.players = playersArray;
 	this.table = tableSocket;
 	this.io = io;
-	this.MAXTURNS = 7;
+	this.MAXTURNS = 2;
 	this.playersAnswers = [];
 
 	this.currentQuestion = 0;
@@ -167,7 +167,7 @@ function Game(playersArray, tableSocket, io) {
 				p.playerSocket.emit('question', self.question);
 			}
 
-			self.table.emit('question', self.question);
+			self.table.emit('question', self.question.title);
 			console.log("question emitted");
 		}
 
@@ -443,7 +443,7 @@ function Game(playersArray, tableSocket, io) {
 
 				play1.playerSocket.emit('question', self.question);
 				play2.playerSocket.emit('question', self.question);
-				self.table.emit('question', self.question);
+				self.table.emit('question', self.question.title);
 				
 			});
 
@@ -482,13 +482,18 @@ function Game(playersArray, tableSocket, io) {
 	this.phase4 = function () {
 		console.log('phase 4 started');
 		this.players.sort(function (player1, player2) {
-			return player1.score - player2.score;
+			return player1.territories.length - player2.territories.length;
 		});
-		//WTF ?
-		this.table.emit('results', players.serialize());
+		var seriPlay = [];
+		
+		for(var i = 0; i < 4; ++i)
+		{
+			seriPlay.push(self.players[i].gameID);
+		}
+		this.table.emit('results', seriPlay);
 		var position = 0;
 		for (var i = 0; i < this.players.length; ++i) {
-			this.players[i].playerSocket.emit('results', position++);
+			self.players[i].playerSocket.emit('results', position++);
 		}
 	};
 

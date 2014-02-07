@@ -160,7 +160,7 @@ var questions = [
     },
     {
         'type': "open",
-        'title': "In what year was the president of France, M. René Coty, elected?",
+        'title': "In what year was the president of France, M. Rene Coty, elected?",
         'answer': 1954,
         'id' : 0
     },

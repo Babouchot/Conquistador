@@ -47,6 +47,8 @@ namespace TestXNA.Sources.GameRooms
 
         #region variables
 
+        public Action endGameCallback; 
+
         private Texture2D _popupImage;
         private Texture2D _iconImage;
         private Texture2D _arrowImage;
@@ -248,11 +250,12 @@ namespace TestXNA.Sources.GameRooms
         /// <returns></returns>
         private bool pickZonesForPlayer(int player, int nbOfZones, float dt)
         {
-            updateDialogBox(dt);
 
             if (_pickZoneDialog.IsShown)
             {
                 _pickZoneData.zonePicked[player] = new List<int>();
+
+                updateDialogBox(dt);
                 return false;
             }
 
@@ -481,9 +484,9 @@ namespace TestXNA.Sources.GameRooms
             initProgressBar();
 
             QuestionDataRoot root = Newtonsoft.Json.JsonConvert.DeserializeObject<QuestionDataRoot>(data.Json.ToJsonString());
-            QuestionData questionData = root.args[0];
+            //QuestionData questionData = root.args[0];
 
-            _lastQestionText = questionData.title;
+            _lastQestionText = root.args[0];
 
             UpdateAction = questionWaitUpdate;
         }
@@ -959,6 +962,19 @@ namespace TestXNA.Sources.GameRooms
 
         #endregion
 
+        #region results
+
+        private void onResults(SocketIOClient.Messages.IMessage data)
+        {
+            Console.WriteLine("\n on results \n");
+            Console.WriteLine(data.Json.ToJsonString());
+
+            //ResultRoot res = Newtonsoft.Json.JsonConvert.DeserializeObject<ResultRoot>(data.Json.ToJsonString());
+            endGameCallback();
+        }
+
+        #endregion
+
         private void emptyUpdate(float dt)
         {
             commonUpdate(dt);
@@ -988,6 +1004,7 @@ namespace TestXNA.Sources.GameRooms
             NodeJSClient.ServerCom.Instance.questionCB = onQuestion;
             NodeJSClient.ServerCom.Instance.answersReceivedCB = onQuestionAnswered;
             NodeJSClient.ServerCom.Instance.playerMoveCB = onMoveRequested;
+            NodeJSClient.ServerCom.Instance.resultCB = onResults;
             //NodeJSClient.ServerCom.Instance.battleResultCB = onBattleResult; -> done in lookForMove
 
             //My initialization logic

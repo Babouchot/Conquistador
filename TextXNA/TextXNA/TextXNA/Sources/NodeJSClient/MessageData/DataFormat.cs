@@ -32,11 +32,12 @@ namespace TestXNA.Sources.NodeJSClient.MessageData
         public List<int> orderedPlayers{ get; set; }
     };
 
+    /*
     public class QuestionData
     {
         public string type { get; set; }
         public string title { get; set; }
-        public int answer { get; set; }
+        public object answer { get; set; }
         public int id { get; set; }
     };
 
@@ -45,6 +46,13 @@ namespace TestXNA.Sources.NodeJSClient.MessageData
         public string name { get; set; }
         public List<QuestionData> args { get; set; }
     };
+     */
+
+    public class QuestionDataRoot
+    {
+        public string name { get; set; }
+        public List<string> args { get; set; }
+    }
 
 
     public class OrderedAnswer
@@ -88,5 +96,11 @@ namespace TestXNA.Sources.NodeJSClient.MessageData
     {
         public string name { get; set; }
         public List<BattleResult> args { get; set; }
+    }
+    
+    public class ResultRoot
+    {
+        public string name { get; set; }
+        public List<List<int>> args { get; set; }
     }
 }

@@ -373,6 +373,7 @@ namespace TestXNA
             //_currentRoom = _warRoom;
             _currentRoom = _waitingRoom;
             _waitingRoom.startGameCallback = goToWarRoom;
+            _warRoom.endGameCallback = goToEndRoom;
         }
 
         private void goToWarRoom()
@@ -382,6 +383,12 @@ namespace TestXNA
             //_currentRoom = _endGameRoom;
         }
 
+        private void goToEndRoom()
+        {
+            //Sources.NodeJSClient.ServerCom.Instance.sendSimpleMessage("startGame");
+            //_currentRoom = _warRoom;
+            _currentRoom = _endGameRoom;
+        }
 
         private void drawRoom()
         {

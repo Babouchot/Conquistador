@@ -41,6 +41,7 @@ namespace TestXNA.Sources.NodeJSClient
         public Action<SocketIOClient.Messages.IMessage> answersReceivedCB;
         public Action<SocketIOClient.Messages.IMessage> playerMoveCB;
         public Action<SocketIOClient.Messages.IMessage> battleResultCB;
+        public Action<SocketIOClient.Messages.IMessage> resultCB;
 
         public void Execute()
         {
@@ -111,6 +112,17 @@ namespace TestXNA.Sources.NodeJSClient
             {
                 Console.WriteLine("\r\nrequest ID event...\r\n");
                 socket.Emit("tableIdentity", new { pseudo = "fack yah !" });
+
+            });
+
+            socket.On("results", (mes) =>
+            {
+                Console.WriteLine("\n results received \n");
+
+                if (resultCB != null)
+                {
+                    resultCB(mes);
+                }
 
             });
 
