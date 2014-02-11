@@ -21,6 +21,9 @@ namespace TestXNA.Sources.UIElements
 
         public PlayerResultUI(int player, bool isBest, string text, Texture2D back)
         {
+
+            Console.WriteLine("\n init result with : "+text+"\n");
+
             _background = back;
             _player = player;
             _isBest = isBest;
@@ -46,10 +49,16 @@ namespace TestXNA.Sources.UIElements
             Vector2 targetDir = _target - _position;
             targetDir.Normalize();
 
-            Vector2 stringPos = _position - targetDir * backSize * 0.35f * _scale ;
+            Vector2 stringPos = _position - targetDir * backSize.Y * 0.3f * _scale ;
 
             MyGame.SpriteBatch.DrawString(MyGame.BasicFont, _text,
-                stringPos, oppositeCol, _angle, MyGame.BasicFont.MeasureString(_text) / 2f, _scale, SpriteEffects.None, 0f); 
+                stringPos, oppositeCol, _angle, MyGame.BasicFont.MeasureString(_text) / 2f, _scale, SpriteEffects.None, 0f);
+
+            string name = GameData.PlayerData.Instance[_player].Name;
+            Vector2 namePos = _position - targetDir * backSize.Y * -0.3f * _scale;
+
+            MyGame.SpriteBatch.DrawString(MyGame.BasicFont, name,
+                namePos, oppositeCol, _angle, MyGame.BasicFont.MeasureString(name) / 2f, _scale, SpriteEffects.None, 0f);
 
         }
 

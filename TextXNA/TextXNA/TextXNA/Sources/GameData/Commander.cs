@@ -18,6 +18,7 @@ namespace TestXNA.Sources.GameData
     class Commander : RotatableUI
     {
         private const float Draw_Scale = 0.5f;
+        private  Vector2 _offset = new Vector2(7f,15f);
         private long tagValue = 0x0f;
         private Texture2D _highlight;
         private int _owner = -1;
@@ -81,7 +82,7 @@ namespace TestXNA.Sources.GameData
 
             Vector2 highlightCenter = new Vector2(_highlight.Width / 2f, _highlight.Height / 2f);
 
-            MyGame.SpriteBatch.Draw(_highlight, _position, null, col, 0f,
+            MyGame.SpriteBatch.Draw(_highlight, _position + _offset, null, col, 0f,
                 highlightCenter, scale, SpriteEffects.None, 0f);
 
             base.draw();

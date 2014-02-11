@@ -65,7 +65,12 @@ namespace TestXNA
         private WarRoom _warRoom;
         private WaitingRoom _waitingRoom;
         private EndGameRoom _endGameRoom;
-        
+
+        private static Song _waitSong;
+        private static Song _endSong;
+        private static Song _warSong;
+
+
         /// <summary>
         /// The target receiving all surface input for the application.
         /// </summary>
@@ -80,7 +85,6 @@ namespace TestXNA
         public MyGame() : base()
         {
             graphics = new GraphicsDeviceManager(this);
-            
             Content.RootDirectory = "Content";
         }
 
@@ -205,6 +209,10 @@ namespace TestXNA
             basicFontBold = Content.Load<SpriteFont>("Fonts/TextBold");
             titleFont = Content.Load<SpriteFont>("Fonts/Title");
             basicFontSmall = Content.Load<SpriteFont>("Fonts/TextSmall");
+
+            _endSong = Content.Load<Song>("Sounds/endMusic");
+            _waitSong = Content.Load<Song>("Sounds/waitMusic");
+            _warSong = Content.Load<Song>("Sounds/warMusic");
 
             Sources.GameData.PlayerData.loadImages(_content);
 
@@ -377,6 +385,7 @@ namespace TestXNA
             _endGameRoom = new EndGameRoom();
             //_currentRoom = _warRoom;
             _currentRoom = _waitingRoom;
+            playWaitSong();
             _waitingRoom.startGameCallback = goToWarRoom;
             _warRoom.endGameCallback = goToEndRoom;
         }
@@ -385,6 +394,7 @@ namespace TestXNA
         {
             Sources.NodeJSClient.ServerCom.Instance.sendSimpleMessage("startGame");
             _currentRoom = _warRoom;
+            playWarSong();
             //_currentRoom = _endGameRoom;
         }
 
@@ -393,6 +403,8 @@ namespace TestXNA
             //Sources.NodeJSClient.ServerCom.Instance.sendSimpleMessage("startGame");
             //_currentRoom = _warRoom;
             _currentRoom = _endGameRoom;
+            _endGameRoom.initScoreUI();
+            playEndSong();
         }
 
         private void drawRoom()
@@ -490,6 +502,26 @@ namespace TestXNA
             set { MyGame.basicFontSmall = value; }
         }
 
+        public static void playEndSong()
+        {
+            MediaPlayer.Stop();
+            MediaPlayer.Play(_endSong);
+            MediaPlayer.IsRepeating = true;
+        }
+
+        public static void playWarSong()
+        {
+            MediaPlayer.Stop();
+            MediaPlayer.Play(_warSong);
+            MediaPlayer.IsRepeating = true;
+        }
+
+        public static void playWaitSong()
+        {
+            MediaPlayer.Stop();
+            MediaPlayer.Play(_waitSong);
+            MediaPlayer.IsRepeating = true;
+        }
 
         #endregion
     }

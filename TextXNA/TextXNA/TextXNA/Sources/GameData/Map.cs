@@ -404,5 +404,20 @@ namespace TestXNA
             return closestZone;
         }
 
+        public int getNbOfZonesForOwner(int owner)
+        {
+            int count = 0;
+
+            foreach (ZoneData zone in _zoneData)
+            {
+                if (zone.Owner == owner)
+                {
+                    ++count;
+                }
+            }
+
+            return count;
+        }
+
     }
 }
