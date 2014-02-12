@@ -424,6 +424,36 @@
       <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\centralProgress.xnb</Output>
       <Time>2014-02-05T22:15:57.6322283+01:00</Time>
     </Item>
+    <Item>
+      <Source>Sounds\endMusic.mp3</Source>
+      <Name>Sounds\endMusic</Name>
+      <Importer>Mp3Importer</Importer>
+      <Processor>SongProcessor</Processor>
+      <Options>None</Options>
+      <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Sounds\endMusic.xnb</Output>
+      <Extra>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Sounds\endMusic.wma</Extra>
+      <Time>2014-02-08T20:05:57.8155853+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Sounds\waitMusic.mp3</Source>
+      <Name>Sounds\waitMusic</Name>
+      <Importer>Mp3Importer</Importer>
+      <Processor>SongProcessor</Processor>
+      <Options>None</Options>
+      <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Sounds\waitMusic.xnb</Output>
+      <Extra>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Sounds\waitMusic.wma</Extra>
+      <Time>2014-02-08T20:05:57.8155853+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Sounds\warMusic.mp3</Source>
+      <Name>Sounds\warMusic</Name>
+      <Importer>Mp3Importer</Importer>
+      <Processor>SongProcessor</Processor>
+      <Options>None</Options>
+      <Output>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Sounds\warMusic.xnb</Output>
+      <Extra>D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Sounds\warMusic.wma</Extra>
+      <Time>2014-02-08T20:05:57.8779855+01:00</Time>
+    </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
       <ContentProjectGUID>{9F5B49DE-A8CE-40B2-8533-3F20B6139DCE}</ContentProjectGUID>

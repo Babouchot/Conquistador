@@ -35,9 +35,6 @@ namespace TestXNA.Sources.GameRooms
         private Texture2D _centerRose;
         private Texture2D _progressTexture;
 
-        private SoundEffect _music;
-        private SoundEffectInstance _musicInstance;
-
         private RadialAnswerContainer _radialUI;
 
         public EndGameRoom()
@@ -47,11 +44,6 @@ namespace TestXNA.Sources.GameRooms
                 , (int)_buttonHeight/2
                 , _buttonWidth
                 , _buttonHeight);
-
-            /*_music = MyGame.ContentManager.Load<SoundEffect>("Sounds/endMusic");
-            _musicInstance = _music.CreateInstance();
-            _musicInstance.IsLooped = true;
-            _musicInstance.Play();*/
 
             _buttonBack = MyGame.ContentManager.Load<Texture2D>("Images/buttonScroll");
             _roomBackground = MyGame.ContentManager.Load<Texture2D>("Images/WaitingBack");
@@ -66,19 +58,18 @@ namespace TestXNA.Sources.GameRooms
             UIElements.StretchableImage stretchButtonTexture = new UIElements.StretchableImage(_buttonBack, stretchAreaButton);
 
             _restartButton = new UIElements.SimpleButton(stretchButtonTexture, area, "Restart");
-
-            initScoreUI();
         }
 
-        private void initScoreUI()
+        public void initScoreUI()
         {
             _radialUI = new RadialAnswerContainer(_centerRose, _progressTexture, 500f, 150f
                 , "Sometimes you win...\nSomtimes you loose...");
 
             for (int i = 0; i < 4; ++i)
             {
-                PlayerResultUI ui = new PlayerResultUI(i, i == 0, "Score : "+PlayerData.Instance[i].Score
+                PlayerResultUI ui = new PlayerResultUI(i, i == 0, "Score : " + PlayerData.Instance[i].Score
                     , _playerUIBack);
+
                 _radialUI.ContainedUIs.Add(ui);
             }
 
@@ -95,6 +86,7 @@ namespace TestXNA.Sources.GameRooms
         public void update(float dt)
         {
             _radialUI.update(dt);
+
             //_restartButton.update(dt);
             ReadOnlyTouchPointCollection touches = MyGame.TouchTarget.GetState();
 

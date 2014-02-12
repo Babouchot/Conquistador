@@ -44,9 +44,6 @@ namespace TestXNA.Sources.GameRooms
         private Texture2D _playerUIBack;
         private Texture2D _roomBackground;
 
-        private SoundEffect _music;
-        private SoundEffectInstance _musicInstance;
-
         public WaitingRoom()
         {
             Microsoft.Xna.Framework.Rectangle area = new Microsoft.Xna.Framework.Rectangle(
@@ -54,11 +51,6 @@ namespace TestXNA.Sources.GameRooms
                 , (int)(MyGame.ScreenCenter.Y * 1.75f) - _buttonHeight / 2
                 , _buttonWidth
                 , _buttonHeight);
-
-            /*_music = MyGame.ContentManager.Load<SoundEffect>("Sounds/waitMusic");
-            _musicInstance = _music.CreateInstance();
-            _musicInstance.IsLooped = true;
-            _musicInstance.Play();*/
 
             _buttonBack = MyGame.ContentManager.Load<Texture2D>("Images/buttonScroll");
             _roomBackground = MyGame.ContentManager.Load<Texture2D>("Images/WaitingBack");

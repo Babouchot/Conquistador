@@ -66,9 +66,6 @@ namespace TestXNA.Sources.GameRooms
         private Texture2D _radialProgress;
         private List<Texture2D> _mapZones = null;
 
-        private SoundEffect _music;
-        private SoundEffectInstance _musicInstance;
-
         private UIElements.StretchableImage _buttonStretchImage;
         private UIElements.StretchableImage _messageStretchImage;
 
@@ -109,12 +106,14 @@ namespace TestXNA.Sources.GameRooms
             public Dictionary<int, List<int>> zonePicked;
         }
 
+        private float _afterButtonTimer = 0f;
+        private float _afterButtonDuration = 1f;
 
         //Question Timeout data
 
         private string _lastQestionText = "no text";
         private float _timeSinceLastQuestion = 0f;
-        private float _questionMaxAllowedTime = 40f;
+        private float _questionMaxAllowedTime = 30f;
         private int _questionId = 0;
         private UIElements.ProgressBar _progressBar = null;
         private UIElements.AnimatedTexture _animatedFire = null;
@@ -126,7 +125,7 @@ namespace TestXNA.Sources.GameRooms
 
         //Move/Turn Data
         private float _timeSinceAnimStart = 0f;
-        private float _animMoveDuration = 3f;
+        private float _animMoveDuration = 5f;
 
         #endregion
 
@@ -204,7 +203,7 @@ namespace TestXNA.Sources.GameRooms
 
                 //move to next player
                 ++_pickZoneData.currentIndex;
-
+                _afterButtonTimer = 0f;
 
                 //re display dialog for new player
                 if (_pickZoneData.currentIndex < players.Count)
@@ -259,6 +258,11 @@ namespace TestXNA.Sources.GameRooms
                 _pickZoneData.zonePicked[player] = new List<int>();
 
                 updateDialogBox(dt);
+                return false;
+            }
+            else if (_afterButtonTimer < _afterButtonDuration)
+            {
+                _afterButtonTimer += dt;
                 return false;
             }
 
@@ -398,8 +402,8 @@ namespace TestXNA.Sources.GameRooms
 
             UIElements.SimpleButton button = new UIElements.SimpleButton(
             _buttonStretchImage,
-            new Rectangle((int)MyGame.ScreenCenter.X - 200, (int)MyGame.ScreenCenter.Y + MyGame.ScreenArea.Height / 4
-                , 400, 200),
+            new Rectangle((int)MyGame.ScreenCenter.X - 150, (int)MyGame.ScreenCenter.Y + MyGame.ScreenArea.Height / 4
+                , 300, 125),
             "OK");
 
             Rectangle boxArea = new Rectangle(0, 0, 400, 600);
@@ -479,6 +483,7 @@ namespace TestXNA.Sources.GameRooms
 
         private void onQuestion(SocketIOClient.Messages.IMessage data)
         {
+
             Console.WriteLine("\nonQuestion\n");
             Console.WriteLine("\n\n");
             Console.WriteLine(data.Json.ToJsonString());
@@ -678,6 +683,8 @@ namespace TestXNA.Sources.GameRooms
             foreach (Commander command in _commanders)
             {
                 command.Arrows.Clear();
+                command.PositionLocked = false;
+                command.CurrentZone = _map.getZoneAt(command.Position);
             }
 
             foreach (Commander command in _commanders)
@@ -878,7 +885,7 @@ namespace TestXNA.Sources.GameRooms
                             commandsToMove.Add(looserCommand);
 
                             int newZone = _map.getClosestZoneOfOwner(loser, fightZone);
-                            //looserCommand.Position = _map.getCenterOfZone(newZone);
+                            looserCommand.CurrentZone = newZone;
                             ends.Add(_map.getCenterOfZone(newZone));
                             starts.Add(looserCommand.Position);
                             looserCommand.PositionLocked = true;
@@ -906,6 +913,7 @@ namespace TestXNA.Sources.GameRooms
 
                     commandsToMove.Add(command);
                     starts.Add(command.Position);
+                    command.CurrentZone = command.AttackStartZone;
                     ends.Add(_map.getCenterOfZone(command.AttackStartZone));
 
                     endCallback = delegate()
@@ -934,7 +942,7 @@ namespace TestXNA.Sources.GameRooms
             for(int i = 0; i < commands.Count; ++i)
             {
                 Commander command = commands[i];
-                command.Position = Vector2.Lerp(starts[i], ends[i], Utils.hill(_timeSinceAnimStart / _animMoveDuration));   
+                command.Position = Vector2.Lerp(starts[i], ends[i], Utils.hill(_timeSinceAnimStart / _animMoveDuration));
             }
 
             if (_timeSinceAnimStart >= _animMoveDuration)
@@ -991,6 +999,12 @@ namespace TestXNA.Sources.GameRooms
             Console.WriteLine("\n on results \n");
             Console.WriteLine(data.Json.ToJsonString());
 
+            for (int i = 0; i < MyGame.NUMBER_OF_PLAYER; ++i)
+            {
+                PlayerData.Instance[i].Score = _map.getNbOfZonesForOwner(i);
+                Console.WriteLine("\n\n player " + i + " score :" + PlayerData.Instance[i].Score + "\n");
+            }
+
             //ResultRoot res = Newtonsoft.Json.JsonConvert.DeserializeObject<ResultRoot>(data.Json.ToJsonString());
             endGameCallback();
         }
@@ -1038,11 +1052,6 @@ namespace TestXNA.Sources.GameRooms
 
             _map = new TestXNA.Map(MyGame.SURFACE_WIDTH, MyGame.SURFACE_HEIGHT);
             _map.loadMap();
-
-            /*_music = MyGame.ContentManager.Load<SoundEffect>("Sounds/warMusic");
-            _musicInstance = _music.CreateInstance();
-            _musicInstance.IsLooped = true;
-            _musicInstance.Play();*/
 
             GraphicsDevice GraphicsDevice = MyGame.SpriteBatch.GraphicsDevice;
 

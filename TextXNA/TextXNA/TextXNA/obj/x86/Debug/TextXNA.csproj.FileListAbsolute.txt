@@ -63,3 +63,9 @@ D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\rope.xnb
 D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\centralRose.xnb
 D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\Arrow2.xnb
 D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Images\centralProgress.xnb
+D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Sounds\endMusic.xnb
+D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Sounds\waitMusic.xnb
+D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Sounds\warMusic.xnb
+D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Sounds\endMusic.wma
+D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Sounds\waitMusic.wma
+D:\Cours\Surface\TextXNA\TextXNA\TextXNA\bin\x86\Debug\Content\Sounds\warMusic.wma
