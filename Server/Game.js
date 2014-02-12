@@ -14,6 +14,7 @@ function Game(playersArray, tableSocket, io) {
 	this.io = io;
 	this.MAXTURNS = 2;
 	this.playersAnswers = [];
+	this.displayAnswersWait = false;
 
 	this.currentQuestion = 0;
 
@@ -118,6 +119,7 @@ function Game(playersArray, tableSocket, io) {
 		}else{
 			console.log('all players answered');
 			self.processAnswers();
+			self.displayAnswersWait = true;
 		}
 	}
 
@@ -168,6 +170,7 @@ function Game(playersArray, tableSocket, io) {
 			}
 
 			self.table.emit('question', self.question.title);
+			self.displayAnswersWait = false;
 			console.log("question emitted");
 		}
 
@@ -236,7 +239,7 @@ function Game(playersArray, tableSocket, io) {
 
 					var questionID = message.id;
 
-					if (questionID != self.currentQuestion) {
+					if (questionID != self.currentQuestion || self.displayAnswersWait) {
 						console.log('Timeout answer');
 						console.log('questionID : ' + questionID);
 						console.log('currentQuestion : ' + self.currentQuestion);
@@ -391,6 +394,7 @@ function Game(playersArray, tableSocket, io) {
 			}else{
 				console.log('all players answered');
 				self.processAnswers();
+				self.displayAnswersWait = true;
 			}
 		}
 		//Réordonner la liste des joueurs par ordre inverse du nombre de zone (sisi, cette phrase à un sens)
@@ -444,6 +448,7 @@ function Game(playersArray, tableSocket, io) {
 				play1.playerSocket.emit('question', self.question);
 				play2.playerSocket.emit('question', self.question);
 				self.table.emit('question', self.question.title);
+				self.displayAnswersWait = false; 
 				
 			});
 
