@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Conquistador</string>
+    <string name="app_slogan">Sometimes, Brain Saves Blood !</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_game">Game</string>
+    <string name="title_activity_question">QuestionActivity</string>
+    <string name="name">What\'s your name ?</string>
+    <string name="instruction">Enter your name \n and go to fight !</string>
+    <string name="title_activity_wait">WaitActivity</string>
+    <string name="send">Send!</string>
+    <string name="question"> Question </string>
+    <string name="player1"> Player 1 </string>
+    <string name="player2"> Player 2 </string>
+    <string name="player3"> Player 3 </string>
+    <string name="player4"> Player 4 </string>
+    <string name="waiting">Waiting for other \n players...  \n Please wait a moment</string>
+
+</resources>

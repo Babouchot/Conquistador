@@ -1,0 +1,77 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/home_background"
+    android:orientation="vertical"
+    android:keepScreenOn="true"
+    tools:context=".MainActivity" xmlns:app="http://schemas.android.com/apk/res/ihm.it.conquistador">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:gravity="center_horizontal"
+        android:shadowColor="@color/white"
+        android:textColor="@color/black"
+        android:shadowRadius="70"
+        android:text="@string/app_name"
+        android:textSize="30sp" />
+
+    <TextView
+        android:id="@+id/slogan"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center_horizontal"
+        android:text="@string/app_slogan"
+        android:textColor="@color/black"
+        android:shadowColor="@color/white"
+        android:shadowRadius="70"
+        android:textSize="15sp" />
+
+    <RelativeLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="5"
+        android:background="@drawable/parchemin"
+        android:orientation="vertical" >
+
+        <EditText
+            android:id="@+id/pseudo"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/textView1"
+            android:layout_alignRight="@+id/textView1"
+            android:layout_below="@+id/textView1"
+            android:layout_marginTop="30dp"
+            android:ems="10"
+            android:inputType="text" 
+			android:textColor="@color/black">
+            <requestFocus />
+        </EditText>
+
+ 
+        <ihm.it.custom.TextViewPlus
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="99dp" 
+            app:customFont="fonts/dali.ttf"
+            android:textSize="20sp"
+            android:textColor="@color/black"
+            android:text="@string/instruction" />
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/playButton"
+        android:layout_width="fill_parent"
+        android:layout_height="200dp"
+        android:background="@drawable/home_button"
+        android:onClick="ScanClick" />
+
+</LinearLayout>
