@@ -412,6 +412,8 @@ function Game(playersArray, tableSocket, io) {
 			console.log("phase 3 next, turnCount : " + turnCount +" nbMOvesInTurn : "+nbMovesInTurn);
 			
 			nbMovesInTurn += 1;
+
+
 			
 			if(nbMovesInTurn >= phase3players.length)
 			{
@@ -426,8 +428,13 @@ function Game(playersArray, tableSocket, io) {
 			}
 			else
 			{
-				console.log('send : play player :' + phase3players[nbMovesInTurn].gameID);
-				io.sockets.emit('playerMoveAsked', {'id' : phase3players[nbMovesInTurn].gameID});
+				if (phase3players[nbMovesInTurn].territories.length < 1) {
+					nextPhase3();		
+				}
+				else {
+					console.log('send : play player :' + phase3players[nbMovesInTurn].gameID);
+					io.sockets.emit('playerMoveAsked', {'id' : phase3players[nbMovesInTurn].gameID});
+				}
 			}
 		}
 		

@@ -155,7 +155,7 @@ var questions = [
     {
         'type': "open",
         'title': "In what year did the Berlin Wall fall?",
-        'answer': 1991,
+        'answer': 1989,
         'id' : 0
     },
     {
